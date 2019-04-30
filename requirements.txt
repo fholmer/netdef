@@ -1,0 +1,13 @@
+aiohttp
+crontab
+cryptography
+Flask
+Flask-Admin
+Flask-BasicAuth
+Flask-Login
+freeopcua
+Jinja2
+psutil
+pymodbus
+pytz
+Werkzeug

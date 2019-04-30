@@ -1,0 +1,55 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+{{ super() }}
+<div class="row-fluid">
+    <div>
+        {% if current_user.is_authenticated %}
+        
+        <div class="panel panel-default">
+            <div class="panel-heading">Application</div>
+            <div class="panel-body">
+                <p>Uptime: {{app_uptime}}</p>
+                <div class="container">
+                    <div class="row">
+                        <a onclick="return window.confirm('Confirm restart')" href="../restart/" class="btn btn-default col-md-2" role="button">
+                            <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                            Restart
+                        </a>
+                        <a onclick="return window.confirm('Confirm shutdown')" href="../shutdown/" class="btn btn-default col-md-2" role="button">
+                            <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+                            Shutdown
+                        </a>
+                        <a href="../logout/" class="btn btn-default col-md-2" role="button">
+                            <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+                            Logout
+                        </a>
+                        <a href="./logfile/" class="btn btn-default col-md-2" role="button">
+                            <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
+                            View logfile
+                        </a>
+                        <a href="./autoupgrade/" class="btn btn-default col-md-2" role="button">
+                            <span class="glyphicon glyphicon-transfer" aria-hidden="true"></span>
+                            Upgrade
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">System</div>
+            <div class="panel-body">
+                <p>Uptime: {{sys_uptime}}</p>
+                <!--<p>Version: {{sys_version}}</p>-->
+                <div class="container">
+                    
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+            Not logged in
+        {% endif %}
+    </div>
+
+</div>
+{% endblock body %}

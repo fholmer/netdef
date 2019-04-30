@@ -1,0 +1,35 @@
+{% extends 'admin/master.html' %}
+
+{% block head_css %}
+{{ super() }}
+<style>
+
+table, td, th {    
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+}
+
+</style>
+{% endblock head_css %}
+
+{% block body %}
+{{ super() }}
+<div class="row-fluid">
+
+    <div>
+        <h2>{{ title }}</h2>
+
+        {{ content|safe }}
+
+    </div>
+
+</div>
+{% endblock body %}

@@ -1,0 +1,43 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+{{ super() }}
+<div class="row-fluid">
+
+    <div>
+        {% if current_user.is_authenticated %}
+        <p>Application version: {{version}}</p>
+        {% else %}
+
+        <form class="form-horizontal" method="POST" action="">
+            {{ form.hidden_tag() if form.hidden_tag }}
+            {% for f in form if f.type != 'CSRFTokenField' %}
+    
+            <div class="form-group">
+            {{ f.label(class_="col-sm-1 control-label") }}
+            <div class="col-sm-2">
+            {{ f(class_="form-control") }}
+           </div>
+           </div> 
+           {% if f.errors %}
+            <ul>
+                {% for e in f.errors %}
+                <li>{{ e }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            {% endfor %}
+
+            <div class="form-group">
+            <div class="col-sm-offset-1 col-sm-2">
+            <button class="btn btn-default" type="submit">Submit</button>
+            </div>
+            </div>
+        </form>
+
+        {{ link | safe }}
+        {% endif %}
+    </div>
+
+</div>
+{% endblock body %}

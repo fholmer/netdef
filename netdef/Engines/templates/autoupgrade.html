@@ -1,0 +1,37 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+{{ super() }}
+<div class="row-fluid">
+    <div>
+        {% if current_user.is_authenticated %}
+
+        <div class="panel panel-default">
+                <div class="panel-heading">Auto Upgrade</div>
+                <div class="panel-body">
+                {% if auto_update_on %}
+
+                <a onclick="return window.confirm('Confirm upgrade')" href="./upgrade/" class="btn btn-default col-md-2" role="button">
+                    <span class="glyphicon glyphicon-transfer" aria-hidden="true"></span>
+                    Upgrade
+                </a>
+                    {% if manage_repo %}
+                    <a href="../../installationrepo/" class="btn btn-default col-md-2" role="button">
+                        <span class="glyphicon glyphicon-transfer" aria-hidden="true"></span>
+                       Manage local repo
+                    </a>
+                    {% endif %}
+
+                {% else %}
+                    <p>Auto update is not enabled.</p>
+                {% endif %}
+    
+                </div>
+        </div>
+
+        {% else %}
+            Not logged in
+        {% endif %}
+    </div>
+
+</div>
+{% endblock body %}

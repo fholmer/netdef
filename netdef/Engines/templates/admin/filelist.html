@@ -1,0 +1,38 @@
+{% extends 'admin/file/list.html' %}
+{% block list_row_actions scoped %}
+{% if admin_view.can_rename and path and name != '..' %}
+  {%- if admin_view.rename_modal -%}
+    {{ lib.add_modal_button(url=get_url('.rename', path=path, modal=True),
+                            title=_gettext('Rename File'),
+                            content='<i class="fa fa-pencil glyphicon glyphicon-pencil"></i>') }}
+  {% else %}
+    <a class="icon" href="{{ get_url('.rename', path=path) }}" title="{{ _gettext('Rename File') }}">
+      <i class="fa fa-pencil glyphicon glyphicon-pencil"></i>
+    </a>
+  {%- endif -%}
+{% endif %}
+{%- if admin_view.can_delete and path -%}
+    {% if is_dir %}
+        {% if name != '..' and admin_view.can_delete_dirs %}
+        <form class="icon" method="POST" action="{{ get_url('.delete') }}">
+            {{ delete_form.path(value=path) }}
+            {{ delete_form.csrf_token }}
+            <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\' recursively?', name=name) }}')">
+                <i class="fa fa-times glyphicon glyphicon-remove"></i>
+            </button>
+        </form>
+        {% endif %}
+    {% else %}
+    <form class="icon" method="POST" action="{{ get_url('.delete') }}">
+        {{ delete_form.path(value=path) }}
+        {{ delete_form.csrf_token }}
+        <button onclick="return confirm('{{ _gettext('Are you sure you want to delete \\\'%(name)s\\\'?', name=name) }}')">
+            <i class="fa fa-trash glyphicon glyphicon-trash"></i>
+        </button>
+    </form>
+    <a class="icon" href="{{ get_url('.download', path=path) }}" title="{{ _gettext('Download File') }}">
+        <i class="fa fa-cloud-download glyphicon glyphicon-cloud-download"></i>
+    </a>
+    {% endif %}
+{%- endif -%}
+{% endblock %}
