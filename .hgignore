@@ -1,3 +1,8 @@
 syntax: glob
 .vscode/settings.json
+__pycache__/
+*.egg-info/
+build/
+dist/
+env/
 venv/

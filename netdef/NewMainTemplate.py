@@ -1,10 +1,10 @@
 import os
-from RSC.Controllers import Controllers
-from RSC.Sources import Sources
-from RSC.Rules import Rules
-from RSC.Engines import ThreadedWebGuiEngine
-from RSC.Shared import Shared
-from RSC.utils import setup_logging, handle_restart
+from netdef.Controllers import Controllers
+from netdef.Sources import Sources
+from netdef.Rules import Rules
+from netdef.Engines import ThreadedWebGuiEngine
+from netdef.Shared import Shared
+from netdef.utils import setup_logging, handle_restart
 from . import defaultconfig
 
 def main():
@@ -23,22 +23,22 @@ def main():
 
     # importerer kontrollermoduler som er aktivert i konfigfil
     controllers = Controllers.Controllers(shared)
-    controllers.load([__package__, 'RSC'])
+    controllers.load([__package__, 'netdef'])
 
     # importerer kildeklasser som er aktivert i konfigfil
     sources = Sources.Sources(shared)
-    sources.load([__package__, 'RSC'])
+    sources.load([__package__, 'netdef'])
 
     # importerer regelmotorer som er aktivert i konfigfil
     rules = Rules.Rules(shared)
-    rules.load([__package__, 'RSC'])
+    rules.load([__package__, 'netdef'])
 
     # motoren som kobler webgrensesnitt, kontrollere, kilder og regler sammen.
     engine = ThreadedWebGuiEngine.ThreadedWebGuiEngine(shared)
     engine.add_controller_classes(controllers)
     engine.add_source_classes(sources)
     engine.add_rule_classes(rules)
-    engine.load([__package__, 'RSC'])
+    engine.load([__package__, 'netdef'])
 
     engine.init()
     engine.start()
