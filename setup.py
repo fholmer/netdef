@@ -65,8 +65,7 @@ setup(
         'Operating System :: Microsoft :: Windows'
     ],
     keywords='Networking Monitoring',    
-    packages=find_packages(include=['netdef']),
-    
+    packages=find_packages(include=['netdef*']),
     install_requires=[
         'aiohttp',
         'beautifulsoup4',
@@ -83,7 +82,6 @@ setup(
         'Werkzeug'
     ],
     python_requires='>=3.5',
-    #package_dir={NAME: NAME},
     package_data={
         MAIN_PACKAGE: [
             'Engines/templates/*.html',
