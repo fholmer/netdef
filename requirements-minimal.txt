@@ -1,0 +1,7 @@
+Flask
+Flask-Admin
+Flask-BasicAuth
+Flask-Login
+Jinja2
+psutil
+Werkzeug

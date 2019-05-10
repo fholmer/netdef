@@ -16,7 +16,7 @@ To build wheel:
       python3 setup.py bdist_wheel
 
 Update requirements:
-    python3 -m pip freeze -r requirements-stable.txt > requirements-stable.txt
+    python3 -m pip freeze -r requirements-full-stable.txt > requirements-full-stable.txt
 
 Download required packages:
     
@@ -35,53 +35,33 @@ here = path.abspath(path.dirname(__file__))
 NAME = 'netdef'
 MAIN_PACKAGE = 'netdef'
 
+def get_list_from_file(*fullfilepath):
+    return open(path.join(*fullfilepath), "r").read().splitlines()
+
 setup(
     name=NAME,
     version=app_version,
     description=NAME,
     #long_description=long_description,
     url='',
-
-    # Author details
     author='Frode Holmer',
     author_email='fholmer+netdef@gmail.com',
+    license='GNU Lesser General Public License v3 or later',
+    keywords='Application Framework Networking Monitoring',    
 
-    # Choose your license
-    license='LGPL',
+    python_requires='>=3.5',
+    packages=find_packages(include=['netdef*']),
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
-    classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Environment :: Console',
-        'Intended Audience :: Other Audience',
-        'Topic :: System :: Networking :: Monitoring',
-        'Topic :: System :: Monitoring',
-        'License :: LGPL',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Operating System :: POSIX :: Linux',
-        'Operating System :: Microsoft :: Windows'
-    ],
-    keywords='Networking Monitoring',    
-    packages=find_packages(include=['netdef*']),
-    install_requires=[
-        'aiohttp',
-        'beautifulsoup4',
-        'crontab',
-        'cryptography',
-        'Flask',
-        'Flask-Admin',
-        'Flask-BasicAuth',
-        'Flask-Login',
-        'freeopcua',
-        'pika',
-        'psutil',
-        'pymodbus',
-        'Werkzeug'
-    ],
-    python_requires='>=3.5',
+    classifiers=get_list_from_file(".", "docs", "classifiers.txt"),
+
+    install_requires=get_list_from_file(".", "requirements-minimal.txt"),
+
+    extras_require={
+        'full':get_list_from_file(".", "requirements-full.txt"),
+        'full-stable':get_list_from_file(".", "requirements-full-stable.txt"),
+    },
+
     package_data={
         MAIN_PACKAGE: [
             'Engines/templates/*.html',
