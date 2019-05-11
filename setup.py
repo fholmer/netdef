@@ -18,6 +18,9 @@ To build wheel:
 Update requirements:
     python3 -m pip freeze -r requirements-full-stable.txt > requirements-full-stable.txt
 
+Upload to pypi:
+	python3 -m twine upload dist/*
+
 Download required packages:
     
 """
@@ -41,9 +44,11 @@ def get_list_from_file(*fullfilepath):
 setup(
     name=NAME,
     version=app_version,
-    description=NAME,
+    description=('An application framework with built-in drivers (Controllers), '
+                 'data holders (Sources) and config parsers (Rules). '
+                 'Also includes a webadmin for configuration and troubleshooting.'),
     #long_description=long_description,
-    url='',
+    url='https://bitbucket.org/fholmer/netdef',
     author='Frode Holmer',
     author_email='fholmer+netdef@gmail.com',
     license='GNU Lesser General Public License v3 or later',

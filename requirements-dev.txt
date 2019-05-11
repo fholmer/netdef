@@ -1,4 +1,5 @@
+wheel
 pyinstaller
 pylint
 pytest
-wheel
+twine
