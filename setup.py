@@ -53,13 +53,13 @@ setup(
     packages=find_packages(include=['netdef*']),
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
-    classifiers=get_list_from_file(".", "docs", "classifiers.txt"),
+    classifiers=get_list_from_file(here, "docs", "classifiers.txt"),
 
-    install_requires=get_list_from_file(".", "requirements-minimal.txt"),
+    install_requires=get_list_from_file(here, "requirements-minimal.txt"),
 
     extras_require={
-        'full':get_list_from_file(".", "requirements-full.txt"),
-        'full-stable':get_list_from_file(".", "requirements-full-stable.txt"),
+        'full':get_list_from_file(here, "requirements-full.txt"),
+        'full-stable':get_list_from_file(here, "requirements-full-stable.txt"),
     },
 
     package_data={

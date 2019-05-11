@@ -1,0 +1,19 @@
+install into a virtual environment with minimal (default) dependencies:
+  $ source venv/bin/activate
+  $ pip install netdef
+
+install into a virtual environment with all dependencies:
+  $ source venv/bin/activate
+  $ pip install netdef[full]
+
+install into a virtual environment with all dependencies and frozen versions:
+  $ source venv/bin/activate
+  $ pip install netdef[full-stable]
+
+install into a virtual environment as a sub-project:
+  $ source venv/bin/activate
+  $ hg clone [bitbucket-link] ./netdef
+  $ echo "netdef=../netdef" >> .hgsub
+  $ pip install -r ./netdef/requirements-dev.txt
+  $ pip install -r ./netdef/requirements-minimal.txt
+  $ pip install -e ./netdef/
