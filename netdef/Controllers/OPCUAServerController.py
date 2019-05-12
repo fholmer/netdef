@@ -1,11 +1,27 @@
 import logging
 import datetime
+import werkzeug.security
 from opcua import Server, ua
-from opcua.ua.uatypes import VariantType#, StatusCode, DataValue
+from opcua.ua.uatypes import VariantType
 from opcua.common.callback import CallbackType
+from opcua.common import utils
+from opcua.server.internal_server import InternalServer, InternalSession
+from opcua.server.user_manager import UserManager
+from netdef.Controllers import BaseController, Controllers
+from netdef.Sources.BaseSource import StatusCode
 
-from . import BaseController, Controllers
-from ..Sources.BaseSource import StatusCode
+class CustomInternalSession(InternalSession):
+    def activate_session(self, params):
+        id_token = params.UserIdentityToken
+        if isinstance(id_token, ua.AnonymousIdentityToken):
+            raise utils.ServiceError(ua.StatusCodes.BadUserAccessDenied)
+        return super().activate_session(params)
+
+class CustomInternalServer(InternalServer):
+    def set_parent(self, parent):
+        self._parent = parent
+    def create_session(self, name, user=UserManager.User.Anonymous, external=False):
+        return CustomInternalSession(self, self.aspace, self.subscription_service, name, user=user, external=external)
 
 @Controllers.register("OPCUAServerController")
 class OPCUAServerController(BaseController.BaseController):
@@ -13,6 +29,10 @@ class OPCUAServerController(BaseController.BaseController):
         super().__init__(name, shared)
         self.logger = logging.getLogger(self.name)
         self.logger.info("init")
+
+        self.shared.config.set_hidden_value(self.name, "user")
+        self.shared.config.set_hidden_value(self.name, "password")
+        self.shared.config.set_hidden_value(self.name, "password_hash")
 
         endpoint = self.shared.config.config(self.name, "endpoint", "no_endpoint")
         certificate = self.shared.config.config(self.name, "certificate", "")
@@ -24,11 +44,49 @@ class OPCUAServerController(BaseController.BaseController):
 
         self.oldnew = self.shared.config.config(self.name, "oldnew_comparision", 0)
 
-        server = Server()
+        admin_username = self.shared.config.config(self.name, "user", "admin")
+        admin_password = self.shared.config.config(self.name, "password", "admin")
+        admin_password_hash = self.shared.config.config(self.name, "password_hash", "").replace("$$", "$")
+
+        anonymous_on = self.shared.config.config(self.name, "anonymous_on", 0)
+        username_on = self.shared.config.config(self.name, "username_on", 1)
+        full_encryption_on = self.shared.config.config(self.name, "full_encryption_on", 1)
+
+        if anonymous_on:
+            server = Server()
+        else:
+            server = Server(iserver=CustomInternalServer())
+            server.iserver.set_parent(server)
+
         server.set_endpoint(endpoint)
+        server.allow_remote_admin(False)
+
         if certificate and private_key:
             server.load_certificate(str(certificate))
             server.load_private_key(str(private_key))
+
+        if username_on:
+            server.set_security_IDs(["Username"])
+
+        if full_encryption_on:
+            server.set_security_policy([
+                    ua.SecurityPolicyType.Basic256Sha256_SignAndEncrypt,
+                    ua.SecurityPolicyType.Basic256Sha256_Sign])
+        
+        def custom_user_manager(isession, userName, password):
+            if userName != admin_username:
+                return False
+            if admin_password_hash:
+                if werkzeug.security.check_password_hash(admin_password_hash, password):
+                    return True
+            else:
+                # fallback til plaintext
+                if password == admin_password:
+                    return True
+            return False
+
+        if username_on:
+            server.user_manager.set_user_manager(custom_user_manager)
 
         idx = server.register_namespace(uri)
         objects = server.get_objects_node()
@@ -60,12 +118,18 @@ class OPCUAServerController(BaseController.BaseController):
     def handle_readall(self, incoming):
         raise NotImplementedError
 
+    def get_default_value(self, incoming):
+        defaultvalue = incoming.interface(incoming.value).value
+        return defaultvalue
+
     def handle_add_source(self, incoming):
         self.logger.debug("'Add source' event for %s", incoming.key)
         if self.has_source(incoming.key):
             self.logger.error("source already exists %s", incoming.key)
             return
-        varnode = self.add_variablenode(self.root, incoming.key, 0, None)
+
+        defaultvalue = self.get_default_value(incoming)
+        varnode = self.add_variablenode(self.root, incoming.key, defaultvalue, None)
         varnode.set_writable()
         self.add_source(incoming.key, (incoming, varnode))
         self.subscription.subscribe_data_change(varnode)
