@@ -46,7 +46,7 @@ setup(
     version=app_version,
     description=('An application framework with built-in drivers (Controllers), '
                  'data holders (Sources) and config parsers (Rules). '
-                 'Also includes a webadmin for configuration and troubleshooting.'),
+                 'Also includes a web interface for configuration and troubleshooting.'),
     #long_description=long_description,
     url='https://bitbucket.org/fholmer/netdef',
     author='Frode Holmer',
