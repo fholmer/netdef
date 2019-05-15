@@ -41,13 +41,16 @@ MAIN_PACKAGE = 'netdef'
 def get_list_from_file(*fullfilepath):
     return open(path.join(*fullfilepath), "r").read().splitlines()
 
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
+
 setup(
     name=NAME,
     version=app_version,
     description=('An application framework with built-in drivers (Controllers), '
                  'data holders (Sources) and config parsers (Rules). '
                  'Also includes a web interface for configuration and troubleshooting.'),
-    #long_description=long_description,
+    long_description=long_description,
     url='https://bitbucket.org/fholmer/netdef',
     author='Frode Holmer',
     author_email='fholmer+netdef@gmail.com',
