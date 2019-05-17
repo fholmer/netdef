@@ -80,11 +80,24 @@ def generate_webadmin_auth(interative=True):
     print("password_hash = {}".format(admin_pw_hash))
     print("secret_key = {}".format(secret_key))
 
+def framework_entrypoint():
+    global_parser = ArgumentParser(add_help=True)
+    global_parser.add_argument('-n', '--non-interactive', action='store_true', help='do not prompt for user/pass')
+    global_parser.add_argument('-g', '--generate-auth', action='store_true', help='generate webadmin authentication')
+    args = global_parser.parse_args()
+
+    if args.generate_auth:
+        generate_webadmin_auth(interative=not args.non_interactive)
+    else:
+        global_parser.print_help()
 
 def cli():
     # entrypoint: console_scripts
-    entrypoint(run_app, get_template_config)
+    # entrypoint(run_app, get_template_config)
+    framework_entrypoint()
 
 if __name__ == '__main__':
     # entrypoint: python -m console_scripts 
-    entrypoint(run_app, get_template_config)
+    # entrypoint(run_app, get_template_config)
+    framework_entrypoint()
+
