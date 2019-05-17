@@ -10,4 +10,6 @@ Jinja2
 psutil
 pymodbus
 pytz
+paho-mqtt
+pyzmq
 Werkzeug
