@@ -1,7 +1,7 @@
-
 netdef
 ======
 
+* Documentation: Not yet finished. Working on it.
 * Bitbucket: https://bitbucket.org/fholmer/netdef
 * GitHub: https://github.com/fholmer/netdef
 * PyPI: https://pypi.org/project/netdef/
@@ -47,10 +47,9 @@ Built-in application engines:
 Use Cases
 ---------
 
-Netdef is useful if:
-
-* You want to translate a protocol into a completely different protocol
-* You want to translate a data-format into a completely different data-format
+Netdef is useful if you want to create a middleware that can translate a
+protocol into a completely different protocol or data format into a completely
+different data format.
 
 Getting started
 ---------------
