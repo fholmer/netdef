@@ -5,7 +5,7 @@ import pathlib
 import os
 import sys
 
-class ApplicationService(win32serviceutil.ServiceFramework):
+class GenericApplicationService(win32serviceutil.ServiceFramework):
     application = None
     
     def __init__(self, args):
@@ -19,6 +19,15 @@ class ApplicationService(win32serviceutil.ServiceFramework):
     def SvcDoRun(self):
         self.running = True
         self.application() 
+
+def get_service(svc_name, exe_name, app_callback):
+    class ApplicationService(GenericApplicationService):
+        _svc_name_ = svc_name
+        _svc_display_name_ = svc_name
+        _exe_name_ = exe_name
+        _exe_args_ = ""
+        application = staticmethod(app_callback)
+    return ApplicationService
 
 def run_service(app_service_class):
     if "-r" in sys.argv:
