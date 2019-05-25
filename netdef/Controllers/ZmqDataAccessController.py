@@ -4,6 +4,8 @@ import zmq
 from netdef.Controllers import BaseController, Controllers
 from netdef.Sources.BaseSource import StatusCode
 
+# this controller is in development, do not use it yet.
+
 # import my supported sources
 from ..Sources.ZmqDataAccessSource import ZmqDataAccessSource
 

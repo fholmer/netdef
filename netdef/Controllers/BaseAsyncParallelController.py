@@ -1,7 +1,7 @@
 import asyncio
 from . import BaseController, Controllers
 
-# denne er under utvikling, altså ikke i bruk enda
+# this controller is in development, do not use it yet.
 
 #@Controllers.register("BaseAsyncParallelController")
 class BaseAsyncParallelController(BaseController.BaseController):

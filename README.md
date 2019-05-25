@@ -31,12 +31,11 @@ Built-in Controllers:
 * trigger events by using crontab format ([crontab](https://pypi.org/project/crontab/))
 * disk, memory and CPU monitoring ([psutil](https://pypi.org/project/psutil/))
 * MQTT client (using a simple messaging format called DataAccess) ([paho-mqtt](https://pypi.org/project/paho-mqtt/))
-* ZeroMQ client (using a simple messaging format called DataAccess) ([pyzmq](https://pypi.org/project/pyzmq/))
 * Simple RESTJson client
 
 Built-in Rules:
 
-* CSV config parser
+* Generic CSV config parser
 
 Built-in application engines:
 
