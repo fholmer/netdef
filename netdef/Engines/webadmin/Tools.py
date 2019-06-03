@@ -1,6 +1,8 @@
+import sys
 import datetime
 import subprocess
 import platform
+import pathlib
 import psutil
 from flask import current_app, stream_with_context, Response
 from flask_admin import expose
@@ -22,8 +24,8 @@ def stdout_from_terminal(*command, err_msg=None):
 
 def stdout_from_terminal_as_generator(*command, err_msg=None, pre="", post=""):
     try:
+        yield "<pre> "
         process = subprocess.Popen(command, stdout=subprocess.PIPE)
-        yield "<pre>"
         if pre:
             yield pre
         for line in iter(process.stdout.readline, b''):
@@ -48,6 +50,33 @@ def verify_update(cmd):
         return False
     return True
 
+def get_update_cmd(
+            executable,
+            no_index,
+            force_reinstall,
+            find_links,
+            trusted_host,
+            minimal_timeout,
+            package
+        ):
+    args = [executable, "-m", "pip", "install", "--upgrade", "-f"]
+    args.append(str(pathlib.Path("./installation_repo").absolute()))
+
+    if no_index:
+        args.append("--no-index")
+    if force_reinstall:
+        args.append("--force-reinstall")
+    if trusted_host:
+        args.append("--trusted-host")
+        args.append(trusted_host)
+    if find_links:
+        args.append("-f")
+        args.append(find_links)
+    if minimal_timeout:
+        args.append("--retries 1")
+        args.append("--timeout 1")
+    args.append(package)
+    return args
 
 @Views.register("Tools")
 def setup(admin):
@@ -97,11 +126,21 @@ class Tools(MyBaseView):
         shared = current_app.config['SHARED']
         config = shared.config.config
         auto_update_on = config("auto_update", "on", 0)
-        auto_update_cmd = config("auto_update", "command", "")
+        default_package_name = config("general", "identifier", "")
+
         if not auto_update_on:
             return "ERROR: Update aborted. Update disabled i config"
 
-        auto_update_cmd = auto_update_cmd.split(" ")
+        auto_update_cmd = get_update_cmd(
+                sys.executable,
+                config("auto_update", "no_index", 1),
+                config("auto_update", "force_reinstall", 0),
+                config("auto_update", "find_links", ""),
+                config("auto_update", "trusted_host", ""),
+                config("auto_update", "minimal_timeout", 0),
+                config("auto_update", "package", default_package_name)
+            )
+
         if not verify_update(auto_update_cmd):
             return "ERROR: Update aborted. update command is rejected"
         
