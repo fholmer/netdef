@@ -16,6 +16,12 @@ def get_vm():
 def get_proc():
     return psutil.Process()
 
+def get_clean_mount_point_name(node):
+    if "/" in node:
+        return 'root' + node.replace("/", ".").rstrip(".")
+    elif "\\" in node:
+        return node.replace(":\\", "").rstrip(".")
+
 def statistics_update(item):
     if Statistics.on:
         Statistics.set(
@@ -27,16 +33,20 @@ def statistics_update(item):
         )
 
 class DataItem():
-    __slots__ = ('key', 'source_type', 'interval', 'func', 'next')
-    def __init__(self, source_type, key, interval, func):
+    __slots__ = ('key', 'source_type', 'interval', 'func', 'args', 'next')
+    def __init__(self, source_type, key, interval, func, args=None):
         self.source_type = source_type
         self.key = key
         self.interval = interval
         self.func = func
+        self.args = args
         self.next = 0
 
     def get_value(self):
-        return self.func()
+        if self.args:
+            return self.func(*self.args)
+        else:
+            return self.func()
 
     def ready(self):
         now = time.time()
@@ -45,7 +55,7 @@ class DataItem():
             return True
         return False
 
-def get_data_items_dict(mempoll, cpupoll, poll):
+def get_data_items_dict(mempoll, cpupoll, poll, checkdisk, diskpoll):
     NO = SystemMonitorSource
     BY = SystemMonitorByteSource
     PE = SystemMonitorPercentSource
@@ -63,6 +73,23 @@ def get_data_items_dict(mempoll, cpupoll, poll):
         DataItem(BY, "process.memory.current", mempoll, lambda: get_proc().memory_full_info().uss),
         DataItem(NO, "process.open.files.count", poll, lambda: len(get_proc().open_files()))
     ]
+    if checkdisk:
+        def get_name(mp, tail):
+            return "sysmon.disk.%s.%s" % (get_clean_mount_point_name(mp), tail)
+
+        for disk in psutil.disk_partitions():
+            mp = disk.mountpoint
+            get_total = lambda mp: psutil.disk_usage(mp).total
+            get_used = lambda mp: psutil.disk_usage(mp).used
+            get_free = lambda mp: psutil.disk_usage(mp).free
+            get_percent = lambda  mp: psutil.disk_usage(mp).percent
+            items.extend([
+                DataItem(BY, get_name(mp, "total"), diskpoll, get_total, [mp]),
+                DataItem(BY, get_name(mp, "used"), diskpoll, get_used, [mp]),
+                DataItem(BY, get_name(mp, "free"), diskpoll, get_free, [mp]),
+                DataItem(PE, get_name(mp, "percent"), diskpoll, get_percent, [mp])
+            ])
+            
     return {data.key: data for data in items}
 
 @Controllers.register("SystemMonitorController")
@@ -71,15 +98,21 @@ class SystemMonitorController(BaseController.BaseController):
         super().__init__(name, shared)
         self.logger = logging.getLogger(self.name)
         self.logger.info("init")
-        self.oldnew = self.shared.config.config(self.name, "oldnew_comparision", 0)
-        self.memory_poll_interval = self.shared.config.config(self.name, "memory_poll_interval", 600)
-        self.cpu_poll_interval = self.shared.config.config(self.name, "cpu_poll_interval", 10)
-        self.poll_interval = self.shared.config.config(self.name, "general_poll_interval", 10)
+        config = self.shared.config.config
+        self.oldnew = config(self.name, "oldnew_comparision", 0)
+        self.memory_poll_interval = config(self.name, "memory_poll_interval", 600)
+        self.cpu_poll_interval = config(self.name, "cpu_poll_interval", 10)
+        self.poll_interval = config(self.name, "general_poll_interval", 10)
+
+        self.disk_monitor_on = config(self.name, "disk_monitor_on", 0)
+        self.disk_poll_interval = config(self.name, "disk_poll_interval", 60)
 
         self.data_items = get_data_items_dict(
             self.memory_poll_interval,
             self.cpu_poll_interval,
-            self.poll_interval
+            self.poll_interval,
+            self.disk_monitor_on,
+            self.disk_poll_interval
         )
         self.internal_sources = {key: data.source_type(key=key) for key, data in self.data_items.items()}
 
