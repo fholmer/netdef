@@ -53,6 +53,7 @@ def verify_update(cmd):
 def get_update_cmd(
             executable,
             no_index,
+            pre,
             force_reinstall,
             find_links,
             trusted_host,
@@ -64,6 +65,8 @@ def get_update_cmd(
 
     if no_index:
         args.append("--no-index")
+    if pre:
+        args.append("--pre")
     if force_reinstall:
         args.append("--force-reinstall")
     if trusted_host:
@@ -104,11 +107,27 @@ class Tools(MyBaseView):
         shared = current_app.config['SHARED']
         manage_repo = current_app.config['MANAGE_REPO']
         config = shared.config.config
-        auto_update_on = config("auto_update", "on", 0)
+        self.auto_update_on = config("auto_update", "on", 0)
+        default_package_name = config("general", "identifier", "")
+        self.auto_update_args = (
+                config("auto_update", "no_index", 1),
+                config("auto_update", "pre_release", 0),
+                config("auto_update", "force_reinstall", 0),
+                config("auto_update", "find_links", ""),
+                config("auto_update", "trusted_host", ""),
+                config("auto_update", "minimal_timeout", 0),
+                config("auto_update", "package", default_package_name)
+        )
+        auto_update_args_names = (
+            "no_index", "pre_release", "force_reinstall", "find_links",
+            "trusted_host", "minimal_timeout", "package"
+        )
         return self.render(
             'autoupgrade.html',
-            auto_update_on=auto_update_on,
-            manage_repo=manage_repo)
+            auto_update_on=self.auto_update_on,
+            manage_repo=manage_repo,
+            update_args=zip(auto_update_args_names, self.auto_update_args)
+        )
     
     @expose("/echo/")
     def echo(self):
@@ -125,20 +144,13 @@ class Tools(MyBaseView):
     def autoupgrade_upgrade(self):
         shared = current_app.config['SHARED']
         config = shared.config.config
-        auto_update_on = config("auto_update", "on", 0)
-        default_package_name = config("general", "identifier", "")
 
-        if not auto_update_on:
+        if not self.auto_update_on:
             return "ERROR: Update aborted. Update disabled i config"
 
         auto_update_cmd = get_update_cmd(
                 sys.executable,
-                config("auto_update", "no_index", 1),
-                config("auto_update", "force_reinstall", 0),
-                config("auto_update", "find_links", ""),
-                config("auto_update", "trusted_host", ""),
-                config("auto_update", "minimal_timeout", 0),
-                config("auto_update", "package", default_package_name)
+                *self.auto_update_args
             )
 
         if not verify_update(auto_update_cmd):

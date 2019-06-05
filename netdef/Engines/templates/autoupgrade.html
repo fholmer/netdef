@@ -6,7 +6,7 @@
         {% if current_user.is_authenticated %}
 
         <div class="panel panel-default">
-                <div class="panel-heading">Auto Upgrade</div>
+                <div class="panel-heading">Upgrade</div>
                 <div class="panel-body">
                 {% if auto_update_on %}
 
@@ -26,6 +26,36 @@
                 {% endif %}
     
                 </div>
+        </div>
+
+
+        <div class="panel panel-default">
+            <div class="panel-heading">upgrade options</div>
+            <div class="panel-body table-responsive">
+        
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th class="column-header col-key">
+                            Key
+                        </th>
+                        <th class="column-header col-val">
+                            Rule
+                        </th>
+                    </tr>
+                </thead>
+                {% for key, val in update_args: %}
+                <tr>
+                    <td class="col-key">
+                        {{key}}
+                    </td>
+                    <td class="col-val">
+                        {{val}}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            </div>
         </div>
 
         {% else %}
