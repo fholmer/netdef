@@ -39,6 +39,8 @@ class BaseRule():
 
         self.ticks = []
 
+        self._expressions_setup_functions = []
+
     def add_interrupt(self, interrupt):
         self._interrupt = interrupt
 
@@ -201,11 +203,11 @@ class BaseRule():
               3. Finner kilder og sender dem til kontroller med ADD_SOURCE
         """
         if not isinstance(expr_info, ExpressionInfo):
-            raise TypeError("Expected ExpressionInfo, got %s" % type(expr))
+            raise TypeError("Expected ExpressionInfo, got %s" % type(expr_info))
 
         source_count = 0
         expr = expr_info.module
-        
+       
         for sourceinfo in expr_info.arguments:
             if not isinstance(sourceinfo, SourceInfo):
                 raise TypeError("Expected SourceInfo, got %s" % type(sourceinfo))
@@ -231,6 +233,10 @@ class BaseRule():
                 arg.register_set_callback(self.shared.queues.write_value_to_controller)
                 # 3.
                 self.add_instance_to_controller(arg)
+
+        if expr_info.setup and not expr_info.setup in self._expressions_setup_functions:
+            self._expressions_setup_functions.append(expr_info.setup)
+            expr_info.setup(self.shared)
 
         self.shared.expressions.instances.add_expression(expr)
 
@@ -281,6 +287,7 @@ class BaseRule():
     def setup_done(self):
         """ Bare oppdatering av interessant data....
         """
+        self._expressions_setup_functions.clear()
         if Statistics.on:
             ns = self.name + "."
             Statistics.set(ns + "source.references.count", len(self.search_expression_by_reference))
@@ -319,16 +326,21 @@ class ExpressionInfo():
     """ Dette er en dataklasse som *beskriver* et uttrykk. Regelmotoren
         skal opprette et uttrykk basert på denne infoen her.
     """
-    __slots__ = ["module", "arguments"]
-    def __init__(self, module, arguments, func="expression"):
+    __slots__ = ["module", "func", "arguments", "setup"]
+    def __init__(self, module, arguments, func="expression", setup="setup"):
 
         if not isinstance(func, str):
             raise TypeError("func: wrong datatype")
 
         if isinstance(module, Expression):
             self.module = module
+            self.setup = None
         elif isinstance(module, ModuleType):
             self.module = Expression(getattr(module, func), module.__file__)
+            if setup and hasattr(module, setup):
+                self.setup = getattr(module, setup)
+            else:
+                self.setup = None
         else:
             raise TypeError("module: wrong datatype")
 
