@@ -12,4 +12,5 @@ pymodbus
 pytz
 paho-mqtt
 pyzmq
+waitress
 Werkzeug

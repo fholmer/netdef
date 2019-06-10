@@ -1,5 +1,7 @@
-wheel
 pyinstaller
 pylint
 pytest
+Sphinx
+sphinx-rtd-theme
 twine
+wheel
