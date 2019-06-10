@@ -6,3 +6,4 @@ build/
 dist/
 env/
 venv/
+docs/_build/

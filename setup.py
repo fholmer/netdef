@@ -67,7 +67,6 @@ setup(
 
     extras_require={
         'full':get_list_from_file(here, "requirements-full.txt"),
-        'full-stable':get_list_from_file(here, "requirements-full-stable.txt"),
     },
 
     package_data={

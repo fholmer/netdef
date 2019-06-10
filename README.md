@@ -1,4 +1,4 @@
-netdef
+Netdef
 ======
 
 * Documentation: Not yet finished. Working on it.
@@ -53,19 +53,19 @@ different data format.
 Getting started
 ---------------
 
-First install cookiecutter and netdef templates:
+First install cookiecutter and netdef templates::
 
     $ python3 -m venv cookiecutter/
     $ cookiecutter/bin/pip install cookiecutter
     $ hg clone https://bitbucket.org/fholmer/cookiecutter-netdef cookiecutter/cookiecutter-netdef
 
-Create your first application:
+Create your first application::
 
     $ cookiecutter/bin/cookiecutter cookiecutter/cookiecutter-netdef/cookiecutter-minimal-app
 
 Cookiecutter and netdef-templates can now be removed if you wish.
 
-Setup your application:
+Setup your application::
 
     $ cd your-application
     $ python3 -m venv venv
