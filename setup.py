@@ -67,6 +67,9 @@ setup(
 
     extras_require={
         'full':get_list_from_file(here, "requirements-full.txt"),
+        'windows-service': [
+            'pywin32'
+        ]
     },
 
     package_data={

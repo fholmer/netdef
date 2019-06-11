@@ -7,10 +7,12 @@ Flask-BasicAuth
 Flask-Login
 freeopcua
 Jinja2
+paho-mqtt
 psutil
 pymodbus
 pytz
-paho-mqtt
+pywin32; sys_platform == 'win32'
 pyzmq
+six==1.11.0
 waitress
 Werkzeug
