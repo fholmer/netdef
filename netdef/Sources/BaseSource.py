@@ -4,6 +4,14 @@ import datetime
 from ..Interfaces.DefaultInterface import DefaultInterface
 
 class StatusCode(enum.Enum):
+    """
+    Used to indicate the quality of a value in BaseSource.status_code
+    
+    NONE: Value is not set yet.
+    INITIAL: First value. you might have to update cashes with this value at application startup.
+    GOOD: A normal value update.
+    INVALID: A value update where the value is not to be trusted.
+    """
     NONE = 0
     INITIAL = 1
     GOOD = 2

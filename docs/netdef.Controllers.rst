@@ -1,5 +1,5 @@
 netdef.Controllers package
-==============
+==========================
 
 .. automodule:: netdef.Controllers.Controllers
     :members:
@@ -18,7 +18,7 @@ This is an abstract baseclass
 
 
 built-in controller modules
------------------------
+---------------------------
 
 .. automodule:: netdef.Controllers.CrontabController
     :members:
