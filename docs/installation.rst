@@ -28,11 +28,11 @@ The rest of this documentation assumes that your application is called First-App
 Setup your application
 ----------------------
 
-Create a virtual environment for your application
+Create a virtual environment for your application:
 
 .. code-block:: console
 
-    $ cd your-application
+    $ cd First-App
     $ python3 -m venv venv
     $ source venv/bin/activate
 
@@ -43,7 +43,7 @@ Install dependecies:
     $ pip install -r requirements-dev.txt
     $ pip install -r requirements.txt
 
-Link First-App into the virtual environment site-packages:
+Link your application into the virtual environment site-packages:
 
 .. code-block:: console
 
