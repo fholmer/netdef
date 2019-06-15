@@ -2,7 +2,6 @@ import logging
 import datetime
 import werkzeug.security
 from opcua import Server, ua
-from opcua.ua.uatypes import VariantType
 from opcua.common.callback import CallbackType
 from opcua.common import utils
 from opcua.server.internal_server import InternalServer, InternalSession
@@ -34,23 +33,30 @@ class OPCUAServerController(BaseController.BaseController):
         self.shared.config.set_hidden_value(self.name, "password")
         self.shared.config.set_hidden_value(self.name, "password_hash")
 
-        endpoint = self.shared.config.config(self.name, "endpoint", "no_endpoint")
-        certificate = self.shared.config.config(self.name, "certificate", "")
-        private_key = self.shared.config.config(self.name, "private_key", "")
-        uri = self.shared.config.config(self.name, "uri", "http://examples.freeopcua.github.io")
-        root_object_name = self.shared.config.config(self.name, "root_object_name", "TEST")
-        separator = self.shared.config.config(self.name, "separator", ".")
-        namespace = self.shared.config.config(self.name, "namespace", 2)
+        def config(key, val):
+            return self.shared.config.config(self.name, key, val)
 
-        self.oldnew = self.shared.config.config(self.name, "oldnew_comparision", 0)
+        endpoint = config("endpoint", "no_endpoint")
+        certificate = config("certificate", "")
+        private_key = config("private_key", "")
+        uri = config("uri", "http://examples.freeopcua.github.io")
+        root_object_name = config("root_object_name", "TEST")
+        separator = config("separator", ".")
+        namespace = config("namespace", 2)
 
-        admin_username = self.shared.config.config(self.name, "user", "admin")
-        admin_password = self.shared.config.config(self.name, "password", "admin")
-        admin_password_hash = self.shared.config.config(self.name, "password_hash", "").replace("$$", "$")
+        self.oldnew = config("oldnew_comparision", 0)
 
-        anonymous_on = self.shared.config.config(self.name, "anonymous_on", 0)
-        username_on = self.shared.config.config(self.name, "username_on", 1)
-        full_encryption_on = self.shared.config.config(self.name, "full_encryption_on", 1)
+        self.strict_datatypes = config("strict_datatypes", 1)
+
+        admin_username = config("user", "admin")
+        admin_password = config("password", "admin")
+        admin_password_hash = config("password_hash", "").replace("$$", "$")
+
+        anonymous_on = config("anonymous_on", 0)
+        username_on = config("username_on", 1)
+        full_encryption_on = config("full_encryption_on", 1)
+
+        initial_values_is_quality_good = config("initial_values_is_quality_good", 0)
 
         if anonymous_on:
             server = Server()
@@ -99,6 +105,11 @@ class OPCUAServerController(BaseController.BaseController):
         self.ns = namespace
         self.items = []
 
+        if initial_values_is_quality_good:
+            self.initial_status_code = ua.StatusCodes.Good
+        else:
+            self.initial_status_code = ua.StatusCodes.BadNoData
+
     def run(self):
         self.logger.info("Running")
         self.server.start()
@@ -129,8 +140,10 @@ class OPCUAServerController(BaseController.BaseController):
             return
 
         defaultvalue = self.get_default_value(incoming)
-        varnode = self.add_variablenode(self.root, incoming.key, defaultvalue, None)
+        varianttype = self.get_varianttype(incoming)
+        varnode = self.add_variablenode(self.root, incoming.key, defaultvalue, varianttype)
         varnode.set_writable()
+
         self.add_source(incoming.key, (incoming, varnode))
         self.subscription.subscribe_data_change(varnode)
 
@@ -156,18 +169,42 @@ class OPCUAServerController(BaseController.BaseController):
         if not parent:
             parent = self.root
 
-        _nodeid = ua.NodeId.from_string(ref)
-        return parent.add_variable(
-            nodeid=ref,
-            bname="%d:%s" % (_nodeid.NamespaceIndex, _nodeid.Identifier),
-            val=val,
-            varianttype=varianttype,
-            datatype=None
-            )
+        nodeid = ua.NodeId.from_string(ref)
 
-    def send_datachange(self, nodeid, value, stime, status_ok):
+        datavalue = self.create_datavalue(
+            val,
+            varianttype,
+            self.initial_status_code
+        )
+        var_node = parent.add_variable(
+            nodeid=ref,
+            bname="%d:%s" % (nodeid.NamespaceIndex, nodeid.Identifier),
+            val=None,
+            varianttype=varianttype
+        )
+        var_node.set_data_value(datavalue)
+        return var_node
+
+    def create_datavalue(self, val, datatype, statuscode):
+        variant = ua.Variant(value=val, varianttype=datatype)
+        status = ua.StatusCode(statuscode)
+        return ua.DataValue(variant=variant, status=status)
+
+    def get_varianttype(self, incoming):
+        if hasattr(incoming, "get_varianttype"):
+            return getattr(incoming, "get_varianttype")
+        else:
+            return None
+
+    def send_datachange(self, nodeid, value, stime, status_ok, ua_status_code):
         if self.has_source(nodeid):
             item, varnode = self.get_source(nodeid)
+            if not status_ok:
+                if item.status_code == StatusCode.NONE:
+                    if ua_status_code == self.initial_status_code:
+                        # we are actually good
+                        status_ok = True
+
             if self.update_source_instance_value(item, value, stime, status_ok, self.oldnew):
                 self.send_outgoing(item)
 
@@ -193,8 +230,8 @@ class SubHandler():
         source_value = item.Value.Value
         source_time = item.SourceTimestamp
         source_status_ok = item.StatusCode.value == 0
-        self.logger.debug("nodeid:%s, value:%s, time:%s, ok:%s", nodeid, source_value, source_time, source_status_ok)
-        self.controller.send_datachange(nodeid, source_value, source_time, source_status_ok)
+        self.logger.debug("nodeid:%s, value:%s, time:%s, ok:%s, uacode:%s", nodeid, source_value, source_time, source_status_ok, item.StatusCode.value)
+        self.controller.send_datachange(nodeid, source_value, source_time, source_status_ok, item.StatusCode.value)
 
     def event_notification(self, event):
         self.logger.info("Python: New event %s", event)
