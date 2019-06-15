@@ -24,6 +24,17 @@ class CustomInternalServer(InternalServer):
 
 @Controllers.register("OPCUAServerController")
 class OPCUAServerController(BaseController.BaseController):
+    """
+    This Controller will start a freeopcua server instance and will
+    add a nodeid for all sources received in ADD_SOURCE messages.
+    
+    When a client writes a new value this event will be forwarded to
+    the associated source and a RUN_EXPRESSION message will be sent.
+
+    When a WRITE_SOURCE message is received the value for the associated
+    source will be updated in the server and all connected clients will
+    receive a value update
+    """
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.logger = logging.getLogger(self.name)
@@ -110,6 +121,7 @@ class OPCUAServerController(BaseController.BaseController):
         else:
             self.initial_status_code = ua.StatusCodes.BadNoData
 
+
     def run(self):
         self.logger.info("Running")
         self.server.start()
@@ -121,50 +133,52 @@ class OPCUAServerController(BaseController.BaseController):
 
         while not self.has_interrupt():
             self.loop_incoming() # denne kaller opp handle_* funksjonene
-            self.loop_outgoing() # denne kaller opp poll_*
 
         self.server.stop()
         self.logger.info("Stopped")
 
-    def handle_readall(self, incoming):
-        raise NotImplementedError
 
     def get_default_value(self, incoming):
+        "Returns the default value of the source value"
         defaultvalue = incoming.interface(incoming.value).value
         return defaultvalue
 
+
     def handle_add_source(self, incoming):
-        self.logger.debug("'Add source' event for %s", incoming.key)
-        if self.has_source(incoming.key):
-            self.logger.error("source already exists %s", incoming.key)
+        "Add a source to the server"
+        nodeid = self.get_nodeid(incoming)
+        self.logger.debug("'Add source' event for nodeid: %s", nodeid)
+        if self.has_source(nodeid):
+            self.logger.error("source already exists %s", nodeid)
             return
 
         defaultvalue = self.get_default_value(incoming)
         varianttype = self.get_varianttype(incoming)
-        varnode = self.add_variablenode(self.root, incoming.key, defaultvalue, varianttype)
-        varnode.set_writable()
+        varnode = self.add_variablenode(self.root, nodeid, defaultvalue, varianttype)
 
-        self.add_source(incoming.key, (incoming, varnode))
+        if self.is_writable(incoming):
+            varnode.set_writable()
+
+        self.add_source(nodeid, (incoming, varnode))
         self.subscription.subscribe_data_change(varnode)
 
 
-    def handle_read_source(self, incoming):
-        raise NotImplementedError
-
     def handle_write_source(self, incoming, value, source_time):
+        "Receive a value change from an expression and update the server"
         self.logger.debug("'Write source' event to %s. value: %s at %s", incoming.key, value, source_time)
-        incoming, varnode = self.get_source(incoming.key)
+        nodeid = self.get_nodeid(incoming)
+        incoming, varnode = self.get_source(nodeid)
         varnode.set_value(value)
 
-    def poll_outgoing_item(self, item):
-        return
 
     def add_folder(self, parent, foldername):
+        "Add a folder in server"
         if not parent:
             parent = self.root
         return parent.add_folder(self.ns, foldername)
 
     def add_variablenode(self, parent, ref, val, varianttype):
+        "Create and add a variable in server and return the variable node"
         self.logger.debug("ADDING %s AS %s" % (ref, varianttype))
         if not parent:
             parent = self.root
@@ -186,17 +200,35 @@ class OPCUAServerController(BaseController.BaseController):
         return var_node
 
     def create_datavalue(self, val, datatype, statuscode):
+        "Create a value for the server that keep the correct datatype"
         variant = ua.Variant(value=val, varianttype=datatype)
         status = ua.StatusCode(statuscode)
         return ua.DataValue(variant=variant, status=status)
 
     def get_varianttype(self, incoming):
+        "Returns the varianttype from the source"
         if hasattr(incoming, "get_varianttype"):
-            return getattr(incoming, "get_varianttype")
+            return getattr(incoming, "get_varianttype")()
         else:
             return None
 
+    def get_nodeid(self, incoming):
+        "Returns the nodeid from the source"
+        if hasattr(incoming, "get_nodeid"):
+            return getattr(incoming, "get_nodeid")()
+        else:
+            return incoming.key
+    
+    def is_writable(self, incoming):
+        "Returns True if source is writable for the opcua client"
+        if hasattr(incoming, "is_writable"):
+            return True if getattr(incoming, "is_writable")() else False
+        else:
+            return True
+
+
     def send_datachange(self, nodeid, value, stime, status_ok, ua_status_code):
+        "Triggers a RUN_EXPRESSION message for given source"
         if self.has_source(nodeid):
             item, varnode = self.get_source(nodeid)
             if not status_ok:
@@ -212,6 +244,7 @@ class OPCUAServerController(BaseController.BaseController):
         self.logger.info('modify_monitored_items')
 
     def create_monitored_items(self, event, dispatcher):
+        "write a warning to logfile if the client add a nodeid that does not exists"
         for idx in range(len(event.response_params)):
             if not event.response_params[idx].StatusCode.is_good():
                 nodeId = event.request_params.ItemsToCreate[idx].ItemToMonitor.NodeId
@@ -220,6 +253,9 @@ class OPCUAServerController(BaseController.BaseController):
                 self.logger.warning("create_monitored_items: missing %s", ident)
 
 class SubHandler():
+    """
+    The subscription handler for the server. Will send value changes i server to the controller.
+    """
     def __init__(self, controller):
         self.controller = controller
         self.logger = self.controller.logger
