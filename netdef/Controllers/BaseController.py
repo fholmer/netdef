@@ -5,6 +5,9 @@ from ..Sources.BaseSource import StatusCode
 from ..Shared.Internal import Statistics
 
 class BaseController():
+    """
+    Abstract class for controllers.
+    """
     def __init__(self, name, shared):
         self.name = name
         self.shared = shared
@@ -19,6 +22,7 @@ class BaseController():
         }
 
     def _statistics_update_last_minute(self, increment):
+        "Write internal statistics to the Statistics singleton if activated"
         if Statistics.on:
             Statistics.set(self.name + ".incoming.queue.size", self.incoming.qsize())
 
@@ -35,38 +39,62 @@ class BaseController():
                 counters["last_minute"] += 1
 
     def add_logger(self, name):
+        "Setup logging module"
         self.logger = logging.getLogger(name)
 
     def init_queue(self):
+        "Setup the message queue and timeout"
         self.incoming = self.shared.queues.get_messages_to_controller(self.name)
         self.messagetypes = self.shared.queues.MessageType
         self.queue_timeout = 0.1
 
     def add_interrupt(self, interrupt):
+        "Setup the interrupt signal"
         self._interrupt = interrupt
 
     def has_interrupt(self):
+        "Returns True if the interrupt signal is received"
         return self._interrupt.is_set()
     
     def sleep(self, seconds):
+        """"
+        Sleep by waiting for the interrupt.
+        Sould be used instead of time.sleep.
+        Override if sleep should be interrupted by even more signals
+        """
         self._interrupt.wait(seconds)
 
     def init_sources(self, sources):
+        """
+        Setup the source storage as a dict.
+        Override if something else is needed.
+        """
         if sources:
             self._sources = sources
         else:
             self._sources = {}
 
     def init_parsers(self, parsers):
+        """
+        Setup the parser storage as a list.
+        Override if something else is needed.
+        """
         if parsers:
             self._parsers = parsers
         else:
             self._parsers = []
 
     def has_source(self, name):
+        """
+        Return True if source name is found
+        """
         return (name in self._sources)
 
     def add_source(self, name, init_value):
+        """
+        Add a source to the sorage dict.
+        Override if something else is needed.
+        """
         if not self.has_source(name):
             self._sources[name] = init_value
 
@@ -74,22 +102,42 @@ class BaseController():
             Statistics.set(self.name + ".sources.count", len(self._sources))
 
     def get_sources(self):
+        "Return source storage"
         return self._sources
 
     def get_source(self, name):
+        "Return named source"
         return self._sources[name]
 
     def get_parsers(self):
+        "Return parser storage"
         return self._parsers
     
     def add_parser(self, parser):
+        "Add parser if not already exists"
         if not parser in self._parsers:
             self._parsers.append(parser)
 
     def run(self):
+        """
+        Override this function in controller. Example::
+
+            def run(self):
+                self.logger.info("Running")
+
+                while not self.has_interrupt():
+                    self.loop_incoming() # dispatch handle_* functions
+                    self.loop_outgoing() # dispatch poll_* functions
+
+                self.logger.info("Stopped")
+
+        """
         raise NotImplementedError
 
     def fetch_one_incoming(self):
+        """
+        Returns one message from the queue.
+        """
         try:
             if not self.has_interrupt():
                 item = self.incoming.get(block=True, timeout=self.queue_timeout)
@@ -101,6 +149,9 @@ class BaseController():
             return None
 
     def loop_incoming(self):
+        """
+        Get every message from the queue and dispatch the associated handler function
+        """
         try:
             while not self.has_interrupt():
                 messagetype, incoming = self.incoming.get(block=True, timeout=self.queue_timeout)
@@ -127,9 +178,13 @@ class BaseController():
             self._statistics_update_last_minute(0)
 
     def handle_tick(self, incoming):
+        """
+        Answer the tick message
+        """
         incoming.tick()
 
     def handle_add_parser(self, incoming):
+        "Add parser to controller if not already exists"
         self.add_parser(incoming)
 
     def handle_readall(self, incoming):
@@ -145,6 +200,9 @@ class BaseController():
         raise NotImplementedError
 
     def loop_outgoing(self):
+        """
+        Check every source and call the poll_outgoing_item function
+        """
         for item in self.get_sources().values():
             self.poll_outgoing_item(item)
 
@@ -152,6 +210,7 @@ class BaseController():
         raise NotImplementedError
 
     def send_outgoing(self, outgoing):
+        "Send RUN_EXPRESSION message on valuechange"
         self.shared.queues.send_message_to_rule(
             self.shared.queues.MessageType.RUN_EXPRESSION,
             outgoing.rule,
@@ -163,8 +222,8 @@ class BaseController():
 
     @staticmethod
     def update_source_instance_value(source_instance, value, stime, status_ok, oldnew_check):
-        """ Denne funksjonen oppdaterer verdi, tidsstempel og status på source_instance
-            Returnerer True hvis source_instance er klar til å sendes med self.send_outgoing
+        """ Updates value, timestamp and state on given source_instance
+            Returns True if source_instance have triggered a value change
         """
 
         prev_val = source_instance.get

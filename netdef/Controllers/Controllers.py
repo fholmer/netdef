@@ -6,12 +6,26 @@ CONTROLLERDICT = {}
 
 # denne dekoratoren vil bli aktivert av aktiverte klasser etter Controllers.load()
 def register(name):
+    """
+    A decorator to register controllers. Example::
+
+        from netdef.Controllers import BaseController, Controllers
+
+        @Controllers.register("NewControllerTemplate")
+        class NewControllerTemplate(BaseController.BaseController):
+            def __init__(self, name, shared):
+                ...
+    """
     def classdecorator(name, cls):
         CONTROLLERDICT[name] = cls
         return cls
     return functools.partial(classdecorator, name)
 
+
 class Controllers():
+    """
+    A collection of all loaded controllers
+    """
     def __init__(self, shared=None):
         self.logging = logging.getLogger(__name__)
         self.items = CONTROLLERDICT
@@ -26,10 +40,20 @@ class Controllers():
             self.instances[name] = class_(name, self.shared)
 
     def load(self, base_packages):
-        """ Importerer controller-modulene. lager kø-instanser til controllermodulene
-            Gjør forberedelser slik at alle delte klasser og instanser er "på plass"
-            når instansen av kontrolleren senere blir initiert
         """
+        Imports controller modules. Creates queue instances associated with the given controllers.
+
+        Example::
+        
+            from netdef.Controllers import Controllers
+            controllers = Controllers.Controllers(shared)
+            controllers.load([__package__, 'netdef'])
+
+        """
+        # Importerer controller-modulene. lager kø-instanser til controllermodulene
+        # Gjør forberedelser slik at alle delte klasser og instanser er "på plass"
+        # når instansen av kontrolleren senere blir initiert
+
         if isinstance(base_packages, str):
             base_packages = [base_packages]
         

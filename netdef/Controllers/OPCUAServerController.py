@@ -177,6 +177,7 @@ class OPCUAServerController(BaseController.BaseController):
             parent = self.root
         return parent.add_folder(self.ns, foldername)
 
+
     def add_variablenode(self, parent, ref, val, varianttype):
         "Create and add a variable in server and return the variable node"
         self.logger.debug("ADDING %s AS %s" % (ref, varianttype))
@@ -199,11 +200,13 @@ class OPCUAServerController(BaseController.BaseController):
         var_node.set_data_value(datavalue)
         return var_node
 
+
     def create_datavalue(self, val, datatype, statuscode):
         "Create a value for the server that keep the correct datatype"
         variant = ua.Variant(value=val, varianttype=datatype)
         status = ua.StatusCode(statuscode)
         return ua.DataValue(variant=variant, status=status)
+
 
     def get_varianttype(self, incoming):
         "Returns the varianttype from the source"
@@ -212,6 +215,7 @@ class OPCUAServerController(BaseController.BaseController):
         else:
             return None
 
+
     def get_nodeid(self, incoming):
         "Returns the nodeid from the source"
         if hasattr(incoming, "get_nodeid"):
@@ -219,6 +223,7 @@ class OPCUAServerController(BaseController.BaseController):
         else:
             return incoming.key
     
+
     def is_writable(self, incoming):
         "Returns True if source is writable for the opcua client"
         if hasattr(incoming, "is_writable"):
@@ -240,8 +245,10 @@ class OPCUAServerController(BaseController.BaseController):
             if self.update_source_instance_value(item, value, stime, status_ok, self.oldnew):
                 self.send_outgoing(item)
 
+
     def modify_monitored_items(self, event, dispatcher):
         self.logger.info('modify_monitored_items')
+
 
     def create_monitored_items(self, event, dispatcher):
         "write a warning to logfile if the client add a nodeid that does not exists"
@@ -252,6 +259,7 @@ class OPCUAServerController(BaseController.BaseController):
                 ident = nodeId.to_string()
                 self.logger.warning("create_monitored_items: missing %s", ident)
 
+
 class SubHandler():
     """
     The subscription handler for the server. Will send value changes i server to the controller.
@@ -259,6 +267,7 @@ class SubHandler():
     def __init__(self, controller):
         self.controller = controller
         self.logger = self.controller.logger
+
 
     def datachange_notification(self, node, val, data):
         nodeid = node.nodeid.to_string()
@@ -268,6 +277,7 @@ class SubHandler():
         source_status_ok = item.StatusCode.value == 0
         self.logger.debug("nodeid:%s, value:%s, time:%s, ok:%s, uacode:%s", nodeid, source_value, source_time, source_status_ok, item.StatusCode.value)
         self.controller.send_datachange(nodeid, source_value, source_time, source_status_ok, item.StatusCode.value)
+
 
     def event_notification(self, event):
         self.logger.info("Python: New event %s", event)
