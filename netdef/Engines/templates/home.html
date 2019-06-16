@@ -1,20 +1,8 @@
-{% extends 'admin/master.html' %}
-{% block body %}
-{{ super() }}
-<div class="row-fluid">
+{% extends 'home/home.html' %}
 
-    <div>
-        {% if current_user.is_authenticated %}
+{% block home %}
 
         <p>Application version: {{version}}</p>
 
-        {% else %}
+{% endblock home %}
 
-            Not logged in
-            
-        {% endif %}
-
-    </div>
-
-</div>
-{% endblock body %}
