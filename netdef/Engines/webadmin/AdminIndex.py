@@ -22,7 +22,9 @@ class MyAdminIndexView(flask_admin.AdminIndexView):
     def index(self):
         if not flask_login.current_user.is_authenticated:
             return redirect(url_for('.login_view'))
-        return self.render(self._template, version=version)
+        else:
+            return redirect("/admin/home/")
+        #return self.render(self._template, version=version)
 
     @expose('/login/', methods=('GET', 'POST'))
     def login_view(self):

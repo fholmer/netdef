@@ -29,6 +29,7 @@ class Views():
 
         #insert default webadmin views into configfile
         activate_views = OrderedDict()
+        activate_views["Home"] = 1
         activate_views["FileModel"] = 1
         activate_views["SettingsModel"] = 1
         activate_views["SourcesModel"] = 1

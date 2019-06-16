@@ -1,6 +1,6 @@
 import logging
 import pathlib
-from flask import Flask
+from flask import Flask, redirect
 import flask_admin
 import flask_login
 from werkzeug.serving import run_simple
@@ -106,7 +106,7 @@ def init_app(webadmin_views, shared):
 
     @app.route('/')
     def index():
-        return '<a href="/admin/">Webadmin</a>'
+        return redirect("/admin/", code=302)
 
     webadmin_on = config(section, "on", 1)
     if webadmin_on:
