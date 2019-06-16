@@ -24,7 +24,7 @@ def stdout_from_terminal(*command, err_msg=None):
 
 def stdout_from_terminal_as_generator(*command, err_msg=None, pre="", post=""):
     try:
-        yield "<pre> "
+        yield "<pre>"
         process = subprocess.Popen(command, stdout=subprocess.PIPE)
         if pre:
             yield pre
@@ -81,13 +81,17 @@ def get_update_cmd(
     args.append(package)
     return args
 
+
 @Views.register("Tools")
-def setup(admin):
+def setup(admin, view=None):
     section = "webadmin"
     config = admin.app.config['SHARED'].config.config
     webadmin_tools_on = config(section, "tools_on", 1)
     if webadmin_tools_on:
-        admin.add_view(Tools(name='Tools', endpoint='tools'))
+        if not view:
+            view = Tools(name='Tools', endpoint='tools')
+        admin.add_view(view)
+
 
 class Tools(MyBaseView):
     @expose("/")
