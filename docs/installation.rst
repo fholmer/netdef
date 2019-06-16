@@ -25,6 +25,9 @@ Create your first application:
 
 The rest of this documentation assumes that your application is called First-App
 
+.. _pip: https://pip.pypa.io
+.. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
+
 Setup your application
 ----------------------
 
@@ -135,5 +138,32 @@ Create a systemd service unit file:
     WantedBy=multi-user.target
 
 
-.. _pip: https://pip.pypa.io
-.. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
+Build from source
+-----------------
+
+Debian
+++++++
+
+Install requirements
+
+.. code-block:: console
+
+    # requirements for building psutil
+    $ sudo apt-get install build-essential python3-dev
+
+    # requirements for pdf
+    $ apt-get install texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended latexmk
+
+Build package
+
+.. code-block:: console
+
+    $ python setup.py bdist_wheel
+
+Build docs
+
+.. code-block:: console
+
+    $ cd docs
+    $ make html
+    $ make latexpdf
