@@ -14,6 +14,9 @@ log = logging.getLogger("ThreadedWebGuiEngine")
 log.info("Enter Threaded Web Gui Engine")
 
 class ThreadedWebGuiEngine(ThreadedEngine.ThreadedEngine):
+    """
+    Integrates a simple werkzeug webserver to serve flask_admin webpages
+    """
     def __init__(self, shared):
         super().__init__(shared)
         self.webadmin_views = Views.Views(shared)
@@ -25,9 +28,11 @@ class ThreadedWebGuiEngine(ThreadedEngine.ThreadedEngine):
     
     def init(self):
         super().init()
-        self.app = init_app(self.webadmin_views, self.shared)
+        app = self.get_flask_app()
+        init_app(app, self.webadmin_views, self.shared)
 
     def block(self):
+        "Run webserver and wait for KeyboardInterrupt"
         # main-funksjonen avslutter når denne funksjonen returnerer
         log.info("run web interface")
         section = "webadmin"
@@ -51,9 +56,49 @@ class ThreadedWebGuiEngine(ThreadedEngine.ThreadedEngine):
             run_simple(host, port, self.app, use_reloader=False, use_debugger=False, threaded=True, ssl_context=ssl_context)
         except KeyboardInterrupt:
             pass
+    
+    def get_flask_app(self):
+        """
+        Returns the main flask app.
 
-def init_app(webadmin_views, shared):
-    """konfigurering av Flask.
+        Common use case is to integrate an existing flask app.
+        
+        main.py Example::
+
+            def init_app(app):
+
+                @app.route('/')
+                def hello_world():
+                    return 'Hello, World!'
+                
+                return app
+
+
+            def main():
+                ...
+
+                engine = ThreadedWebGuiEngine.ThreadedWebGuiEngine(shared)
+
+                # here we go
+                init_app(engine.get_flask_app())
+
+                engine.add_controller_classes(controllers)
+                engine.add_source_classes(sources)
+                engine.add_rule_classes(rules)
+                engine.load([__package__, 'netdef'])
+                engine.init()
+                engine.start()
+                engine.block() # until ctrl-c or SIG_TERM
+                engine.stop()
+                ...
+
+        """
+        if not self.app:
+            self.app = Flask(__name__, template_folder='templates', static_folder='static')
+        return self.app
+
+def init_app(app, webadmin_views, shared):
+    """Configure flask. Setup flask_admin and flask_login
     """
     config = shared.config.config
     section = "webadmin"
@@ -71,8 +116,6 @@ def init_app(webadmin_views, shared):
     admin_password_hash = config(section, "password_hash", "", add_if_not_exists=False)
     secret_key = "\x94\x03\x9c\x15\x00\xbf\x8c\xdd\xfef\xf8D]\xcc\xbf\xd4\xb6\xf3\x9a\xfe\x80\xa2\x90n"
     secret_key = config(section, "secret_key", secret_key, add_if_not_exists=False)
-
-    app = Flask(__name__, template_folder='templates', static_folder='static')
 
     # dersom vi har overstyrt denne modulen og det finnes en annen template-mappe
     # så blir den fanget opp i variabelen template_path og lagt til i jinja sin
