@@ -50,7 +50,11 @@ class ModbusServerController(BaseController.BaseController):
         self.server = MyController(self.context, framer, identity, (host, port), controller=self)
 
     def get_modbus_server_context(self):
-        """ parser konfigfil og returnerer en ModbusServerContext instanse
+        """
+        Iter the devicelist section in config-file and builds a ModbusServerContext object
+
+        :return: an ModbusServerContext instance
+
         """
         config = self.shared.config.config
         device_dict = {}
@@ -103,6 +107,7 @@ class ModbusServerController(BaseController.BaseController):
         return ModbusSocketFramer
 
     def run(self):
+        "Main loop. Will exit when receiving interrupt signal"
         self.logger.info("Running")
         self.server.serve_forever()
         self.logger.info("Closing connections")

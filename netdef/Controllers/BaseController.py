@@ -7,6 +7,10 @@ from ..Shared.Internal import Statistics
 class BaseController():
     """
     Abstract class for controllers.
+
+    :param name: Name to be used in logfiles
+    :param shared: a reference to the shared object
+
     """
     def __init__(self, name, shared):
         self.name = name
@@ -120,7 +124,9 @@ class BaseController():
 
     def run(self):
         """
-        Override this function in controller. Example::
+        Override this function in controller. Example:
+
+        .. code-block:: python
 
             def run(self):
                 self.logger.info("Running")

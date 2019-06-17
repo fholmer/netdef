@@ -123,6 +123,7 @@ class OPCUAServerController(BaseController.BaseController):
 
 
     def run(self):
+        "Main loop. Will exit when receiving interrupt signal"
         self.logger.info("Running")
         self.server.start()
         self.server.subscribe_server_callback(CallbackType.ItemSubscriptionCreated, self.create_monitored_items)

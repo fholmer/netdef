@@ -22,7 +22,6 @@ built-in controller modules
 
 .. automodule:: netdef.Controllers.CrontabController
     :members:
-    :undoc-members:
     :show-inheritance:
 
 .. automodule:: netdef.Controllers.ModbusServerController

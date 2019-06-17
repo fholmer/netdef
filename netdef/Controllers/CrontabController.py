@@ -16,6 +16,7 @@ class CrontabController(BaseController.BaseController):
         self.send_inital_value = self.shared.config.config(self.name, "send_inital_value", 0)
 
     def run(self):
+        "Main loop. Will exit when receiving interrupt signal"
         log.info("Running")
         while not self.has_interrupt():
             self.loop_incoming() # denne kaller opp handle_* funksjonene
@@ -30,6 +31,12 @@ class CrontabController(BaseController.BaseController):
         pass #log.debug("Write source event %s %s", incoming.key, value)
 
     def poll_outgoing_item(self, item):
+        """
+        Check if it is time to trigger event for given source
+
+        :param item: source instance to check
+        
+        """
         if item.source == "CrontabSource":
             now = datetime.datetime.utcnow()
             future = crontab.CronTab(item.key).next(default_utc=True, delta=False)
