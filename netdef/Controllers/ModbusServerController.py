@@ -25,6 +25,8 @@ class ModbusServerController(BaseController.BaseController):
         self.oldnew = config(self.name, "oldnew_comparision", 1)
 
         self.context = self.get_modbus_server_context()
+
+        framer = self.get_framer()
         
         self.readfunction = 0x03 # read holding registers
         self.writefunction = 0x10
@@ -39,7 +41,6 @@ class ModbusServerController(BaseController.BaseController):
 
         host = config(self.name, "host", '0.0.0.0')
         port = config(self.name, "port", 5020)
-        framer = ModbusSocketFramer
 
         # når vi starter modbus sin serve_forever så blokkeres denne tråden
         # og vi får ikke kjørt loop_incoming, loop_outgoing
@@ -93,6 +94,13 @@ class ModbusServerController(BaseController.BaseController):
                 device_dict[device_id] = store
 
         return ModbusServerContext(slaves=device_dict, single=False)
+
+    def get_framer(self):
+        """
+        Returns the framer to be used.
+        Override this function to return a custom framer
+        """
+        return ModbusSocketFramer
 
     def run(self):
         self.logger.info("Running")
