@@ -3,11 +3,18 @@ Welcome to netdef's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: User manual:
 
    readme
    installation
    overview
+   authors
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API Reference:
+
+   development
    netdef
    netdef.Controllers
    netdef.Engines
@@ -15,7 +22,6 @@ Welcome to netdef's documentation!
    netdef.Rules
    netdef.Shared
    netdef.Sources
-   authors
 
 Indices and tables
 ==================
