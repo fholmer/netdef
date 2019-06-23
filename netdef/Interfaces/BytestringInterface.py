@@ -1,4 +1,4 @@
-from netdef.Interfaces.DefaultInterface import DefaultInterface
+from .DefaultInterface import DefaultInterface
 
 class ByteStringInterface(DefaultInterface):
     """ Interface som letter manipulering av bit i en integer """
