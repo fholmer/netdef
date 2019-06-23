@@ -57,8 +57,6 @@ class OPCUAServerController(BaseController.BaseController):
 
         self.oldnew = config("oldnew_comparision", 0)
 
-        self.strict_datatypes = config("strict_datatypes", 1)
-
         admin_username = config("user", "admin")
         admin_password = config("password", "admin")
         admin_password_hash = config("password_hash", "").replace("$$", "$")
@@ -119,7 +117,7 @@ class OPCUAServerController(BaseController.BaseController):
         if initial_values_is_quality_good:
             self.initial_status_code = ua.StatusCodes.Good
         else:
-            self.initial_status_code = ua.StatusCodes.BadNoData
+            self.initial_status_code = ua.StatusCodes.BadWaitingForInitialData
 
 
     def run(self):
@@ -156,7 +154,6 @@ class OPCUAServerController(BaseController.BaseController):
         defaultvalue = self.get_default_value(incoming)
         varianttype = self.get_varianttype(incoming)
         varnode = self.add_variablenode(self.root, nodeid, defaultvalue, varianttype)
-
         if self.is_writable(incoming):
             varnode.set_writable()
 
@@ -169,8 +166,17 @@ class OPCUAServerController(BaseController.BaseController):
         self.logger.debug("'Write source' event to %s. value: %s at %s", incoming.key, value, source_time)
         nodeid = self.get_nodeid(incoming)
         incoming, varnode = self.get_source(nodeid)
-        varnode.set_value(value)
+        varianttype = self.get_varianttype(incoming)
 
+        # Check if datatype is compatible with varianttype
+        if isinstance(varianttype, ua.VariantType):
+            if varianttype == ua.VariantType.String and isinstance(value, (str, None)):
+                pass # string can be None or str
+            elif not isinstance(value, type(ua.get_default_value(varianttype))):
+                self.logger.error("%s: Value %s is not compatible with datatype %r", nodeid, incoming.value_as_string, varianttype)
+                varianttype = None
+
+        varnode.set_value(value, varianttype)
 
     def add_folder(self, parent, foldername):
         "Add a folder in server"
@@ -195,7 +201,7 @@ class OPCUAServerController(BaseController.BaseController):
         var_node = parent.add_variable(
             nodeid=ref,
             bname="%d:%s" % (nodeid.NamespaceIndex, nodeid.Identifier),
-            val=None,
+            val=val,
             varianttype=varianttype
         )
         var_node.set_data_value(datavalue)

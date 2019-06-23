@@ -120,6 +120,7 @@ class OPCUAClientController(BaseController.BaseController):
             node_instance = self.client.get_node(incoming.key)
             #print(id(node_instance), source_time)
             #TODO: kanske gjøre internt oppslag på nodeid-instansene, i stedet for å hente ny hver gang?
+            #TODO: hente datatype med v.get_data_type_as_variant_type()
             node_instance.set_value(value)
         else:
             self.logger.error("Write error. Source %s not found", incoming.key)
