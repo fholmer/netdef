@@ -8,6 +8,7 @@ Welcome to netdef's documentation!
    readme
    installation
    overview
+   quickstart
    authors
 
 .. toctree::

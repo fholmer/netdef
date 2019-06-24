@@ -44,12 +44,12 @@ Build sdist and wheel:
     $ python setup.py bdist_wheel
 
 
-Windows 10
-++++++++++
+Windows
++++++++
 
 Install requirements:
 
-You have to install `Python`_ and `Mercurial`_
+Get `Python`_ and `Mercurial`_
 
 Get sources:
 
@@ -58,7 +58,7 @@ Get sources:
     hg clone https://fholmer@bitbucket.org/fholmer/netdef
     cd netdef
 
-Setup virtual environment:
+Setup an virtual environment:
 
 .. code-block:: console
 
