@@ -3,20 +3,20 @@ Welcome to netdef's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: User manual:
+   :caption: User guide:
 
-   readme
-   installation
-   overview
-   quickstart
-   tutorial
-   authors
+   user_guide/readme
+   user_guide/installation
+   user_guide/overview
+   user_guide/quickstart
+   user_guide/tutorial
+   user_guide/authors
 
 .. toctree::
    :maxdepth: 2
    :caption: API Reference:
 
-   development
+   developer_guide/development
    api/netdef
    api/netdef.Controllers
    api/netdef.Engines

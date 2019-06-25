@@ -3,7 +3,7 @@ Quickstart
 
 Netdef will require a spesific project structure:
 
-.. literalinclude:: project-structure.txt
+.. literalinclude:: ../tutorial_first_app/project-structure.txt
 
 Pre made project templates are available using cookiecutter
 

@@ -30,7 +30,7 @@ WRITE_SOURCE message is sent to *controllers*.
 
 The example below shows 4 simultaneous controllers and 2 simultaneous rules:
 
-.. image :: _static/overview.png
+.. image :: ../_static/overview.png
 
 The main task of the application is to:
 
