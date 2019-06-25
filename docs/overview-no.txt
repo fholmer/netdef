@@ -1,0 +1,68 @@
+========
+Overview
+========
+
+Begreper brukt i dette dokumentet:
+
++--------------+-----------------------------+
+| Norsk        | Navn i kildekode            |
++==============+=============================+
+| Motor        | ThreadedEngine              |
++--------------+-----------------------------+
+| Regelmotorer | Rules                       |
++--------------+-----------------------------+
+| Kilder       | Sources                     |
++--------------+-----------------------------+
+| Kontrollere  | Controllers                 |
++--------------+-----------------------------+
+| Postboks     | Incoming queue, SharedQueue |
++--------------+-----------------------------+
+| Melding      | Message                     |
++--------------+-----------------------------+
+| Meldingstype | MessageType                 |
++--------------+-----------------------------+
+| Uttrykk      | Expression                  |
++--------------+-----------------------------+
+
+Når du lager en applikasjon i Netdef vil prosjektmappen din få
+følgende struktur:
+
+* Controllers
+* Expressions
+* Interfaces
+* Rules
+* Sources
+
+Applikasjonen består av én «motor», én eller flere «regelmotorer», én eller
+flere «kilder» og én eller flere «kontrollere». Motoren er en instanse
+av klassen ThreadedEngine, regelmotorene er instanser klasser som er arvet
+av BaseRule, kilder er instanser av klasser som er arvet av BaseSource,
+og kontrollere er instanser av klasser som er arvet av BaseController.
+Alle instanser har en egen «postboks» og instansene kommuniserer med hverandre
+ved å registrere en melding i postboksen til den instansen som skal lese
+meldingen. De viktigste meldingstypene i applikasjonen er ADD_SOURCE,
+ADD_PARSER, WRITE_SOURCE og RUN_EXPRESSION.
+
+Meldingsflyten vil ved de fleste tilfeller være som følger: Regelmotorer vil
+sende ADD_SOURCE til kontrollere ved oppstart. Kontrollere vil sende
+RUN_EXPRESSION tilbake til regelmotor på dataendringer. Regelmotor vil så
+hente uttrykk som skal evalueres på grunn av dataendringen og sender
+RUN_EXPRESSION til motoren. Dersom uttrykkene genererer dataendringer vil
+WRITE_SOURCE sendes til kontroller.
+
+Eksempelet under viser 4 samtidige kontrollere og 2 samtidige rules:
+
+.. image:: overview.png
+    :alt: Overview
+
+Hovedoppgaven til applikasjonen er å:
+
+* Innhente ekstern data ved bruk av én eller flere kontrollere.
+* Hente verdier fra ekstern data og aktivere «uttrykk» som evaluerer verdiene.
+* Sende ut data basert på resultatet av uttrykket
+
+Eksempelet under viser hvordan to kontrollere innhenter data fra forskjellige
+typer datakilder, deretter blir verdier hentet ut fra ekstern data og satt inn
+i «kilder». Til slutt blir «uttrykk» kjørt med kildene som argumenter.
+Dersom uttrykket produserer en eller flere responser vil disse bli sendt
+som en WRITE_SOURCE melding direkte til kontroller.

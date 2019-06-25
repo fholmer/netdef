@@ -9,6 +9,7 @@ Welcome to netdef's documentation!
    installation
    overview
    quickstart
+   tutorial
    authors
 
 .. toctree::
@@ -16,13 +17,13 @@ Welcome to netdef's documentation!
    :caption: API Reference:
 
    development
-   netdef
-   netdef.Controllers
-   netdef.Engines
-   netdef.Interfaces
-   netdef.Rules
-   netdef.Shared
-   netdef.Sources
+   api/netdef
+   api/netdef.Controllers
+   api/netdef.Engines
+   api/netdef.Interfaces
+   api/netdef.Rules
+   api/netdef.Shared
+   api/netdef.Sources
 
 Indices and tables
 ==================

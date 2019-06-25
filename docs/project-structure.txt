@@ -1,13 +1,18 @@
 
     /First-App
         /setup.py
-        /requirements.txt
         /config
             /default.conf
         /first_app
             /Controllers
             /Engines
+                /__init__.py
+                /templates
+                /webadmin
             /Interfaces
             /Rules
             /Sources
-
+            /__init__.py
+            /__main__.py
+            /defaultconfig.py
+            /main.py
