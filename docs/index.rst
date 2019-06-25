@@ -6,8 +6,8 @@ Welcome to netdef's documentation!
    :caption: User guide:
 
    user_guide/readme
-   user_guide/installation
    user_guide/overview
+   user_guide/installation
    user_guide/quickstart
    user_guide/tutorial
    user_guide/authors
@@ -17,6 +17,7 @@ Welcome to netdef's documentation!
    :caption: API Reference:
 
    developer_guide/development
+   api/configs
    api/netdef
    api/netdef.Controllers
    api/netdef.Engines
