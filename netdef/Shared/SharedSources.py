@@ -31,11 +31,13 @@ class SourceInstances():
 
 
 class SharedSources():
-    """ *classes* inneholder en dict *items* med uinstansierte
-        sources-klasser. (nøkkel er navn fra konfig, verdi er klassen)
-        Brukes av regelmotor når den parser konfigfiler og skal finne riktig source.
+    """
+    :attr:`classes` contain a dict (:attr:`classes.items`) with uninitiated
+    sources classes. (key is name from config, value is class)
+    Used by rules when parsing config files and finding the right source.
 
-        *instances* inneholder liste over alle sources instanser opprettet av regelmotor.
+    :attr:`instances` contains a list of all sources (:attr:`instances.items`)
+    instances created by the rules.
     """
     classes = SourceClasses()
     instances = SourceInstances()

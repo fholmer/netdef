@@ -9,6 +9,34 @@ from .Shared.Shared import Shared
 from .Engines.BaseEngine import BaseEngine
 
 def setup_logging(config):
+    """
+    Parse the config file for:
+
+    .. code-block:: ini
+    
+        [logging]
+        logglevel
+        loggformat
+        loggdatefmt
+        loggfile
+        to_console
+        to_file
+    
+    Then the logging module is set acording to the configs
+
+
+    :param config: instance of :class:`netdef.Shared.SharedConfig.Config`
+
+    Example::
+
+        ...
+        from netdef.Shared import Shared
+        from netdef.utils import setup_logging
+        shared = Shared.Shared("First-App", install_path, proj_path, config_string)
+        setup_logging(shared.config)
+        ...
+    
+    """
     assert isinstance(config, Config)
     
     logglevel = logging.INFO
@@ -41,7 +69,27 @@ def setup_logging(config):
         for package_name, level in config.get_dict("logginglevels").items():
             logging.getLogger(package_name).setLevel(int(level))
 
+
 def handle_restart(shared, engine):
+    """
+    By calling this function your application will restart on SystemExit
+    if shared.restart_on_exit is True.
+
+    :param shared: instance of :class:`netdef.Shared.Shared`
+    :param engine: instance or subclass of :class:`netdef.Engines.BaseEngine.BaseEngine`
+
+    Example::
+
+        from netdef.utils import handle_restart
+        ...
+        engine.init()
+        engine.start()
+        engine.block() # until ctrl-c or SIG_TERM
+        engine.stop()
+        handle_restart(shared, engine)
+
+    """
+
     assert(isinstance(shared, Shared))
     assert(isinstance(engine, BaseEngine))
     # dersom restart-knappen i webadmin er benyttet:

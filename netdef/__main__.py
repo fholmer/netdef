@@ -11,6 +11,30 @@ def get_template_config():
     return defaultconfig.template_config_string
 
 def entrypoint(run_callback, template_config_callback):
+    """
+    Entrypoint to be used in your application. Parses Command line arguments
+    and dispatch functions.
+
+    Example from ``First-App/first_app/__main__.py``::
+
+        from netdef.__main__ import entrypoint
+        
+        def run_app():
+            from . import main
+
+        def get_template_config():
+            from . import defaultconfig
+            return defaultconfig.template_config_string
+
+        def cli():
+            # entrypoint: console_scripts
+            entrypoint(run_app, get_template_config)
+
+        if __name__ == '__main__':
+            # entrypoint: python -m console_scripts 
+            entrypoint(run_app, get_template_config)
+
+    """
 
     global_parser = ArgumentParser(add_help=True)
     global_parser.add_argument('proj_path', type=pathlib.Path, help='path to project directory')
@@ -33,6 +57,13 @@ def entrypoint(run_callback, template_config_callback):
         print("use argument -r, --run to start application")
 
 def create_project(proj_path, template_config_callback):
+    """
+    Create project structure in given folder. Add content from
+    `template_config_callback` into ``config/default.ini``
+
+    :param str proj_path: project folder
+    :param str template_config_callback: config text
+    """
     if proj_path.is_dir():
         print("%s already exists" % proj_path)
     else:
@@ -61,6 +92,14 @@ def create_project(proj_path, template_config_callback):
         print("Create %s" % log_path)
 
 def generate_webadmin_auth(interative=True):
+    """
+    Generate a user and password in ini-format.
+    Prints result to stdout.
+    Can be copy-pasted into ``config/default.conf``
+
+    :param bool interactive: ask for user/pass if True. Generate automaticly if not.
+
+    """
     import werkzeug.security
     import binascii
 
@@ -81,6 +120,12 @@ def generate_webadmin_auth(interative=True):
     print("secret_key = {}".format(secret_key))
 
 def framework_entrypoint():
+    """
+    The main entrypoint for the netdef package. Used by :func:`cli`.
+
+    Parses command line arguments and dispatch functions
+
+    """
     global_parser = ArgumentParser(add_help=True)
     global_parser.add_argument('-n', '--non-interactive', action='store_true', help='do not prompt for user/pass')
     global_parser.add_argument('-g', '--generate-auth', action='store_true', help='generate webadmin authentication')
@@ -92,6 +137,15 @@ def framework_entrypoint():
         global_parser.print_help()
 
 def cli():
+    """
+    entrypoint for use in ``setup.py``::
+
+        entry_points={
+            'console_scripts': [
+                '{NAME}={MAIN_PACKAGE}.__main__:cli'.format(NAME=NAME, MAIN_PACKAGE=MAIN_PACKAGE),
+            ],
+        },
+    """
     # entrypoint: console_scripts
     # entrypoint(run_app, get_template_config)
     framework_entrypoint()

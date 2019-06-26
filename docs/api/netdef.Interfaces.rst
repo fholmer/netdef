@@ -10,7 +10,7 @@ Default interface
     :show-inheritance:
 
 
-built-in interface modules
+Built-in interface modules
 --------------------------
 
 .. automodule:: netdef.Interfaces.IntegerInterface
@@ -18,7 +18,22 @@ built-in interface modules
     :undoc-members:
     :show-inheritance:
 
+.. automodule:: netdef.Interfaces.FloatInterface
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: netdef.Interfaces.StringInterface
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 .. automodule:: netdef.Interfaces.BytestringInterface
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: netdef.Interfaces.CommTestInterface
     :members:
     :undoc-members:
     :show-inheritance:

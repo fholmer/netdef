@@ -1,31 +1,31 @@
 from .DefaultInterface import DefaultInterface
 
 class IntegerInterface(DefaultInterface):
-    """ Interface som letter manipulering av bit i en integer """
+    """ Interface that facilitates bit manipulation in an integer """
 
     def __init__(self, value):
-        """ Dersom verdi er none benytter vi i stedet 0 """
+        "If value is none, we instead use 0"
         super().__init__(value or 0) # integer: benytter 0 i stedet for None
 
     def bits(self, *offsets):
-        "Returnerer liste med True eller False"
+        "Returns True or False List"
         return ([self.bit(offset) for offset in offsets])
     
     def bit(self, offset):
-        "returnerer True eller False"
+        "returns True or False"
         return (self.value & (1 << offset) > 0)
 
     def setbit(self, offset, bit=True):
-        """Endrer bit i verdi til True, kan også endre til False hvis bit=False
-           Ingen returverdi."""
+        """Changing bit in value to True. Can also change to False if bit = False
+            Does not return any value."""
         if bit:
             self.value |= (1 << offset)
         else:
             self.clearbit(offset)
 
     def setbits(self, *offsets, bit=True):
-        """Endrer bits i verdi til True, kan også endre til False hvis bit=False
-           Ingen returverdi."""
+        """ Changing bits in value to True. Can also change to False if bit = False
+            Does not return any value."""
         if bit:
             for offset in offsets:
                 self.value |= (1 << offset)
@@ -33,10 +33,10 @@ class IntegerInterface(DefaultInterface):
             self.clearbits(*offsets)
 
     def clearbit(self, offset):
-        """Endrer bit i verdi til False. Ingen returverdi."""
+        "Changes bit in value to False. No return value."
         self.value &= ~(1 << offset)
 
     def clearbits(self, *offsets):
-        """Endrer bits i verdi til False. Ingen returverdi."""
+        "Changes bits in value to False. No return value."
         for offset in offsets:
             self.value &= ~(1 << offset)

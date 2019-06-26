@@ -2,20 +2,23 @@ import queue
 from enum import Enum
 import logging
 
-# meldingstyper
-# bare ADD_SOURCE, ADD_PARSER, WRITE_SOURCE, RUN_EXPRESSION er implementert
+# mesage types
+# only ADD_SOURCE, ADD_PARSER, WRITE_SOURCE, RUN_EXPRESSION er implementert
 
 class MessageType(Enum):
-    READ_ALL = 1
+    READ_ALL = 1  # not implementet yet
     ADD_SOURCE = 2
-    READ_SOURCE = 3
+    READ_SOURCE = 3  # not implementet yet
     WRITE_SOURCE = 4
     RUN_EXPRESSION = 5
     ADD_PARSER = 6
-    REMOVE_SOURCE = 7
+    REMOVE_SOURCE = 7  # not implementet yet
     TICK = 8
 
 class SharedQueues():
+    """
+    Message queues for all controllers, rules and the engine
+    """
     MessageType = MessageType
     def __init__(self, maxsize=0):
         self.maxsize = maxsize
@@ -37,33 +40,40 @@ class SharedQueues():
         self.messages_to_engine = queue.Queue(maxsize)
 
     def add_controller(self, name):
-        """ Opprett ny incoming kø til navngitt kontroller'
+        """ Create a *incoming* queue for given controller'
         """
         self.messages_to_controller[name] = queue.Queue(self.maxsize)
         self.available_controllers.append(name)
 
     def add_rule(self, name):
-        """ Opprett ny incoming kø til navngitt regelmotor
+        """ Create a *incoming* queue for given rule'
         """
         self.messages_to_rule[name] = queue.Queue(self.maxsize)
         self.available_rules.append(name)
 
     def get_messages_to_controller(self, name):
-        """ Returnerer køen til navngitt kontroller
+        """ Returns the *incoming* queue for given controller
         """
         return self.messages_to_controller[name]
 
     def get_messages_to_rule(self, name):
-        """ Returnerer incoming køen til navngitt regelmotor
+        """ Returns the *incoming* queue for given rule
         """
         return self.messages_to_rule[name]
 
     def get_messages_to_engine(self):
-        """ Returnerer motoren incoming kø
+        """ Returns the *incoming* queue for the engine
         """
         return self.messages_to_engine
 
     def send_message_to_controller(self, messagetype, controllername, message_object):
+        """
+        Send a message to given controller
+
+        :param self.MessageType messagetype: 
+        :param str controllername: 
+        :param message_object: usually a source instance. can also be a tuple.
+        """
         try:
             self.messages_to_controller[controllername].put_nowait((messagetype, message_object))
         except KeyError:
@@ -74,6 +84,13 @@ class SharedQueues():
                 )
 
     def send_message_to_rule(self, messagetype, rule_name, message_object):
+        """
+        Send a message to given rule
+
+        :param self.MessageType messagetype: 
+        :param str rule_name: 
+        :param message_object: usually a source instance.
+        """
         if rule_name == "*":
             for name in self.available_rules:
                 self.messages_to_rule[name].put_nowait((messagetype, message_object))
@@ -81,15 +98,36 @@ class SharedQueues():
             self.messages_to_rule[rule_name].put_nowait((messagetype, message_object))
 
     def send_message_to_engine(self, messagetype, message_object):
+        """
+        Send a message to the engine
+
+        :param self.MessageType messagetype: probably MessageType.RUN_EXPRESSION
+        :param message_object: usually a source instance.
+        """
         self.messages_to_engine.put_nowait((messagetype, message_object))
 
     def run_expressions_in_engine(self, source_instance, expressions):
+        """
+        Send a RUN_EXPRESSION message to the engine.
+
+        :param source_instance: the source that triggered given expressions
+        :param list expressions: list of expressions
+
+        """
         self.send_message_to_engine(
             MessageType.RUN_EXPRESSION,
             (source_instance, expressions)
         )
 
     def write_value_to_controller(self, source_instance, value, source_time):
+        """
+        Send a WRITE_SOURCE message to given controller
+
+        :param source_instance: the source
+        :param value: new value. datatype have to match the given source
+        :param datetime.datetime source_time: timestamp in utc
+
+        """
         controllername = source_instance.controller
         try:
             self.messages_to_controller[controllername].put_nowait(

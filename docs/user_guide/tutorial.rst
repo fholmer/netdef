@@ -131,4 +131,11 @@ We now have to create the csv and py file:
             oua.set = "Hello, world {}".format(int(cron.value))
 
 
+Now you can try to launch the application::
+
+    $ python -m first_app -r .
+
+
+
+
 TODO
