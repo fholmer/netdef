@@ -73,6 +73,7 @@ class MQTTDataAccessController(BaseController.BaseController):
             raise OSError(mqtt.error_string(rc))
 
     def run(self):
+        "Main loop. Will exit when receiving interrupt signal"
         self.logger.info("Running")
         can_reconnect = False
         reconnect_timeout = 0

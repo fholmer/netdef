@@ -47,101 +47,192 @@ class BaseSource():
         self.interface = DefaultInterface
 
     def __str__(self):
-        "brukes til søk og print av kildedata"
+        # brukes til søk og print av kildedata
         return self.get_reference() + " V:{}".format(self.value_as_string)
 
     def get_reference(self):
-        """ Brukers av Rule.
-            Benyttes til å identifisere like kilder. hvis to instanser returnerer samme referanse
-            betyr dette at den ene instansen er overflødig og kan erstattes
         """
+        Used to identify similar sources. if two instances return the same reference
+        this means that one instance is redundant and can be replaced
+        """
+        # Brukers av Rule.
+        # Benyttes til å identifisere like kilder. hvis to instanser returnerer samme referanse
+        # betyr dette at den ene instansen er overflødig og kan erstattes
         return "C:{} S:{} R:{} K:{}".format(self.controller, self.source, self.rule, self.key)
 
     @property
     def value_as_string(self):
-        """brukes primært av webgrensesnitt til å vise verdi i tabell.
-        bør overstyres for å begrense visning av store data"""
+        """
+        Is primarily used by web interfaces to display value in table.
+        Can be overridden to limit the display of large data.
+        Example::
+
+            @property
+            def value_as_string(self):
+                if self.value and isinstance(self.value, bytes):
+                    n = len(self.value)
+                    return "<{}...><data len:{}>".format(self.value[:10], n)
+                else:
+                    return super().value_as_string
+        """
+        # brukes primært av webgrensesnitt til å vise verdi i tabell.
+        # bør overstyres for å begrense visning av store data
         return str(self.value)
 
     @staticmethod
     def pack_subitems(value):
-        """Benyttes av controller. Lager utdata som kan benyttes til å spørre
-           etter etter en liste med inndata
         """
+        Creates output that can be used to query for a list of inputs
+        """
+        # Benyttes av controller. Lager utdata som kan benyttes til å spørre
+        # etter etter en liste med inndata
         return None
 
     @staticmethod
     def can_unpack_subitems(value):
-        """ Benyttes av controller. Funksjon som bekrefter/avkrefter om inndata er
-            en kjent liste av noe slag. hvis ja, så blir unpack_subitems brukt etterpå.
         """
+        Function that confirms / decides on input data a known list.
+        If so, then unpack_subitems can be used afterwards.
+
+        Example::
+
+            def parse_response(self, response):
+                for parser in self.get_parsers():
+                    if parser.can_unpack_subitems(response):
+                        yield from parser.unpack_subitems(response)
+
+        """
+        # """ Benyttes av controller. Funksjon som bekrefter/avkrefter om inndata er
+        #     en kjent liste av noe slag. hvis ja, så blir unpack_subitems brukt etterpå.
+        # """
         return False # kilder må overstyre denne. den er default av.
 
     @staticmethod
     def unpack_subitems(value):
-        """ Benyttes av controller. Funksjon som parser svar fra kilde og
-            yielder items funnet i verdi. Denne kan overstyres og
-            tilpasses controller den skal brukes mot.
         """
+        Function that parses response from source and yield items found in value.
+        This can be overridden and adapted to the controller it is to be used in.
+
+        Example::
+
+            def parse_response(self, response):
+                for parser in self.get_parsers():
+                    if parser.can_unpack_subitems(response):
+                        yield from parser.unpack_subitems(response)
+
+        """
+        # """ Benyttes av controller. Funksjon som parser svar fra kilde og
+        #     yielder items funnet i verdi. Denne kan overstyres og
+        #     tilpasses controller den skal brukes mot.
+        # """
         yield None
 
     @staticmethod
     def can_unpack_value(value):
-        """ Benyttes av controller. Funksjon som bekrefter/avkrefter om inndata er
-            kompatiblet med denne klassen. hvis ja, så blir unpack_value brukt etterpå.
         """
+        Function that confirms / determines if the input data is compatible with this class.
+        If so, unpack_value should be used afterwards.
+
+        Example::
+
+            def parse_item(self, item):
+                for parser in self.get_parsers():
+                    if parser.can_unpack_value(item):
+                        key, source_time, value = parser.unpack_value(item)
+                        self.send_datachange(key, source_time, value)
+
+        """
+        # """ Benyttes av controller. Funksjon som bekrefter/avkrefter om inndata er
+        #     kompatiblet med denne klassen. hvis ja, så blir unpack_value brukt etterpå.
+        # """
         return False # kilder må overstyre denne. den er default av.
 
     @staticmethod
     def unpack_value(key, source_time, value):
-        """ Benyttes av controller. Funksjon som parser svar fra kilde og
-            returnererfølgende tuple: (key, source_time, value)
-            key kan så benyttes til å finne riktig instanse og oppdatere verdier
-            denne kan overstyres og tilpasses controller den skal brukes mot.
         """
+        Function that parses response from source and returns following tuple: (key, source_time, value)
+        Key can then be used to find the right instance and update values.
+
+        Can be overridden and adapted to the controller it is to be used in.
+
+        :returns: tuple(key, source_time, value)
+        :rtype: tuple
+
+        Example::
+
+            def parse_item(self, item):
+                for parser in self.get_parsers():
+                    if parser.can_unpack_value(item):
+                        key, source_time, value = parser.unpack_value(item)
+                        self.send_datachange(key, source_time, value)
+
+        """
+        # """ Benyttes av controller. Funksjon som parser svar fra kilde og
+        #     returnererfølgende tuple: (key, source_time, value)
+        #     key kan så benyttes til å finne riktig instanse og oppdatere verdier
+        #     denne kan overstyres og tilpasses controller den skal brukes mot.
+        # """
         return key, source_time, value
 
     def pack_value(self, value):
-        """ Benyttes av controller. Funksjon som gjør om key og verdier til et format
-            som kilden benytter. Denne kan overstyres og tilpasses controller den
-            skal brukes mot.
+        """ 
+        Function that converts key and values ​​into a format that the source uses.
+        Can be overridden and adapted to the controller it is to be used in.
+
+        Example::
+
+            def handle_write_source(self, incoming, value, source_time):
+                data = incoming.pack_value(value, source_time)
+                topic, payload = incoming.make_message(incoming.key, data)
+                self.publish_data_item(topic, payload)
+                
         """
+        # """ Benyttes av controller. Funksjon som gjør om key og verdier til et format
+        #     som kilden benytter. Denne kan overstyres og tilpasses controller den
+        #     skal brukes mot.
+        # """
         return self.key, value
     
     def pack_add_source(self):
-        """ Benyttes av controller. Dersom kilde må legges til i eksternt system
-            for å endringer tilbake så kan denne funksjonen overstyres og tilpasses.
-            Den er default av.
         """
+        Used if source must be added to external system. I.e. a subscription.
+        Can be overridden and customized.
+        """
+        # """ Benyttes av controller. Dersom kilde må legges til i eksternt system
+        #     for å endringer tilbake så kan denne funksjonen overstyres og tilpasses.
+        #     Den er default av.
+        # """
         return False
 
     def copy_value(self):
-        """ Lag en kopi av verdien slik at den er en ny instanse"""
+        """ Shallow copy of the value """
         return copy.copy(self.value)
 
     def copy_get_value(self):
-        """ Lag en kopi av verdien slik at den er en ny instanse"""
+        """ Shallow copy of the value """
         return copy.copy(self.get_value)
 
     @property
     def get(self):
-        """ Les verdi fra controller """
+        """ Get the value that is updated by the controller """
         return self.get_value
 
     @get.setter
     def get(self, val):
-        """ controller skriver til get_value med denne funksjonen """
+        """ Set the value """
+        # controller skriver til get_value med denne funksjonen
         self.get_value = val
         self.value = val
 
     @property
     def set(self):
-        """ Les verdi fra uttrykk"""
+        """ Get the value that is updated by expressions """
         return self.set_value
 
     @set.setter
     def set(self, val):
-        """ Utrykk skriver til set_value med denne funsjonen """
+        """ Set the value """
+        # Utrykk skriver til set_value med denne funsjonen
         if isinstance(val, DefaultInterface):
             val = val.value
         self.set_value = val
@@ -150,7 +241,9 @@ class BaseSource():
             self.set_callback(self, val, datetime.datetime.utcnow())
 
     def register_set_callback(self, set_callback):
-        """ Regelmotor kaller denne funksjonen.
-            callback setter en WRITE_SOURCE melding til kontrollerens kø.
         """
+        Register the callback that sends WRITE_SOURCE message to the controller queue.
+        """
+        # Regelmotor kaller denne funksjonen.
+        # callback setter en WRITE_SOURCE melding til kontrollerens kø.
         self.set_callback = set_callback

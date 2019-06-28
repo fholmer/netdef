@@ -74,6 +74,7 @@ class ZmqDataAccessController(BaseController.BaseController):
                 self.logger.exception(error)
 
     def run(self):
+        "Main loop. Will exit when receiving interrupt signal"
         self.logger.info("Running")
         self.connect()
         while not self.has_interrupt():

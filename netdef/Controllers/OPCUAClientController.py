@@ -27,6 +27,7 @@ class OPCUAClientController(BaseController.BaseController):
         self.subscription = None
 
     def run(self):
+        "Main loop. Will exit when receiving interrupt signal"
         reconnect = False
         reconnect_timeout = 0
 

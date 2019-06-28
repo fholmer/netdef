@@ -12,6 +12,7 @@ class SystemMonitorSource(BaseSource.BaseSource):
 
     @property
     def value_as_string(self):
+        ""
         return str(self.value)
 
 @Sources.register("SystemMonitorByteSource")

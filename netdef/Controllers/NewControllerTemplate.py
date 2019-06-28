@@ -15,6 +15,7 @@ class NewControllerTemplate(BaseController.BaseController):
         self.one_config_entry = self.shared.config.config(self.name, "one_config_entry", "default_value")
 
     def run(self):
+        "Main loop. Will exit when receiving interrupt signal"
         self.logger.info("Running")
         while not self.has_interrupt():
             self.loop_incoming() # denne kaller opp handle_* funksjonene

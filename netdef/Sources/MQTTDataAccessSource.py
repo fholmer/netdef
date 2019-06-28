@@ -29,6 +29,7 @@ class MQTTDataAccessSource(BaseSource.BaseSource):
         return topic, payload
 
     def pack_value(self, value, stime):
+        "pack the value and stime into a mqtt payload"
         payload = {
                 "value":value,
                 "source_time":stime.timestamp(),
@@ -38,11 +39,18 @@ class MQTTDataAccessSource(BaseSource.BaseSource):
 
     @staticmethod
     def can_unpack_value(value):
+        "Check if it is possible to extract a value from the payload"
         if isinstance(value, dict) and "key" in value:
             return True
         return False
 
     @staticmethod
     def unpack_value(value):
+        """
+        Return a tuple with key, time and value from the mqtt payload
+
+        :returns: tuple(key, source_time, value)
+        :rtype: tuple
+        """
         source_time = datetime.datetime.utcfromtimestamp(value["source_time"])
         return value["key"], source_time, value["value"]

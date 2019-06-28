@@ -27,6 +27,7 @@ class XmlRpcController(BaseController.BaseController):
             self.endpoint = xmlrpc.client.ServerProxy(self.endpoint_url)
 
     def run(self):
+        "Main loop. Will exit when receiving interrupt signal"
         self.logger.info("Running")
         while not self.has_interrupt():
             if self.disable:  # disble: tøm køen og loop

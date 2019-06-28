@@ -11,8 +11,7 @@ class BytestringSource(BaseSource.BaseSource):
 
     @property
     def value_as_string(self):
-        """brukes primært av webgrensesnitt til å vise verdi i tabell.
-        bør overstyres for å begrense visning av store data"""
+        "byte data as string"
         if self.value and isinstance(self.value, bytes):
             n = len(self.value)
             return "<{}...><data len:{}>".format(self.value[:10], n)

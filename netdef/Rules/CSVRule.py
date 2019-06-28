@@ -20,6 +20,7 @@ class CSVRule(BaseRule.BaseRule):
         log.info("init")
 
     def setup(self):
+        "Parse config files"
         log.info("Running setup")
         for name, active in self.shared.config.get_dict(NAME).items():
             if int(active):
@@ -79,6 +80,7 @@ class CSVRule(BaseRule.BaseRule):
             self.update_statistics(self.name + "." + name, 0, expression_count, source_count)
 
     def run(self):
+        "Main loop. Will exit when receiving interrupt signal"
         log.info("Running")
         while not self.has_interrupt():
             self.loop_incoming() # denne kaller opp handle_* funksjonene

@@ -117,6 +117,7 @@ class SystemMonitorController(BaseController.BaseController):
         self.internal_sources = {key: data.source_type(key=key) for key, data in self.data_items.items()}
 
     def run(self):
+        "Main loop. Will exit when receiving interrupt signal"
         self.logger.info("Running")
         if Statistics.on:
             uss = psutil.Process().memory_full_info().uss

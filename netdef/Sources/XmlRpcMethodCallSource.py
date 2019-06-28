@@ -19,9 +19,11 @@ class XmlRpcMethodCallSource(BaseSource.BaseSource):
 
     @staticmethod
     def can_unpack_subitems(value):
+        "Returns False, cannot unpack subitems"
         return False
 
     @staticmethod
     def unpack_subitems(value):
+        "Yields None, cannot unpack subitems"
         yield None
 

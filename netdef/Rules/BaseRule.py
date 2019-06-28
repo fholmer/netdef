@@ -21,8 +21,15 @@ from ..Controllers.BaseController import BaseController
 # uttrykk = expression
 # regelmotor = rule
 # motor = threadedengine
+#
 
 class BaseRule():
+    """
+    Abstract class for rules.
+
+    :param str name: Name to be used in logfiles
+    :param netdef.Shared.Shared shared: a reference to the shared object
+    """
     def __init__(self, name, shared):
         self.name = name
         self.shared = shared
@@ -42,21 +49,30 @@ class BaseRule():
         self._expressions_setup_functions = []
 
     def add_interrupt(self, interrupt):
+        "Setup the interrupt signal"
         self._interrupt = interrupt
 
     def has_interrupt(self):
+        "Returns True if the interrupt signal is received"
         return self._interrupt.is_set()
 
     def sleep(self, seconds):
+        """"
+        Sleep by waiting for the interrupt.
+        Sould be used instead of time.sleep.
+        Override if sleep should be interrupted by even more signals
+        """
         self._interrupt.wait(seconds)
 
     def init_queue(self):
+        "Setup the message queue and timeout"
         self.incoming = self.shared.queues.get_messages_to_rule(self.name)
         self.messagetypes = self.shared.queues.MessageType
 
     def loop_incoming(self):
-        """ Hoved-loop. sjekker incoming-køen og utfører RUN_EXPRESSION-meldinger
+        """ Get every message from the queue and dispatch the associated handler function
         """
+        # Hoved-loop. sjekker incoming-køen og utfører RUN_EXPRESSION-meldinger
         try:
             while not self.has_interrupt():
                 if Statistics.on:
@@ -70,27 +86,59 @@ class BaseRule():
             pass
 
     def setup(self):
-        """ Implementer følgende:
-              1. Åpne og lese en konfigfil
-              2. Opprett SourceInfo for kildene funnet i konfig
-              3. Opprett instanse av uttrykk funnet i konfig
-              4. Opprett kildeinstanser ut fra data i SourceInfo
-              5. Knytt opp kildeinstanse til uttrykk.
-              6. Send ADD_SOURCE og ADD_PARSER til kontroller
         """
+        Implement the following:
+        
+            1. Open and read a configuration file
+            2. Create SourceInfo for the sources found in config
+            3. Create instance of expression found in config
+            4. Create source instances based on data in SourceInfo
+            5. Link source instances to expression.
+            6. Send ADD_SOURCE and ADD_PARSER to controllers
+        """
+        # Implementer følgende:
+        #       1. Åpne og lese en konfigfil
+        #       2. Opprett SourceInfo for kildene funnet i konfig
+        #       3. Opprett instanse av uttrykk funnet i konfig
+        #       4. Opprett kildeinstanser ut fra data i SourceInfo
+        #       5. Knytt opp kildeinstanse til uttrykk.
+        #       6. Send ADD_SOURCE og ADD_PARSER til kontroller
         raise NotImplementedError
 
+
     def run(self):
+        """
+        Override this function in rule. Example:
+
+        .. code-block:: python
+
+            def run(self):
+                self.logger.info("Running")
+
+                while not self.has_interrupt():
+                    self.loop_incoming() # dispatch handle_* functions
+
+                self.logger.info("Stopped")
+
+        """
         raise NotImplementedError
         
     def handle_run_expression(self, incoming):
         raise NotImplementedError
 
     def add_class_to_controller(self, source_name, controller_name=None):
-        """ Sender ADD_PARSER til kontroller. Kontroller bruker disse 
-            klassenes statiske funksjoner til å dekode / enkode verdier etc.
-            Brukes i parsing av konfigfil.
         """
+        Sends ADD_PARSER to controls. Controllers will use static functions
+        defined in these classes to decode / encode values etc.
+
+        :param str source_name: source name as string
+        :param str controller_name: controller name as string
+
+        """
+        #  Sender ADD_PARSER til kontroller. Kontroller bruker disse 
+        # klassenes statiske funksjoner til å dekode / enkode verdier etc.
+        # Brukes i parsing av konfigfil.
+
         if not controller_name:
             controller_name = self.source_and_controller_from_key(source_name)[1]
 
@@ -102,7 +150,10 @@ class BaseRule():
         )
 
     def add_instance_to_controller(self, item_instance):
-        """ Sender ADD_SOURCE til kontroller.
+        """ Send ADD_SOURCE to controller of given source.
+
+            :param netdef.Sources.BaseSource item_instance: source instance
+
         """
         try:
             self.shared.sources.instances.add_item(item_instance)
@@ -117,7 +168,11 @@ class BaseRule():
             self.logger.exception(eee)
 
     def send_expressions_to_engine(self, item_instance, expressions):
-        """ sender RUN_EXPRESSION til motor
+        """ Send RUN_EXPRESSION to the engine
+
+        :param item_instance: the source instance that triggered the expressions
+        :param list expressions: list of expressions
+
         """
         self.shared.queues.run_expressions_in_engine(
             item_instance,
@@ -125,9 +180,22 @@ class BaseRule():
         )
 
     def convert_to_instance(self, item_name, source_name, controller_name, rule_name, defaultvalue):
-        """ Bruker kildenavnet til å finne klassen. lager instanse av 
-            klassen. returnerer kildeinstansen.
         """
+        Uses the source name to find the actual source class.
+        Make a instance off the given source class, returns the instance
+        
+        :param str item_name: item as string
+        :param str source_name: source as string
+        :param str controller_name: controller as string
+        :param str rule_name: rule as string
+        :param defaultvalue: could be anything.
+
+        :returns: instance of source
+
+        """
+        # Bruker kildenavnet til å finne klassen. lager instanse av 
+        # klassen. returnerer kildeinstansen.
+
         source_class = self.shared.sources.classes.get_item(source_name)
 
         item_instance = source_class(
@@ -140,8 +208,12 @@ class BaseRule():
         return item_instance
 
     def get_expressions(self, instance):
-        """ Finner alle uttrykkene som er koblet til kilden.
+        """ 
+        Returns all expression that is associated with the given instance
+
+        :returns: list or None
         """
+        # Finner alle uttrykkene som er koblet til kilden.
         ref = instance.get_reference()
         if ref in self.search_expression_by_reference:
             return self.search_expression_by_reference[ref]
@@ -149,6 +221,16 @@ class BaseRule():
             return None
 
     def rule_name_from_key(self, key, default_rule_name):
+        """
+        Check if rule name is valid.
+
+        :param str key: the source key
+        :param str default_rule_name: rule name to use if not found by given key
+        :returns: rule name
+        :rtype: str
+        :raises ValueError: if rule does not exists
+
+        """
         rule = self.shared.config.config(key, "rule", default_rule_name, False)
         if rule == "*":
             return "*"
@@ -158,8 +240,18 @@ class BaseRule():
 
 
     def source_and_controller_from_key(self, key, controller=None):
-        """ Finner kildenavn og kontrollernavn fra variabelen *key*
         """
+        Check if controller name is valid.
+        Returns a valid (key, controller) tuple
+
+        :param str key: the source key
+        :param str controller: controller name to use if not found by given key
+        :returns: tuple of key and controller
+        :rtype: tuple
+        :raises ValueError: if controller does not exists
+
+        """
+        # Finner kildenavn og kontrollernavn fra variabelen *key*
         available_controllers = self.shared.queues.available_controllers
         available_sources = self.shared.sources.classes.items
         if key in available_sources:
@@ -173,7 +265,7 @@ class BaseRule():
         raise ValueError("Controller {} missing for key: {}".format(controller, key))
 
     def update_statistics(self, namespace, error_count, expression_count, source_count):
-        """ skriver interessant info til Statistics-singleton
+        """ Write useful info to Statistics-singleton
         """
         if Statistics.on:
             ns = namespace + "."
@@ -185,23 +277,44 @@ class BaseRule():
             self.logger.info(ns + "Parsed sources: %d", source_count)
 
     def add_new_parser(self, source_name, controller_name=None):
-        """ det er ikke alltid lett for en kontroller å forstå hva slags
-            data som en kilde anser som verdi. Noen kontrollere vet ikke
-            hvilken kilde som skal ha dataene engang...
-            Men kildeklassen har statiske funksjoner som kontrolleren kan
-            bruke til å finne ut av disse tingene!
-            Løsningen er at kildeklassen registreres i kontrolleren som
-            "parser". Så i denne konteksten er parser og kildeklasse egentlig det
-            samme.
         """
+        It is not always easy for a controller to understand what kind
+        data that a source regards as value. Some controllers do not even know
+        which source to update with data.
+        
+        Therefore the source classes has static functions that the controller can
+        use to find out these things.
+
+        Use this function to add a source class to a controller as a parser.
+
+        :param str source_name: source as string
+        :param str controller_name: controller as string
+
+        """
+        # """ det er ikke alltid lett for en kontroller å forstå hva slags
+        #     data som en kilde anser som verdi. Noen kontrollere vet ikke
+        #     hvilken kilde som skal ha dataene engang...
+        #     Men kildeklassen har statiske funksjoner som kontrolleren kan
+        #     bruke til å finne ut av disse tingene!
+        #     Løsningen er at kildeklassen registreres i kontrolleren som
+        #     "parser". Så i denne konteksten er parser og kildeklasse egentlig det
+        #     samme.
+        # """
         self.add_class_to_controller(source_name, controller_name)
 
     def add_new_expression(self, expr_info):
-        """ Funksjon som gjør litt for mange ting:
-              1. Oppdaterer self.search_* funksjonene (indirekte via self.maintain_searches)
-              2. Knytter kildene til uttrykket som argumenter
-              3. Finner kilder og sender dem til kontroller med ADD_SOURCE
         """
+        This function does too many things:
+
+        1. Updates self.search_* functions (indirectly via self.maintain_searches)
+        2. Associate the sources with expressions as arguments
+        3. Finds sources and sends them to controllers with ADD_SOURCE message
+        """
+        # Funksjon som gjør litt for mange ting:
+        # 1. Oppdaterer self.search_* funksjonene (indirekte via self.maintain_searches)
+        # 2. Knytter kildene til uttrykket som argumenter
+        # 3. Finner kilder og sender dem til kontroller med ADD_SOURCE
+
         if not isinstance(expr_info, ExpressionInfo):
             raise TypeError("Expected ExpressionInfo, got %s" % type(expr_info))
 
@@ -243,7 +356,7 @@ class BaseRule():
         return source_count
 
     def maintain_searches(self, source_instance, expression):
-        """ Sørger for at self.search_expression_by_reference dict er oppdatert
+        """ Keeps self.search_expression_by_reference dict updated
         """
         source_ref = source_instance.get_reference()
 
@@ -254,11 +367,15 @@ class BaseRule():
             self.search_expression_by_reference[source_ref] = [expression]
 
     def has_existing_instance(self, source_instance):
-        """ returnerer True hvis kilden vi jobber med allerede
-            finnes. Dette er viktig, for vi ønsker ikke flere
-            instanser av en kilde som egentlig refererer til samme
-            verdi... 
         """
+        Returns True if the source we are working on already
+        exists. This is important, because we do not want more
+        than one source instance for each value...
+        """
+        # returnerer True hvis kilden vi jobber med allerede
+        # finnes. Dette er viktig, for vi ønsker ikke flere
+        # instanser av en kilde som egentlig refererer til samme
+        # verdi... 
         return self.shared.sources.instances.has_item_ref(source_instance.get_reference())
         
     def get_existing_instance(self, source_instance):
@@ -285,8 +402,8 @@ class BaseRule():
 
 
     def setup_done(self):
-        """ Bare oppdatering av interessant data....
-        """
+        "Update useful statistics"
+        # Bare oppdatering av interessant data....
         self._expressions_setup_functions.clear()
         if Statistics.on:
             ns = self.name + "."
@@ -300,9 +417,11 @@ class BaseRule():
 
 
 class SourceInfo():
-    """ Dette er en dataklasse som *beskriver* en kilde. Regelmotoren
-        skal opprette en kildeinstanse basert på denne infoen her.
+    """ This is a data class that *describes* a source. The rule
+        shall create a source instance based on this *description*
     """
+    # Dette er en dataklasse som *beskriver* en kilde. Regelmotoren
+    # skal opprette en kildeinstanse basert på denne infoen her.
     __slots__ = ["typename", "key", "controller", "defaultvalue"]
     def __init__(self, typename, key, controller=None, defaultvalue=None):
         self.key = key
@@ -323,9 +442,11 @@ class SourceInfo():
             raise TypeError("controller: wrong datatype")
 
 class ExpressionInfo():
-    """ Dette er en dataklasse som *beskriver* et uttrykk. Regelmotoren
-        skal opprette et uttrykk basert på denne infoen her.
+    """ This is a data class that *describes* an expression. The rule
+        shall create an expression  based on this *description*
     """
+    # Dette er en dataklasse som *beskriver* et uttrykk. Regelmotoren
+    # skal opprette et uttrykk basert på denne infoen her.
     __slots__ = ["module", "func", "arguments", "setup"]
     def __init__(self, module, arguments, func="expression", setup="setup"):
 

@@ -16,12 +16,30 @@ This is an abstract baseclass
     :undoc-members:
     :show-inheritance:
 
+.. automodule:: netdef.Controllers.BaseAsyncController
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
-built-in controller modules
+
+Built-in controller modules
 ---------------------------
+
+.. automodule:: netdef.Controllers.CommTestController
+    :members:
+    :show-inheritance:
 
 .. automodule:: netdef.Controllers.CrontabController
     :members:
+    :show-inheritance:
+
+.. automodule:: netdef.Controllers.InternalController
+    :members:
+    :show-inheritance:
+
+.. automodule:: netdef.Controllers.ModbusClientController
+    :members:
+    :undoc-members:
     :show-inheritance:
 
 .. automodule:: netdef.Controllers.ModbusServerController
@@ -29,7 +47,27 @@ built-in controller modules
     :undoc-members:
     :show-inheritance:
 
+.. automodule:: netdef.Controllers.MQTTDataAccessController
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: netdef.Controllers.OPCUAClientController
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 .. automodule:: netdef.Controllers.OPCUAServerController
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: netdef.Controllers.RESTJsonController
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+.. automodule:: netdef.Controllers.XmlRpcController
     :members:
     :undoc-members:
     :show-inheritance:

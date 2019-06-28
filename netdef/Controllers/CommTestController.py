@@ -48,6 +48,7 @@ class CommTestController(BaseController.BaseController):
                 pass 
 
     def run(self):
+        "Main loop. Will exit when receiving interrupt signal"
         self.logger.info("Running")
         # kjører polling av self.incoming synkront i egen tråd
         self.loop.run_in_executor(None, self.loop_incoming_until_interrupt)

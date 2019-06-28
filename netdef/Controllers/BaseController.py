@@ -8,7 +8,7 @@ class BaseController():
     """
     Abstract class for controllers.
 
-    :param name: Name to be used in logfiles
+    :param str name: Name to be used in logfiles
     :param shared: a reference to the shared object
 
     """

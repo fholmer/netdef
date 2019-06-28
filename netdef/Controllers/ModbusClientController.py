@@ -23,6 +23,7 @@ class ModbusClientController(BaseController.BaseController):
         self.client = ModbusClient(host, port=port)
 
     def run(self):
+        "Main loop. Will exit when receiving interrupt signal"
         reconnect = False
         reconnect_timeout = 0
 

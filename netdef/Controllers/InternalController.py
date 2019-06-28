@@ -12,6 +12,7 @@ class InternalController(BaseController.BaseController):
         self.send_events = self.shared.config.config(self.name, "send_events", 0)
 
     def run(self):
+        "Main loop. Will exit when receiving interrupt signal"
         self.logger.info("Running")
         while not self.has_interrupt():
             self.loop_incoming() # denne kaller opp handle_* funksjonene
