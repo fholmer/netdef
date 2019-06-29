@@ -11,6 +11,7 @@ Welcome to netdef's documentation!
    user_guide/quickstart
    user_guide/tutorial
    user_guide/authors
+   user_guide/changelog
 
 .. toctree::
    :maxdepth: 2
