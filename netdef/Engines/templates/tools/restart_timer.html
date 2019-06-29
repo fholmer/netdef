@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Restart</title>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <script type="text/javascript">
+
+            function startTimer(duration, display) {
+                var timer = duration;
+
+                var interval_ref = setInterval(function () {
+                    display.textContent = timer;
+                    timer--;
+                    if (timer < 0) {
+                        clearInterval(interval_ref);
+                    }
+                }, 1000);
+            }
+
+            window.onload = function () {
+                display = document.querySelector('#time');
+                startTimer(9, display);
+            };
+
+        </script>
+        <div>
+            Restarting... refresh browser in <span id="time">10</span> seconds
+        </div>
+    </body>
+</html>

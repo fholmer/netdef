@@ -49,15 +49,18 @@ class MyAdminIndexView(flask_admin.AdminIndexView):
         shared = current_app.config["SHARED"]
         shared.restart_on_exit = True
         self.restarting = 1
-        shutdown_server()
         return redirect(url_for('.command_result_view'))
 
     @expose('/command_result/')
     def command_result_view(self):
         if self.restarting > 0:
-            return "Restarting ..."
+            shutdown_server()
+            return self.render("tools/restart_timer.html")
+
         elif self.shuttingdown > 0:
+            shutdown_server()
             return "Shutting down ..."
+            
         else:
             return redirect(url_for('.index'))
             
@@ -66,7 +69,6 @@ class MyAdminIndexView(flask_admin.AdminIndexView):
         shared = current_app.config["SHARED"]
         shared.restart_on_exit = False
         self.shuttingdown = 1
-        shutdown_server()
         return redirect(url_for('.command_result_view'))
     
 class User(flask_login.UserMixin):
