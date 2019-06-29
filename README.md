@@ -1,7 +1,7 @@
 Netdef
 ======
 
-* Documentation: Not yet finished. Working on it.
+* Documentation: https://netdef.readthedocs.io/en/latest/
 * Bitbucket: https://bitbucket.org/fholmer/netdef
 * GitHub: https://github.com/fholmer/netdef
 * PyPI: https://pypi.org/project/netdef/
