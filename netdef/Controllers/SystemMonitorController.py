@@ -120,8 +120,11 @@ class SystemMonitorController(BaseController.BaseController):
         "Main loop. Will exit when receiving interrupt signal"
         self.logger.info("Running")
         if Statistics.on:
-            uss = psutil.Process().memory_full_info().uss
-            Statistics.set("process.memory.startup", bytes2human(uss))
+            try:
+                uss = psutil.Process().memory_full_info().uss
+                Statistics.set("process.memory.startup", bytes2human(uss))
+            except psutil.AccessDenied as error:
+                self.logger.error("memory uss: %r", error)
 
         while not self.has_interrupt():
             self.loop_incoming() # denne kaller opp handle_* funksjonene
@@ -141,12 +144,15 @@ class SystemMonitorController(BaseController.BaseController):
         status_ok = True
         for dataitem in self.data_items.values():
             if dataitem.ready():
-                value = dataitem.get_value()
-                internal_item = self.internal_sources[dataitem.key]
-                self.update_source_instance_value(internal_item, value, stime, status_ok, self.oldnew)
-                statistics_update(internal_item)
-                if self.has_source(dataitem.key):
-                    self.send_datachange(dataitem.key, value, stime, True)
+                try:
+                    value = dataitem.get_value()
+                    internal_item = self.internal_sources[dataitem.key]
+                    self.update_source_instance_value(internal_item, value, stime, status_ok, self.oldnew)
+                    statistics_update(internal_item)
+                    if self.has_source(dataitem.key):
+                        self.send_datachange(dataitem.key, value, stime, True)
+                except psutil.AccessDenied as error:
+                    self.logger.error("%s: error: %s", dataitem.key, error)
 
     def send_datachange(self, source_key, value, stime, status_ok):
         item = self.get_source(source_key)
