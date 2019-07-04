@@ -8,6 +8,7 @@
 - ModbusServerController: get modbus framer by calling self.get_framer
 - Added FloatInterface and StringInterface
 - Display a 10 second restart timer in webadmin on restart
+- InternalController: config entry send_init_event trigger event at startup
 
 **Bug fixes**
 
