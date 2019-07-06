@@ -90,7 +90,7 @@ class ExpressionExecutor(BaseEngine.BaseExpressionExecutor):
     def run(self):
         log.info("Running")
         while not self.has_interrupt():
-            self.loop_incoming() # denne kaller opp handle_* funksjonene
+            self.loop_incoming() # dispatch handle_* functions
             self.loop_futures()
         self.thread_pool.shutdown(wait=True)
         log.info("Stopped")

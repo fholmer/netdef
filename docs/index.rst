@@ -15,9 +15,14 @@ Welcome to netdef's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: API Reference:
+   :caption: Developer guide:
 
    developer_guide/development
+
+.. toctree::
+   :maxdepth: 2
+   :caption: API Reference:
+
    api/configs
    api/netdef
    api/netdef.Controllers

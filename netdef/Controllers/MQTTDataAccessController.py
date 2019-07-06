@@ -89,7 +89,7 @@ class MQTTDataAccessController(BaseController.BaseController):
                 can_reconnect = True
 
                 while not self.has_interrupt():
-                    self.loop_incoming() # denne kaller opp handle_* funksjonene
+                    self.loop_incoming() # dispatch handle_* functions
                     self.loop_mqtt()
 
             except OSError as error:

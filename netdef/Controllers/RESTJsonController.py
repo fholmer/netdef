@@ -60,8 +60,8 @@ class RESTJsonController(BaseController.BaseController):
             if self.disable:  # to disable: empty queue by calling self.fetch_one_incoming
                 self.fetch_one_incoming()
             else:
-                self.loop_incoming() # denne kaller opp handle_* funksjonene
-                self.loop_outgoing() # denne kaller opp poll_*
+                self.loop_incoming() # dispatch handle_* functions
+                self.loop_outgoing() # dispatch poll_* functions
             time.sleep(0.1)
         self.logger.info("Stopped")
 

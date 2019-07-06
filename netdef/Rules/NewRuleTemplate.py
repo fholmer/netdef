@@ -1,7 +1,7 @@
 import logging
 import pathlib
-from .utils import import_file
-from . import BaseRule, Rules
+from netdef.Rules.utils import import_file
+from netdef.Rules import BaseRule, Rules
 
 SourceInfo = BaseRule.SourceInfo
 ExpressionInfo = BaseRule.ExpressionInfo
@@ -59,7 +59,7 @@ class NewTemplateRule(BaseRule.BaseRule):
     def run(self):
         self.logger.info("Running")
         while not self.has_interrupt():
-            self.loop_incoming() # denne kaller opp handle_* funksjonene
+            self.loop_incoming() #  dispatch handle_* functions
         self.logger.info("Stopped")
 
     def handle_run_expression(self, incoming):

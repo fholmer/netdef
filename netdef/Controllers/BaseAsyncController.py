@@ -18,7 +18,7 @@ class BaseAsyncController(BaseController.BaseController):
     def loop_incoming_until_interrupt(self):
         # denne funksjonen kjører som en vanlig blokkerende tråd i asyncio
         while not self.has_interrupt():
-            self.loop_incoming() # denne kaller opp handle_* funksjonene
+            self.loop_incoming() # dispatch handle_* functions
 
         # her må vi fortelle asyncio at det er på tide å stoppe
         self.interrupt_loop.set()

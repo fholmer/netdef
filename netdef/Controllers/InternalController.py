@@ -16,8 +16,8 @@ class InternalController(BaseController.BaseController):
         "Main loop. Will exit when receiving interrupt signal"
         self.logger.info("Running")
         while not self.has_interrupt():
-            self.loop_incoming() # denne kaller opp handle_* funksjonene
-            self.loop_outgoing() # denne kaller opp poll_*
+            self.loop_incoming() # dispatch handle_* functions
+            self.loop_outgoing() # dispatch poll_* functions
         self.logger.info("Stopped")
 
     def handle_add_source(self, incoming):

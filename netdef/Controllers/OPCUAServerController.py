@@ -131,7 +131,7 @@ class OPCUAServerController(BaseController.BaseController):
         self.subscription = self.server.create_subscription(100, subhandler)
 
         while not self.has_interrupt():
-            self.loop_incoming() # denne kaller opp handle_* funksjonene
+            self.loop_incoming() # dispatch handle_* functions
 
         self.server.stop()
         self.logger.info("Stopped")

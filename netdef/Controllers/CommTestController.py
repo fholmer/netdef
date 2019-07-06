@@ -30,7 +30,7 @@ class CommTestController(BaseController.BaseController):
 
     def loop_incoming_until_interrupt(self):
         while not self.has_interrupt():
-            self.loop_incoming() # denne kaller opp handle_* funksjonene
+            self.loop_incoming() # dispatch handle_* functions
         self.interrupt_loop.set()
 
     @asyncio.coroutine

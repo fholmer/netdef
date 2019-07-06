@@ -65,7 +65,7 @@ class OPCUAClientController(BaseController.BaseController):
                 last_keepalive = time.time()
                 self.logger.info("Running")
                 while not self.has_interrupt():
-                    self.loop_incoming() # denne kaller opp handle_* funksjonene
+                    self.loop_incoming() # dispatch handle_* functions
                     time.sleep(0.01)
                     if time.time() > (last_keepalive + keepalive_timeout):
                         # self.logger.debug("Sending keepalive")

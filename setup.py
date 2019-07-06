@@ -57,6 +57,11 @@ setup(
     license='GNU Lesser General Public License v3 or later',
     keywords='Application Framework Networking Monitoring',    
 
+    project_urls={
+        "Source Code": "https://bitbucket.org/fholmer/netdef",
+        "Documentation": "https://netdef.readthedocs.io/en/latest/"
+    },
+
     python_requires='>=3.5',
     packages=find_packages(include=['netdef*']),
 

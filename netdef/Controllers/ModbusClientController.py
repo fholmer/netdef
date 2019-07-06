@@ -41,8 +41,8 @@ class ModbusClientController(BaseController.BaseController):
                 self.logger.info("Running")
 
                 while not self.has_interrupt():
-                    self.loop_incoming() # denne kaller opp handle_* funksjonene
-                    self.loop_outgoing() # denne kaller opp poll_* funksjonene
+                    self.loop_incoming() # dispatch handle_* functions
+                    self.loop_outgoing() # dispatch poll_* functions funksjonene
 
             except (ConnectionRefusedError, ConnectionError, ConnectionException) as error:
                 self.logger.debug("Exception: %s", error)

@@ -83,7 +83,7 @@ class CSVRule(BaseRule.BaseRule):
         "Main loop. Will exit when receiving interrupt signal"
         log.info("Running")
         while not self.has_interrupt():
-            self.loop_incoming() # denne kaller opp handle_* funksjonene
+            self.loop_incoming() # dispatch handle_* functions
         log.info("Stopped")
 
     def handle_run_expression(self, incoming):

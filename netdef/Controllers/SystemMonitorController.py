@@ -127,7 +127,7 @@ class SystemMonitorController(BaseController.BaseController):
                 self.logger.error("memory uss: %r", error)
 
         while not self.has_interrupt():
-            self.loop_incoming() # denne kaller opp handle_* funksjonene
+            self.loop_incoming() # dispatch handle_* functions
             self.poll_data()
 
         self.logger.info("Stopped")

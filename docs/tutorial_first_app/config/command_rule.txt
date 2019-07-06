@@ -1,0 +1,4 @@
+echo hello
+dir .
+./simple_script.sh
+echo Don\'t break the

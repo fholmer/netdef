@@ -20,7 +20,6 @@ Features
 * Abstract base classes for creating custom controllers, sources and rules
 * The configuration is done using configparser with extended interpolation
 * Start a new netdef project with cookiecutter. Templates available at https://bitbucket.org/fholmer/cookiecutter-netdef.
-* Code in Rule-Source-Controller design pattern.
 
 Built-in Controllers:
 

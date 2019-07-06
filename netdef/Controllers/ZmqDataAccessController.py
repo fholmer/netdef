@@ -78,8 +78,8 @@ class ZmqDataAccessController(BaseController.BaseController):
         self.logger.info("Running")
         self.connect()
         while not self.has_interrupt():
-            self.loop_incoming() # denne kaller opp handle_* funksjonene
-            self.loop_subscribers() # denne kaller opp poll_*
+            self.loop_incoming() # dispatch handle_* functions
+            self.loop_subscribers() # dispatch poll_* functions
 
         self.logger.info("Stopped")
 

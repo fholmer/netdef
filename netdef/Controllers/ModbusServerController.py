@@ -150,7 +150,7 @@ class MyController(ModbusTcpServer):
         if self.controller.has_interrupt():
             self._BaseServer__shutdown_request = True
         else:
-            self.controller.loop_incoming() # denne kaller opp handle_* funksjonene
+            self.controller.loop_incoming() # dispatch handle_* functions
 
 class MyContext(ModbusSlaveContext):
     def __init__(self, *args, **kwargs):
