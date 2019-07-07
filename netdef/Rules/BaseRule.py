@@ -5,9 +5,9 @@ import logging
 from ..Engines.expression.Expression import Expression
 from ..Shared.Internal import Statistics
 from ..Interfaces.internal.tick import Tick
-
 from ..Sources.BaseSource import BaseSource
 from ..Controllers.BaseController import BaseController
+from .utils import get_module_from_string
 
 
 # Det er en blanding av norsk og engelsk her.
@@ -42,7 +42,8 @@ class BaseRule():
         # Hensikten med .get_reference er forklart i Sources/BaseSource.py
         # Hvis du skal ha tak i alle uttrkk som blir berørt av en kilde
         # så bruk "source.get_reference()" som nøkkel i denne her:
-        self.search_expression_by_reference = {}
+        self.stats_unique_sources = 0
+        self.stats_unique_expressions = 0
 
         self.ticks = []
 
@@ -215,8 +216,10 @@ class BaseRule():
         """
         # Finner alle uttrykkene som er koblet til kilden.
         ref = instance.get_reference()
-        if ref in self.search_expression_by_reference:
-            return self.search_expression_by_reference[ref]
+        shared_expr = self.shared.expressions.instances
+
+        if shared_expr.has_source_ref(ref):
+            return shared_expr.get_expressions_by_source_ref(ref)
         else:
             return None
 
@@ -232,8 +235,6 @@ class BaseRule():
 
         """
         rule = self.shared.config.config(key, "rule", default_rule_name, False)
-        if rule == "*":
-            return "*"
         if rule in self.shared.queues.available_rules:
             return rule
         raise ValueError("Rule missing for key: {}".format(key))
@@ -302,16 +303,20 @@ class BaseRule():
         # """
         self.add_class_to_controller(source_name, controller_name)
 
+    @staticmethod
+    def get_module_from_string(mod_str, abs_root=None, location_name=None, mod_name=None):
+        return get_module_from_string(mod_str, abs_root, location_name, mod_name)
+
     def add_new_expression(self, expr_info):
         """
         This function does too many things:
 
-        1. Updates self.search_* functions (indirectly via self.maintain_searches)
+        1. Updates shared.expressions.instances (indirectly via self.maintain_searches)
         2. Associate the sources with expressions as arguments
         3. Finds sources and sends them to controllers with ADD_SOURCE message
         """
         # Funksjon som gjør litt for mange ting:
-        # 1. Oppdaterer self.search_* funksjonene (indirekte via self.maintain_searches)
+        # 1. Oppdaterer shared.expressions.instances (indirekte via self.maintain_searches)
         # 2. Knytter kildene til uttrykket som argumenter
         # 3. Finner kilder og sender dem til kontroller med ADD_SOURCE
 
@@ -356,15 +361,19 @@ class BaseRule():
         return source_count
 
     def maintain_searches(self, source_instance, expression):
-        """ Keeps self.search_expression_by_reference dict updated
+        """ Keeps shared.expressions.instances updated
         """
         source_ref = source_instance.get_reference()
+        shared_expr = self.shared.expressions.instances
 
-        if source_ref in self.search_expression_by_reference:
-            if not expression in self.search_expression_by_reference[source_ref]:
-                self.search_expression_by_reference[source_ref].append(expression)
+        if shared_expr.has_source_ref(source_ref):
+            if not shared_expr.has_expression_in_source_ref(source_ref, expression):
+                self.stats_unique_expressions += 1
+                shared_expr.add_expression_in_source_ref(source_ref, expression)
         else:
-            self.search_expression_by_reference[source_ref] = [expression]
+            self.stats_unique_sources += 1
+            self.stats_unique_expressions += 1
+            shared_expr.add_expression_in_source_ref(source_ref, expression)
 
     def has_existing_instance(self, source_instance):
         """
@@ -407,13 +416,10 @@ class BaseRule():
         self._expressions_setup_functions.clear()
         if Statistics.on:
             ns = self.name + "."
-            Statistics.set(ns + "source.references.count", len(self.search_expression_by_reference))
-            self.logger.info("Unique sources: %d", len(self.search_expression_by_reference))
-            count = 0
-            for expressions in self.search_expression_by_reference.values():
-                count += len(expressions)
-            Statistics.set(ns + "expressions.count", count)
-            self.logger.info("expression references: %d", count)
+            Statistics.set(ns + "source.references.count", self.stats_unique_sources)
+            self.logger.info("Unique sources: %d", self.stats_unique_sources)
+            Statistics.set(ns + "expressions.count", self.stats_unique_expressions)
+            self.logger.info("expression references: %d", self.stats_unique_expressions)
 
 
 class SourceInfo():
@@ -454,16 +460,20 @@ class ExpressionInfo():
             raise TypeError("func: wrong datatype")
 
         if isinstance(module, Expression):
-            self.module = module
-            self.setup = None
+            _pymod = None
+            _expr = module
         elif isinstance(module, ModuleType):
-            self.module = Expression(getattr(module, func), module.__file__)
-            if setup and hasattr(module, setup):
-                self.setup = getattr(module, setup)
-            else:
-                self.setup = None
+            _pymod = module
+            _expr = Expression(getattr(_pymod, func), _pymod.__file__)
         else:
             raise TypeError("module: wrong datatype")
+
+        self.module = _expr
+
+        if setup and hasattr(_pymod, setup):
+            self.setup = getattr(_pymod, setup)
+        else:
+            self.setup = None
 
         self.arguments = []
         if not arguments:

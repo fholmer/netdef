@@ -48,7 +48,7 @@ class BaseSource():
 
     def __str__(self):
         # brukes til søk og print av kildedata
-        return self.get_reference() + " V:{}".format(self.value_as_string)
+        return self.get_reference() + " R: {} V:{}".format(self.rule, self.value_as_string)
 
     def get_reference(self):
         """
@@ -58,7 +58,7 @@ class BaseSource():
         # Brukers av Rule.
         # Benyttes til å identifisere like kilder. hvis to instanser returnerer samme referanse
         # betyr dette at den ene instansen er overflødig og kan erstattes
-        return "C:{} S:{} R:{} K:{}".format(self.controller, self.source, self.rule, self.key)
+        return "C:{} S:{} K:{}".format(self.controller, self.source, self.key)
 
     @property
     def value_as_string(self):

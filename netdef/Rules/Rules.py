@@ -1,8 +1,9 @@
 import logging
 import importlib
 import functools
+from collections import OrderedDict
 
-RULESDICT = {}
+RULESDICT = OrderedDict()
 
 def register(name):
     def classdecorator(name, cls):
@@ -14,7 +15,7 @@ def register(name):
 class Rules():
     def __init__(self, shared=None):
         self.classes = RULESDICT
-        self.instances = {}
+        self.instances = OrderedDict()
         self.add_shared_object(shared)
         self.logging = logging.getLogger(__name__)
 

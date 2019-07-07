@@ -1,8 +1,9 @@
 import importlib
 import functools
 import logging
+from collections import OrderedDict
 
-SOURCEDICT = {}
+SOURCEDICT = OrderedDict()
 
 def register(name):
     def classdecorator(name, cls):

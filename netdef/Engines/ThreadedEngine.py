@@ -30,9 +30,12 @@ class ThreadedEngine(BaseEngine.BaseEngine):
     def start(self):
         time.sleep(0.1)
 
-        log.info("Parse rules")
+        log.info("Setup rules")
         for name, obj in self._rules.instances.items():
             obj.setup()
+
+        log.info("start rules")
+        for name, obj in self._rules.instances.items():
             obj.add_interrupt(self._interrupt)
             thr = Thread(target=obj.run, name=name)
             thr.start()

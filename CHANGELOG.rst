@@ -14,10 +14,13 @@
 
 - OPCUAServerController: Fixed a varianttype bug
 - Fixed pyinstaller hook file
+- BaseRule is rewritten to store expression info in shared module. This fixes
+  a problem with multiple rules sharing same sources.
 
 **Incompatible API changes**
 
 - OPCUAServerController: startup statuscode changed from BadNoData to BadWaitingForInitialData
+- BaseRule: rule_name_from_key no longer accept * as a rule name
 
 1.0.3
 =====

@@ -1,6 +1,7 @@
 import importlib
 import importlib.util
 import sys
+import pathlib
 
 V_MAJOR = sys.version_info.major
 V_MINOR = sys.version_info.minor
@@ -36,3 +37,22 @@ def load_entrypoint(entrypoint, package=None):
         for attr in qualname.split('.'):
             obj = getattr(mod, attr)
     return mod, obj
+
+def get_module_from_string(mod_str, abs_root, location_name, mod_name):
+    if "/" in mod_str:
+        if abs_root:
+            abs_file = pathlib.Path(abs_root).joinpath(mod_str)
+        else:
+            abs_file = pathlib.Path(mod_str).absolute()
+        if not abs_file.is_absolute():
+            raise ValueError("{} is not absolute path".format(abs_file))
+        elif not abs_file.is_file():
+            raise ValueError("{} not found".format(abs_file))
+        elif not location_name:
+            raise ValueError("location_name: expect string, got {}".format(location_name))
+        elif not mod_name:
+            raise ValueError("mod_name: expect string, got {}".format(mod_name))
+        return import_file(mod_str, location_name, mod_name)
+    else:
+        mod, obj = load_entrypoint(mod_str, location_name)
+        return mod

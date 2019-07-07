@@ -1,8 +1,9 @@
 import importlib
 import functools
 import logging
+from collections import OrderedDict
 
-CONTROLLERDICT = {}
+CONTROLLERDICT = OrderedDict()
 
 # denne dekoratoren vil bli aktivert av aktiverte klasser etter Controllers.load()
 def register(name):
@@ -30,7 +31,7 @@ class Controllers():
         self.logging = logging.getLogger(__name__)
         self.items = CONTROLLERDICT
         self.add_shared_object(shared)
-        self.instances = {}
+        self.instances = OrderedDict()
 
     def add_shared_object(self, shared):
         self.shared = shared
