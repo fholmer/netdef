@@ -304,8 +304,8 @@ class BaseRule():
         self.add_class_to_controller(source_name, controller_name)
 
     @staticmethod
-    def get_module_from_string(mod_str, abs_root=None, location_name=None, mod_name=None):
-        return get_module_from_string(mod_str, abs_root, location_name, mod_name)
+    def get_module_from_string(mod_str, package=None, abs_root=None, location_name=None, mod_name=None):
+        return get_module_from_string(mod_str, package, abs_root, location_name, mod_name)
 
     def add_new_expression(self, expr_info):
         """

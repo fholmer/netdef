@@ -1,7 +1,7 @@
 1.0.4-dev1
 ==========
 
-2019-06-29
+2019-07-07
 
 **Enhancements**
 
@@ -9,6 +9,7 @@
 - Added FloatInterface and StringInterface
 - Display a 10 second restart timer in webadmin on restart
 - InternalController: config entry send_init_event trigger event at startup
+- Added an experimental yaml parser
 
 **Bug fixes**
 

@@ -12,7 +12,9 @@ psutil
 pymodbus
 pytz
 pywin32; sys_platform == 'win32'
+PyYAML
 pyzmq
+schema
 six==1.11.0
 waitress
 Werkzeug

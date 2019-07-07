@@ -38,12 +38,15 @@ def load_entrypoint(entrypoint, package=None):
             obj = getattr(mod, attr)
     return mod, obj
 
-def get_module_from_string(mod_str, abs_root, location_name, mod_name):
+def get_module_from_string(mod_str, package, abs_root, location_name, mod_name):
     if "/" in mod_str:
-        if abs_root:
+        if pathlib.Path(mod_str).is_absolute():
+            abs_file = pathlib.Path(mod_str)
+        elif abs_root:
             abs_file = pathlib.Path(abs_root).joinpath(mod_str)
         else:
             abs_file = pathlib.Path(mod_str).absolute()
+            
         if not abs_file.is_absolute():
             raise ValueError("{} is not absolute path".format(abs_file))
         elif not abs_file.is_file():
@@ -54,5 +57,5 @@ def get_module_from_string(mod_str, abs_root, location_name, mod_name):
             raise ValueError("mod_name: expect string, got {}".format(mod_name))
         return import_file(mod_str, location_name, mod_name)
     else:
-        mod, obj = load_entrypoint(mod_str, location_name)
+        mod, obj = load_entrypoint(mod_str, package)
         return mod
