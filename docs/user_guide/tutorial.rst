@@ -138,14 +138,14 @@ Create a custom controller
 
 Copy the included template to create a custom controller.
 
-``netdef/Controllers/NewControllerTemplate.py:``
+``netdef/Controllers/NewControllerTemplate.py``:
 
 .. literalinclude:: ../../netdef/Controllers/NewControllerTemplate.py
 
 
 Paste it into your application with a new name:
 
-``first_app/Controllers/SubprocessController.py:``
+``first_app/Controllers/SubprocessController.py``:
 
 ..  code-block:: python
     :linenos:
@@ -200,13 +200,13 @@ Create a custom source
 
 Copy the included template to create a custom source for your controller.
 
-``netdef/Sources/NewSourceTemplate.py:``
+``netdef/Sources/NewSourceTemplate.py``:
 
 .. literalinclude:: ../../netdef/Sources/NewSourceTemplate.py
 
 Paste it into your application with a new name:
 
-``first_app/Sources/SubprocessSource.py:``
+``first_app/Sources/SubprocessSource.py``:
 
 ..  code-block:: python
     :linenos:
@@ -229,7 +229,7 @@ Line 4 and 5 is changed to the same name as the file.
 
 Change line 7 in your custom controller:
 
-``first_app/Controllers/SubprocessController.py:``
+``first_app/Controllers/SubprocessController.py``:
 
 ..  code-block:: python
     :linenos:
@@ -290,13 +290,13 @@ Create a custom rule
 
 Copy the included template to create a custom rule.
 
-``netdef/Rules/NewRuleTemplate.py:``
+``netdef/Rules/NewRuleTemplate.py``:
 
 .. literalinclude:: ../../netdef/Rules/NewRuleTemplate.py
 
 Paste it into your application with a new name:
 
-``first_app/Rules/FirstAppRule.py:``
+``first_app/Rules/FirstAppRule.py``:
 
 ..  code-block:: python
     :linenos:
@@ -405,7 +405,7 @@ command. the command can be extracted from the sources key:
 The controller can retrieve the command to run by calling
 :attr:`get_command_and_args` 
 
-``first_app/Controllers/SubprocessController.py:``
+``first_app/Controllers/SubprocessController.py``:
 
 .. code-block:: python
    :lineno-start: 1
@@ -580,7 +580,7 @@ The expression is a python file. The rule expect to find a function called :func
 
 Now we are ready to create the rule
 
-``first_app/Rules/FirstAppRule.py:``
+``first_app/Rules/FirstAppRule.py``:
 
 .. code-block:: python
    :lineno-start: 1
