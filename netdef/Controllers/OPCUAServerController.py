@@ -10,6 +10,7 @@ from netdef.Controllers import BaseController, Controllers
 from netdef.Sources.BaseSource import StatusCode
 
 class CustomInternalSession(InternalSession):
+    "This custom InternalSession will block anonymous access"
     def activate_session(self, params):
         id_token = params.UserIdentityToken
         if isinstance(id_token, ua.AnonymousIdentityToken):
@@ -17,6 +18,13 @@ class CustomInternalSession(InternalSession):
         return super().activate_session(params)
 
 class CustomInternalServer(InternalServer):
+    """
+    This custom InternalServer will block anonymous access.
+    How to use::
+        from opcua import Server
+        server = Server(iserver=CustomInternalServer())
+        server.iserver.set_parent(server)
+    """
     def set_parent(self, parent):
         self._parent = parent
     def create_session(self, name, user=UserManager.User.Anonymous, external=False):
@@ -61,9 +69,34 @@ class OPCUAServerController(BaseController.BaseController):
         admin_password = config("password", "admin")
         admin_password_hash = config("password_hash", "").replace("$$", "$")
 
+        security_ids = []
         anonymous_on = config("anonymous_on", 0)
         username_on = config("username_on", 1)
-        full_encryption_on = config("full_encryption_on", 1)
+        certificate_on = config("certificate_basic256sha256_on", 0)
+
+        if anonymous_on:
+            security_ids.append("Anonymous")
+        if username_on:
+            security_ids.append("Username")
+        if certificate_on:
+            security_ids.append("Basic256Sha256")
+
+        security_policy = []
+
+        if config("nosecurity_on", 1):
+            security_policy.append(ua.SecurityPolicyType.NoSecurity)
+        if config("basic128rsa15_sign_on", 0):
+            security_policy.append(ua.SecurityPolicyType.Basic128Rsa15_Sign)
+        if config("basic128rsa15_signandencrypt_on", 0):
+            security_policy.append(ua.SecurityPolicyType.Basic128Rsa15_SignAndEncrypt)
+        if config("basic256_sign_on", 0):
+            security_policy.append(ua.SecurityPolicyType.Basic256_Sign)
+        if config("basic256_signandencrypt_on", 0):
+            security_policy.append(ua.SecurityPolicyType.Basic256_SignAndEncrypt)
+        if config("basic256sha256_sign_on", 1):
+            security_policy.append(ua.SecurityPolicyType.Basic256Sha256_Sign)
+        if config("basic256sha256_signandencrypt_on", 1):
+            security_policy.append(ua.SecurityPolicyType.Basic256Sha256_SignAndEncrypt)
 
         initial_values_is_quality_good = config("initial_values_is_quality_good", 0)
 
@@ -80,13 +113,11 @@ class OPCUAServerController(BaseController.BaseController):
             server.load_certificate(str(certificate))
             server.load_private_key(str(private_key))
 
-        if username_on:
-            server.set_security_IDs(["Username"])
+        if security_ids:
+            server.set_security_IDs(security_ids)
 
-        if full_encryption_on:
-            server.set_security_policy([
-                    ua.SecurityPolicyType.Basic256Sha256_SignAndEncrypt,
-                    ua.SecurityPolicyType.Basic256Sha256_Sign])
+        if security_policy:
+            server.set_security_policy(security_policy)
         
         def custom_user_manager(isession, userName, password):
             if userName != admin_username:
@@ -95,7 +126,7 @@ class OPCUAServerController(BaseController.BaseController):
                 if werkzeug.security.check_password_hash(admin_password_hash, password):
                     return True
             else:
-                # fallback til plaintext
+                # fallback to plaintext
                 if password == admin_password:
                     return True
             return False
