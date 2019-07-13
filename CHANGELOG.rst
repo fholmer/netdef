@@ -18,6 +18,8 @@
 - Fixed pyinstaller hook file
 - BaseRule is rewritten to store expression info in shared module. This fixes
   a problem with multiple rules sharing same sources.
+- Fixed a problem where the name of a controller or rule and module name 
+  had to be equal.
 
 **Incompatible API changes**
 
