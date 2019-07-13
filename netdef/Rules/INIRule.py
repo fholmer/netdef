@@ -50,7 +50,11 @@ class INIRule(BaseRule.BaseRule):
         source_count = 0
 
         for section in ini_object.sections():
+            if not ini_object.getint(section, "on", fallback=1):
+                continue
+
             self.logger.info("loading section: %s", section)
+
             parser_string = ini_object.get(section, "parsers", fallback="")
             parsers = []
 
