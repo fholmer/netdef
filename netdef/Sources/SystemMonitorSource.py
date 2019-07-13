@@ -1,14 +1,20 @@
 from netdef.Sources import BaseSource, Sources
-from netdef.Interfaces.DefaultInterface import DefaultInterface
+from netdef.Interfaces import UnitOfValueInterface
+
+bytes2human = UnitOfValueInterface.bytes2human
 
 @Sources.register("SystemMonitorSource")
 class SystemMonitorSource(BaseSource.BaseSource):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.interface = DefaultInterface
+        self.interface = self.get_interface()
+
+    @staticmethod
+    def get_interface():
+        return UnitOfValueInterface.NoUnitInterface
 
     def get_value_and_unit(self):
-        return str(self.value)
+        return self.interface(self.value).get_value_and_unit()
 
     @property
     def value_as_string(self):
@@ -17,21 +23,12 @@ class SystemMonitorSource(BaseSource.BaseSource):
 
 @Sources.register("SystemMonitorByteSource")
 class SystemMonitorByteSource(SystemMonitorSource):
-    def get_value_and_unit(self):
-        return bytes2human(self.value)
+    @staticmethod
+    def get_interface():
+        return UnitOfValueInterface.ByteUnitInterface
 
 @Sources.register("SystemMonitorPercentSource")
 class SystemMonitorPercentSource(SystemMonitorSource):
-    def get_value_and_unit(self):
-        return "{}%".format(round(self.value, 1))
-
-def bytes2human(n):
-    symbols = ('K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')
-    prefix = {}
-    for i, s in enumerate(symbols):
-        prefix[s] = 1 << (i + 1) * 10
-    for s in reversed(symbols):
-        if n >= prefix[s]:
-            value = float(n) / prefix[s]
-            return '%.1f%s' % (value, s)
-    return "%sB" % n
+    @staticmethod
+    def get_interface():
+        return UnitOfValueInterface.PercentUnitInterface
