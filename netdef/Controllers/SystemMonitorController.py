@@ -94,6 +94,10 @@ def get_data_items_dict(mempoll, cpupoll, poll, checkdisk, diskpoll):
 
 @Controllers.register("SystemMonitorController")
 class SystemMonitorController(BaseController.BaseController):
+    """
+    .. tip:: Development Status :: 5 - Production/Stable
+
+    """
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.logger = logging.getLogger(self.name)

@@ -11,6 +11,10 @@ log.debug("Loading module")
 
 @Controllers.register("ModbusClientController")
 class ModbusClientController(BaseController.BaseController):
+    """
+    .. caution:: Development Status :: 4 - Beta
+
+    """
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.logger = logging.getLogger(name)

@@ -10,6 +10,10 @@ log.debug("Loading module")
 
 @Controllers.register("CrontabController")
 class CrontabController(BaseController.BaseController):
+    """
+    .. tip:: Development Status :: 5 - Production/Stable
+
+    """
     def __init__(self, name, shared):
         super().__init__(name, shared)
         log.info("init")

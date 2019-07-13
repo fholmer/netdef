@@ -33,6 +33,8 @@ class CustomInternalServer(InternalServer):
 @Controllers.register("OPCUAServerController")
 class OPCUAServerController(BaseController.BaseController):
     """
+    .. tip:: Development Status :: 5 - Production/Stable
+
     This Controller will start a freeopcua server instance and will
     add a nodeid for all sources received in ADD_SOURCE messages.
     

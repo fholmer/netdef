@@ -4,6 +4,10 @@ from netdef.Controllers import BaseController, Controllers
 # this controller is in development, do not use it yet.
 
 class BaseAsyncController(BaseController.BaseController):
+    """
+    .. caution:: Development Status :: 4 - Beta
+
+    """
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.init_asyncio()

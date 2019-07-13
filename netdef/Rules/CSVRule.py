@@ -15,6 +15,10 @@ log.debug("Loading module")
 
 @Rules.register(NAME)
 class CSVRule(BaseRule.BaseRule):
+    """
+    .. tip:: Development Status :: 5 - Production/Stable
+
+    """
     def __init__(self, name, shared):
         super().__init__(name, shared)
         log.info("init")

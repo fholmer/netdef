@@ -16,6 +16,10 @@ log.debug("Loading module")
 
 @Controllers.register("RESTJsonController")
 class RESTJsonController(BaseController.BaseController):
+    """
+    .. tip:: Development Status :: 5 - Production/Stable
+
+    """
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.logger = logging.getLogger(name)

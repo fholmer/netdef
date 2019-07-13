@@ -5,6 +5,10 @@ from . import BaseController, Controllers
 
 #@Controllers.register("BaseAsyncParallelController")
 class BaseAsyncParallelController(BaseController.BaseController):
+    """
+    .. danger:: Development Status :: 3 - Alpha
+
+    """
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.logger.info("init")
