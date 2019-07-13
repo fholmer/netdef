@@ -22,20 +22,31 @@ This is an abstract baseclass
     :show-inheritance:
 
 
-Built-in controller modules
----------------------------
+Built-in controller modules:
+
+Communication test by ICMP or TCP ping
+--------------------------------------
 
 .. automodule:: netdef.Controllers.CommTestController
     :members:
     :show-inheritance:
 
+Events by date or time
+----------------------
+
 .. automodule:: netdef.Controllers.CrontabController
     :members:
     :show-inheritance:
 
+User controlled events
+----------------------
+
 .. automodule:: netdef.Controllers.InternalController
     :members:
     :show-inheritance:
+
+Modbus communication
+--------------------
 
 .. automodule:: netdef.Controllers.ModbusClientController
     :members:
@@ -47,10 +58,17 @@ Built-in controller modules
     :undoc-members:
     :show-inheritance:
 
+
+MQTT communication
+------------------
+
 .. automodule:: netdef.Controllers.MQTTDataAccessController
     :members:
     :undoc-members:
     :show-inheritance:
+
+OPC UA communication
+--------------------
 
 .. automodule:: netdef.Controllers.OPCUAClientController
     :members:
@@ -61,6 +79,9 @@ Built-in controller modules
     :members:
     :undoc-members:
     :show-inheritance:
+
+HTTP / HTTPS communication
+--------------------------
 
 .. automodule:: netdef.Controllers.RESTJsonController
     :members:

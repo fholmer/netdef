@@ -12,7 +12,7 @@ This is an abstract baseclass
     :show-inheritance:
 
 
-built-in engine modules
+Built-in engine modules
 -----------------------
 
 .. automodule:: netdef.Engines.ThreadedEngine
