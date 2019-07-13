@@ -151,6 +151,7 @@ INIRule
    :caption: config/example_rule_101.ini
 
     [example_rule_101]
+    on = 1
     parsers = IntegerSource, TextSource
     module = config/example_rule_101.py
     setup = setup

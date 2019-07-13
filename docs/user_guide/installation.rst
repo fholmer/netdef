@@ -33,8 +33,8 @@ Install Netdef::
     $ pip install netdef
 
 
-Windows 10
-----------
+Windows
+-------
 
 Prerequisites:
 
