@@ -1,7 +1,7 @@
 1.0.4-dev1
 ==========
 
-2019-07-07
+2019-07-13
 
 **Enhancements**
 
@@ -10,6 +10,7 @@
 - Display a 10 second restart timer in webadmin on restart
 - InternalController: config entry send_init_event trigger event at startup
 - Added an experimental yaml parser
+- Added an experimental ini parser
 
 **Bug fixes**
 

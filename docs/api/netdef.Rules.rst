@@ -34,3 +34,8 @@ Built-in controller modules
     :members:
     :undoc-members:
     :show-inheritance:
+
+.. automodule:: netdef.Rules.INIRule
+    :members:
+    :undoc-members:
+    :show-inheritance:

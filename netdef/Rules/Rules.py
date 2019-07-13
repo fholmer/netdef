@@ -40,7 +40,6 @@ class Rules():
                 if int(activate) and not name in added:
                     try:
                         importlib.import_module("{}.Rules.{}".format(base_package, name))
-                        self.shared.queues.add_rule(name)
                         added.append(name)
                     except ImportError as e:
                         if isinstance(e.name, str):
@@ -52,3 +51,6 @@ class Rules():
         for name, activate in activate_rules.items():
             if int(activate) and not name in added:
                 self.logging.error("%s not found in %s", name, base_packages)
+
+        for name in self.classes.keys():
+            self.shared.queues.add_rule(name)

@@ -82,7 +82,8 @@ CSVRule
    :caption: config/example_rule_101.csv
 
     IntegerSource,TextSource
-    example-data-as-int,example-data-as-text
+    example-data1-as-int,example-data1-as-text
+    example-data2-as-int,example-data2-as-text
 
 .. code-block:: python
    :caption: config/example_rule_101.py
@@ -114,10 +115,49 @@ YAMLRule
         expression: expression
         arguments:
           - source: IntegerSource
-            key:    example-data-as-int
+            key:    example-data1-as-int
 
           - source: TextSource
-            key:    example-data-as-text
+            key:    example-data1-as-text
+
+      - module: config/example_rule_101.py
+        setup: setup
+        expression: expression
+        arguments:
+          - source: IntegerSource
+            key:    example-data2-as-int
+
+          - source: TextSource
+            key:    example-data2-as-text
+
+.. code-block:: python
+   :caption: config/example_rule_101.py
+
+    def setup(shared):
+        pass
+
+    def expression(intdata, textdata):
+        pass
+
+
+INIRule
+++++++++
+
+.. literalinclude:: ../rule-configs/INIRule.conf
+   :language: ini
+   :caption: config/default.conf
+
+.. code-block:: ini
+   :caption: config/example_rule_101.ini
+
+    [example_rule_101]
+    parsers = IntegerSource, TextSource
+    module = config/example_rule_101.py
+    setup = setup
+    expression = expression
+    arguments:
+        IntegerSource(example-data1-as-int), TextSource(example-data1-as-text)
+        IntegerSource(example-data2-as-int), TextSource(example-data2-as-text)
 
 .. code-block:: python
    :caption: config/example_rule_101.py

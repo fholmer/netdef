@@ -29,8 +29,8 @@ def setup(admin):
         admin.app.config['MANAGE_REPO'] = 0
 
 class Files(MyBaseView, fileadmin.FileAdmin):
-    allowed_extensions= ('txt','conf','csv', 'der', 'pam', 'zip', 'py')
-    editable_extensions=('txt','conf','csv', 'py')
+    allowed_extensions= ('txt', 'conf', 'csv', 'der', 'pam', 'key', 'zip', '7z', 'py', 'ini', 'yaml')
+    editable_extensions=('txt', 'conf', 'csv', 'py', 'ini', 'yaml')
     can_download = True
 
     # har overstyrt list_row_actions for å legge til en download-knapp.

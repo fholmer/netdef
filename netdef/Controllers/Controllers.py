@@ -70,7 +70,6 @@ class Controllers():
                         importlib.import_module("{}.Controllers.{}".format(base_package, name))
                         # lager kø-instanser
                         added.append(name)
-                        self.shared.queues.add_controller(name)
                     except ImportError as e:
                         if isinstance(e.name, str):
                             if not e.name.startswith(base_package + ".Controllers"):
@@ -81,6 +80,9 @@ class Controllers():
         for name, activate in activate_controllers.items():
             if int(activate) and not name in added:
                     self.logging.error("%s not found in %s", name, base_packages)
+
+        for name in self.items.keys():
+            self.shared.queues.add_controller(name)
 
         activate_aliases = self.shared.config.get_dict("controller_aliases")
         for name, origin in activate_aliases.items():
