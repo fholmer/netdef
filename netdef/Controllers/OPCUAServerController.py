@@ -15,6 +15,8 @@ class CustomInternalSession(InternalSession):
         id_token = params.UserIdentityToken
         if isinstance(id_token, ua.AnonymousIdentityToken):
             raise utils.ServiceError(ua.StatusCodes.BadUserAccessDenied)
+        elif isinstance(id_token, ua.X509IdentityToken):
+            raise utils.ServiceError(ua.StatusCodes.BadIdentityTokenRejected)
         return super().activate_session(params)
 
 class CustomInternalServer(InternalServer):
