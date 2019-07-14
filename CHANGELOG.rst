@@ -20,6 +20,8 @@
   a problem with multiple rules sharing same sources.
 - Fixed a problem where the name of a controller or rule and module name 
   had to be equal.
+- OPCUAClientController: specify security mode in configfile
+- OPCUAServerController: reject X509IdentityToken
 
 **Incompatible API changes**
 

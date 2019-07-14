@@ -2,6 +2,7 @@ import logging
 import time
 import concurrent.futures
 import opcua
+
 from . import BaseController, Controllers
 from ..Sources.BaseSource import StatusCode
 
@@ -19,23 +20,67 @@ class OPCUAClientController(BaseController.BaseController):
         self.logger = logging.getLogger(name)
         self.logger.info("init")
 
-        endpoint = self.shared.config.config(self.name, "endpoint", "")
-        certificate = self.shared.config.config(self.name, "certificate", "")
-        private_key = self.shared.config.config(self.name, "private_key", "")
-        connection_timeout = self.shared.config.config(self.name, "connection_timeout", 4)
-        self.oldnew = self.shared.config.config(self.name, "oldnew_comparision", 0)
-        self.disable = self.shared.config.config(self.name, "disable", 0)
+        self.shared.config.set_hidden_value(self.name, "user")
+        self.shared.config.set_hidden_value(self.name, "password")
+
+        self.oldnew = self.config("oldnew_comparision", 0)
+        self.disable = self.config("disable", 0)
+
+        endpoint = self.config("endpoint", "")
+        certificate = self.config("certificate", "")
+        private_key = self.config("private_key", "")
+        connection_timeout = self.config("connection_timeout", 4)
+        username = self.config("user", "")
+        password = self.config("password", "")
+
+        self.security_string = "" # format: Policy,Mode,certificate,private_key
+
+        if self.config("basic128rsa15_sign_on", 0):
+            self.security_string = "Basic128Rsa15,Sign,{},{}".format(certificate, private_key)
+
+        elif self.config("basic128rsa15_signandencrypt_on", 0):
+            self.security_string = "Basic128Rsa15,SignAndEncrypt,{},{}".format(certificate, private_key)
+
+        elif self.config("basic256_sign_on", 0):
+            self.security_string = "Basic256,Sign,{},{}".format(certificate, private_key)
+
+        elif self.config("basic256_signandencrypt_on", 0):
+            self.security_string = "Basic256,SignAndEncrypt,{},{}".format(certificate, private_key)
+
+        elif self.config("basic256sha256_sign_on", 0):
+            self.security_string = "Basic256Sha256,Sign,{},{}".format(certificate, private_key)
+
+        elif self.config("basic256sha256_signandencrypt_on", 0):
+            self.security_string = "Basic256Sha256,SignAndEncrypt,{},{}".format(certificate, private_key)
+
+        elif self.config("nosecurity_on", 1):
+            self.security_string = ""
+
         self.client = opcua.Client(endpoint, connection_timeout)
-        self.client.load_client_certificate(certificate)
-        self.client.load_private_key(private_key)
+
+        if username:
+            self.client.set_user(username)
+            self.client.set_password(password)
+
+        # use this to use x509 cert identification instead of username/password or anonymous
+        certificate_on = self.config("certificate_basic256sha256_on", 0)
+        if certificate_on:
+            self.client.load_client_certificate(certificate)
+            self.client.load_private_key(private_key)
+
         self.subscription = None
+
+    def config(self, key, default):
+        return self.shared.config.config(self.name, key, default)
 
     def run(self):
         "Main loop. Will exit when receiving interrupt signal"
+
+        self.sleep(1)
         reconnect = False
         reconnect_timeout = 0
 
-        keepalive_timeout = self.shared.config.config(self.name, "keepalive_timeout", 600)
+        keepalive_timeout = self.config("keepalive_timeout", 600)
         last_keepalive = time.time()
 
         while not self.has_interrupt():
@@ -45,16 +90,19 @@ class OPCUAClientController(BaseController.BaseController):
                 continue
             
             self.sleep(reconnect_timeout)
-            reconnect_timeout = self.shared.config.config(self.name, "reconnect_timeout", 20)
+            reconnect_timeout = self.config("reconnect_timeout", 20)
 
             try:
                 if reconnect:
                     self.safe_disconnect()
                     #TODO: sette alle verdier til StatusCode.NONE
 
+                if self.security_string:
+                    self.client.set_security_string(self.security_string)
+
                 self.client.connect()
                 
-                intervall = self.shared.config.config(self.name, "subscription_interval", 100)
+                intervall = self.config("subscription_interval", 100)
                 handler = SubHandler(self)
                 self.subscription = self.client.create_subscription(intervall, handler)
 
@@ -70,7 +118,7 @@ class OPCUAClientController(BaseController.BaseController):
                 self.logger.info("Running")
                 while not self.has_interrupt():
                     self.loop_incoming() # dispatch handle_* functions
-                    time.sleep(0.01)
+
                     if time.time() > (last_keepalive + keepalive_timeout):
                         # self.logger.debug("Sending keepalive")
                         self.client.send_hello()
@@ -83,6 +131,10 @@ class OPCUAClientController(BaseController.BaseController):
             except (concurrent.futures.TimeoutError) as error:
                 self.logger.debug(error, exc_info=True)
                 self.logger.error("Timeout error. Reconnect in %s sec.", reconnect_timeout)
+            
+            except opcua.ua.uaerrors.UaStatusCodeError as error:
+                self.logger.debug(error, exc_info=True)
+                self.logger.error("UaStatusCodeError: %s. Reconnect in %s sec.", error, reconnect_timeout)
 
         self.safe_disconnect()
         self.logger.info("Stopped")
@@ -102,9 +154,6 @@ class OPCUAClientController(BaseController.BaseController):
         except Exception as error:
             self.logger.warning("Cannot disconnect client: %s", error)
 
-    def handle_readall(self, incoming):
-        raise NotImplementedError
-
     def handle_add_source(self, incoming):
         try:
             # key sould be of format: "ns=2;s=Channel1.Device1.Tag1"
@@ -116,9 +165,6 @@ class OPCUAClientController(BaseController.BaseController):
         except opcua.ua.uaerrors.UaStringParsingError as error:
             self.logger.exception(error)
         #TODO: kanske lagre nodeid-instansene?
-
-    def handle_read_source(self, incoming):
-        raise NotImplementedError
 
     def handle_write_source(self, incoming, value, source_time):
         if self.has_source(incoming.key):
