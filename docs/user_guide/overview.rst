@@ -37,4 +37,4 @@ The main task of the application is to:
 * Obtain external data using one or more *controllers*.
 * Retrieving values ​​from external data and activating *expressions* that
   evaluate the values.
-* Transmitt data based on the result of the *expression*
+* Transmit data based on the result of the *expression*

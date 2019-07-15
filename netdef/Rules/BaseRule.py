@@ -60,7 +60,7 @@ class BaseRule():
     def sleep(self, seconds):
         """"
         Sleep by waiting for the interrupt.
-        Sould be used instead of time.sleep.
+        Should be used instead of time.sleep.
         Override if sleep should be interrupted by even more signals
         """
         self._interrupt.wait(seconds)
