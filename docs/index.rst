@@ -11,6 +11,7 @@ Welcome to netdef's documentation!
    user_guide/quickstart
    user_guide/tutorial
    user_guide/webadmin
+   user_guide/configuration
    user_guide/authors
    user_guide/changelog
 

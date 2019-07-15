@@ -49,10 +49,10 @@ Here is a basic example:
      - Plain text password. If password_hash is set then this option is ignored.
    * - password_hash
      - 
-     - Password hash generated with ``python -m netdef -g`` command
+     - Password hash generated with ``python -m netdef -ga`` command
    * - secret_key
      - 
-     - Secret flask session key. Can be generated with ``python -m netdef -g``
+     - Secret flask session key. Can be generated with ``python -m netdef -ga``
    * - on
      - 1
      - Enable Webadmin. 1 = enabled. 0 = disabled.
