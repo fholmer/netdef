@@ -8,7 +8,7 @@ SourceInfo = BaseRule.SourceInfo
 ExpressionInfo = BaseRule.ExpressionInfo
 
 compile_parsers = re.compile(r"(?P<source>\w+)")
-compile_arguments = re.compile(r"(?P<source>\w+)\((?P<key>([^()]|(\g<0>))*)\)")
+compile_arguments = re.compile(r"(?P<source>\w+)\((?P<key>([^()])*)\)")
 
 NAME = "INIRule"
 
