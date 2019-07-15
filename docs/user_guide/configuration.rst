@@ -102,7 +102,7 @@ Built-in configs
      - | version
      - | 1 
      - | Version of your configfile. If you have to
-       | break compability in the future you can
+       | break compatibility in the future you can
        | bump the config version to reject
        | outdated config files
 
@@ -351,13 +351,13 @@ Built-in configs
    * - | webadmin
      - | ssl_certificate
      - | 
-     - | File path to ssl sertificate.
+     - | File path to ssl certificate.
        | Required if ssl_on=1.
      
    * - | webadmin
      - | ssl_certificate_key
      - | 
-     - | File path to ssl sertificate key.
+     - | File path to ssl certificate key.
        | Required if ssl_on=1.
      
    * - | webadmin

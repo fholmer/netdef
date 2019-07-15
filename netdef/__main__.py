@@ -102,7 +102,7 @@ def generate_webadmin_auth(interactive=True):
     Prints result to stdout.
     Can be copy-pasted into ``config/default.conf``
 
-    :param bool interactive: ask for user/pass if True. Generate automaticly if not.
+    :param bool interactive: ask for user/pass if True. Generate automatically if not.
 
     """
     import werkzeug.security

@@ -156,7 +156,7 @@ class OPCUAClientController(BaseController.BaseController):
 
     def handle_add_source(self, incoming):
         try:
-            # key sould be of format: "ns=2;s=Channel1.Device1.Tag1"
+            # key should be of format: "ns=2;s=Channel1.Device1.Tag1"
             node_instance = self.client.get_node(incoming.key)
             self.subscription.subscribe_data_change(node_instance)
             self.add_source(incoming.key, incoming)

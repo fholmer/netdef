@@ -22,7 +22,7 @@ def setup_logging(config):
         to_console
         to_file
     
-    Then the logging module is set acording to the configs
+    Then the logging module is set according to the configs
 
 
     :param config: instance of :class:`netdef.Shared.SharedConfig.Config`

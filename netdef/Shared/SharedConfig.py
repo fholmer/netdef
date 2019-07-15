@@ -11,7 +11,7 @@ class Config():
     """
     A *wrapper* class for the configparser module in standard python library.
 
-    :param str indentifier: a unique indentifier for this app.
+    :param str identifier: a unique identifier for this app.
     :param str install_path: Full filepath to application package location
     :param str proj_path: Full filepath to project location
     :param str default_config_string: initial config text for configparser

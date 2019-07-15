@@ -454,7 +454,7 @@ added as an argument to the command. the option is read from config file.
             self.value_as_args = self.shared.config.config(self.name, "value_as_args", 1)
 
 The run method will be very simple in this tutorial.
-Normaly this is where we create a polling loop or setup subscriptions
+Normally this is where we create a polling loop or setup subscriptions
 and await events. In this example we only wait for WRITE_SOURCE messages.
 So we only have to iterate the message queue:
 

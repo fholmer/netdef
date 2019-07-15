@@ -1,7 +1,7 @@
 Quickstart
 ==========
 
-Netdef will require a spesific project structure:
+Netdef will require a specific project structure:
 
 .. literalinclude:: ../tutorial_first_app/project-structure.txt
    :language: text
@@ -40,7 +40,7 @@ Create a virtual environment for your application:
     $ python3 -m venv venv
     $ source venv/bin/activate
 
-Install dependecies:
+Install dependencies:
 
 .. code-block:: console
 

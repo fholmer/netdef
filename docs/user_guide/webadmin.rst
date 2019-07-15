@@ -82,10 +82,10 @@ Here is a basic example:
      - Enable Webadmin->Statistics. 1 = enabled. 0 = disabled.
    * - ssl_certificate
      - 
-     - File path to ssl sertificate. Required if ssl_on=1.
+     - File path to ssl certificate. Required if ssl_on=1.
    * - ssl_certificate_key
      - 
-     - File path to ssl sertificate key. Required if ssl_on=1.
+     - File path to ssl certificate key. Required if ssl_on=1.
    * - ssl_on
      - 0
      - Enable https. 1 = enabled. 0 = disabled.
