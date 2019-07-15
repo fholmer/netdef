@@ -128,7 +128,7 @@ class OPCUAClientController(BaseController.BaseController):
                 self.logger.debug(error, exc_info=True)
                 self.logger.error("Connection error. Reconnect in %s sec.", reconnect_timeout)
 
-            except (concurrent.futures.TimeoutError) as error:
+            except (concurrent.futures.TimeoutError, OSError) as error:
                 self.logger.debug(error, exc_info=True)
                 self.logger.error("Timeout error. Reconnect in %s sec.", reconnect_timeout)
             
