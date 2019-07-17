@@ -6,8 +6,8 @@ netdef.Controllers package
     :undoc-members:
     :show-inheritance:
 
-BaseSource
-----------
+Abstract BaseController
+-----------------------
 
 This is an abstract baseclass
 
@@ -16,13 +16,17 @@ This is an abstract baseclass
     :undoc-members:
     :show-inheritance:
 
+Abstract BaseAsyncController
+----------------------------
+
 .. automodule:: netdef.Controllers.BaseAsyncController
     :members:
     :undoc-members:
     :show-inheritance:
 
 
-Built-in controller modules:
+.. rubric:: Built-in controller modules:
+
 
 Communication test by ICMP or TCP ping
 --------------------------------------

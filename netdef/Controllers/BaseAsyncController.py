@@ -32,4 +32,29 @@ class BaseAsyncController(BaseController.BaseController):
         await callback()
 
     def run(self):
+        """
+        Override this function in controller. Example:
+
+        .. code-block:: python
+
+            def run(self):
+                self.logger.info("Running")
+
+                some_client = SomeAsyncioClient()
+
+                # Start polling of the blocking incoming queue in a thread executor
+                self.loop.run_in_executor(None, self.loop_incoming_until_interrupt)
+
+                # TODO: define a coroutine that stops your async client when called.
+                async def stop_some_client():
+                    await some_client.stop()
+
+                # register coroutine to be run at interrupt / shutdown 
+                self.loop.create_task(self.run_async_on_interrupt(stop_some_client))
+
+                # TODO: start your client coroutine
+                self.loop.run_until_complete(some_client.start())
+
+                self.logger.info("Stopped")
+        """
         raise NotImplementedError
