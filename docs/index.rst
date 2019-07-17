@@ -1,4 +1,4 @@
-Welcome to netdef's documentation!
+Welcome to Netdef's documentation!
 ======================================
 
 .. toctree::
@@ -6,7 +6,7 @@ Welcome to netdef's documentation!
    :caption: User guide:
 
    Overview <user_guide/readme>
-   user_guide/overview
+   user_guide/application_architecture
    user_guide/installation
    user_guide/quickstart
    user_guide/tutorial

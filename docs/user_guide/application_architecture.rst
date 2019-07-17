@@ -33,7 +33,7 @@ send ``ADD_SOURCE`` to *controllers* at startup. *Controllers* will send
 ``RUN_EXPRESSION`` back to *rules* on data changes. *Rules* will then
 collect *expressions* to be evaluated due to the data change and send
 ``RUN_EXPRESSION`` to the *engine*. If the *expressions* generate data changes a
-``WRITE_SOURCE`` message is sent to *controllers*.
+``WRITE_SOURCE`` message is sent to *controllers*. 
 
 The example below shows 4 simultaneous controllers and 2 simultaneous rules:
 
