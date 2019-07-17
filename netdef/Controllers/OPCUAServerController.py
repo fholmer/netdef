@@ -23,6 +23,7 @@ class CustomInternalServer(InternalServer):
     """
     This custom InternalServer will block anonymous access.
     How to use::
+    
         from opcua import Server
         server = Server(iserver=CustomInternalServer())
         server.iserver.set_parent(server)

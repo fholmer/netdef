@@ -5,7 +5,7 @@ Welcome to netdef's documentation!
    :maxdepth: 2
    :caption: User guide:
 
-   user_guide/readme
+   Overview <user_guide/readme>
    user_guide/overview
    user_guide/installation
    user_guide/quickstart

@@ -4,7 +4,7 @@
 Installation
 ============
 
-Netdef is written in `Python`__ and supports Python 3.5.3+.
+Netdef is implemented in `Python`__ and supports Python 3.5.3+.
 
 __ https://docs.python-guide.org/
 

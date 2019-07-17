@@ -21,10 +21,16 @@ netdef.Shared package
     :undoc-members:
     :show-inheritance:
 
+.. autoclass:: netdef.Shared.SharedQueues.MessageType
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 .. automodule:: netdef.Shared.SharedQueues
     :members:
     :undoc-members:
     :show-inheritance:
+    :exclude-members: MessageType
 
 .. automodule:: netdef.Shared.SharedSources
     :members:
