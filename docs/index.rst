@@ -9,7 +9,7 @@ Welcome to Netdef's documentation!
    user_guide/application_architecture
    user_guide/installation
    user_guide/quickstart
-   user_guide/tutorial
+   user_guide/tutorial/index
    user_guide/webadmin
    user_guide/configuration
    user_guide/authors
