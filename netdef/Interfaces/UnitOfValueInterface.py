@@ -5,10 +5,16 @@ class NoUnitInterface(DefaultInterface):
         return str(self.value)
 
 class ByteUnitInterface(DefaultInterface):
+    def __init__(self, value):
+        super().__init__(value or 0)
+
     def get_value_and_unit(self):
         return bytes2human(self.value)
 
 class PercentUnitInterface(DefaultInterface):
+    def __init__(self, value):
+        super().__init__(value or 0.0)
+
     def get_value_and_unit(self):
         return "{}%".format(round(self.value, 1))
 

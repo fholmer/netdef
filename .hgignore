@@ -7,3 +7,4 @@ dist/
 env/
 venv/
 docs/_build/
+.pytest_cache/
