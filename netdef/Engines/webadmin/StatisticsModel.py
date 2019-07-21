@@ -32,6 +32,7 @@ class StatisticsModelView(SourcesModelView):
     can_create = False
     can_edit = False
     can_delete = False
+    can_view_details = False
     column_list = ('key', 'value')
     column_sortable_list = ()
     column_searchable_list = ('key')
@@ -49,3 +50,7 @@ class StatisticsModelView(SourcesModelView):
             page_size = self.page_size
         results = self.sampling(sources, page * page_size, page_size)
         return total, results
+
+
+    def get_pk_value(self, model_):
+        return 'key'

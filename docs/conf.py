@@ -45,7 +45,7 @@ source_suffix = ['.rst', '.md']
 
 # The master toctree document.
 master_doc = 'index'
-
+default_role = 'py:obj'
 # General information about the project.
 project = u'netdef'
 copyright = u"2019, Frode Holmer"

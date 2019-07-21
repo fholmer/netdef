@@ -20,10 +20,9 @@ class StatusCode(enum.Enum):
 class BaseSource():
     def __init__(self, key=None, value=None, controller=None, source=None, rule=None):
         #verdier
-        self.get_value = None  # Ny verdi inn fra driver
-        self.set_value = None  # Ny verdi ut fra uttrykk
-        self.value = value  # cachet verdi fra get eller set når disse er behandlet
-        self.set_callback = None # callback som skal kjøres når verdi settes fra utrykk
+
+        # cache
+        self.value = value  # cachet verdi fra get_value eller set_value når disse er behandlet
 
         # verdiens statuskode, ved oppstart er den NONE
         # første innhentede verdi fra controller er INITIAL
@@ -35,6 +34,20 @@ class BaseSource():
         # dersom verdi ikke har medfølgende tidsstempel skal
         # controller selv sette denne med datetime.datetime.utcnow()
         self.source_time = None
+        self.source_datatype = None
+
+        # Ny verdi inn fra driver
+        self.get_value = None
+        self.get_source_time = None
+        self.get_status_code = None
+        self.get_origin = None
+
+        # Ny verdi ut fra uttrykk
+        self.set_value = None
+        self.set_source_time = None
+        self.set_status_code = None
+        self.set_origin = None
+        self.set_callback = None # callback som skal kjøres når verdi settes fra utrykk
 
         # kilder
         self.rule = rule # kontroller må benytte denne for å sende RUN_EXPRESSION til riktig kø
@@ -235,10 +248,25 @@ class BaseSource():
         # Utrykk skriver til set_value med denne funsjonen
         if isinstance(val, DefaultInterface):
             val = val.value
-        self.set_value = val
-        self.value = val
+        self._set_set_value(val, None, True, "expression")
+
+    def _set_set_value(self, value, stime, status_ok, origin):
+        """
+        Backend for `set` and `set_value_from_string`
+
+        :param value: value to be set
+        :param (None or datetime.datetime) stime: timestamp when the value was changed
+        :param bool status_ok: True if value is good
+        :param str origin: who set the value
+
+        """
+        self.set_value = value
+        self.set_status_code = StatusCode.GOOD if status_ok else StatusCode.INVALID
+        self.set_source_time = datetime.datetime.utcnow() if stime is None else stime
+        self.set_origin = origin
+        self.value = value
         if self.set_callback:
-            self.set_callback(self, val, datetime.datetime.utcnow())
+            self.set_callback(self, value, self.set_source_time)
 
     def register_set_callback(self, set_callback):
         """
@@ -247,3 +275,39 @@ class BaseSource():
         # Regelmotor kaller denne funksjonen.
         # callback setter en WRITE_SOURCE melding til kontrollerens kø.
         self.set_callback = set_callback
+
+    def can_set_value_from_string(self):
+        """
+        Returns True if the value can be converted from string to its given
+        datatype. Only `builtins.int`, `str` and `float` have built-in support, but aditional
+        types can be implemented by this function and `set_value_from_string`
+
+        """
+        if isinstance(self.set_value, (int, str, float)):
+            return True
+        elif isinstance(self.get_value, (int, str, float)):
+            return True
+        else:
+            return False
+    
+    def set_value_from_string(self, value, stime=None, status_ok=True, origin=""):
+        """
+        Converts given value to correct datatype and sends a WRITE_SOURCE message
+        to controller.
+
+        This function is called when a value change is triggered from
+        :menuselection:`Webadmin --> Sources --> Edit`
+
+        :param value: value to be set
+        :param (None or datetime.datetime) stime: timestamp when the value was changed
+        :param bool status_ok: True if value is good
+        :param str origin: who set the value
+
+        """
+        if isinstance(self.set_value, (int, str, float)):
+            val = type(self.set_value)(value)
+        elif isinstance(self.get_value, (int, str, float)):
+            val = type(self.get_value)(value)
+        else:
+            val = str(val)
+        self._set_set_value(val, stime, status_ok, origin)

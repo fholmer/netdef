@@ -1,7 +1,7 @@
 1.0.4-dev1
 ==========
 
-2019-07-13
+2019-07-21
 
 **Enhancements**
 
@@ -11,6 +11,7 @@
 - InternalController: config entry send_init_event trigger event at startup
 - Added an experimental yaml parser
 - Added an experimental ini parser
+- Source value can be changed from webadmin --> Sources --> Edit
 
 **Bug fixes**
 

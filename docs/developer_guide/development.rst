@@ -92,6 +92,9 @@ Install requirements
     # requirements for pdf
     $ apt-get install texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended latexmk
 
+    # requirements for pdf multi language
+    $ apt-get install texlive-lang-european texlive-lang-english
+
 Setup virtual environment:
 
 .. code-block:: console
