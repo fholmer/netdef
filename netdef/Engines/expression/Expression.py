@@ -6,8 +6,8 @@ class Expression():
     to the source-instances that will become arguments to the expression
     function
 
-    - expression -- a reference to the actual function
-    - filename (string) -- filename of the module where the function is found
+    :param callable expression: A reference to the actual function
+    :param str filename: Filename of the module where the function is found
 
     """
     def __init__(self, expression, filename):
@@ -61,8 +61,8 @@ class Argument():
     """
     A wrapper for source instances.
 
-    - source_instance -- An source instance
-    - instigator: (boolean) -- True if given source instance triggered the execution
+    :param `BaseSource` source_instance: An source instance
+    :param boolean instigator: True if given source instance triggered the execution
 
     """
 
@@ -86,6 +86,19 @@ class Argument():
             self._new = False
             self._update = False
 
+    
+    def create_interface(self, value=None):
+        """
+        Wrap given value into the source interface.
+        (See `interface` attr of `netdef.Sources.BaseSource.BaseSource`)
+
+        :param object value: value to be wrapped
+
+        :return: An interface instance 
+        :rtype: `netdef.Interfaces.DefaultInterface`
+
+        """
+        return self._instance.interface(self.value if value is None else value)
 
     @property
     def instance(self):

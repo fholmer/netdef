@@ -1,7 +1,7 @@
 1.0.4-dev1
 ==========
 
-2019-07-21
+2019-07-22
 
 **Enhancements**
 
@@ -12,6 +12,7 @@
 - Added an experimental yaml parser
 - Added an experimental ini parser
 - Source value can be changed from webadmin --> Sources --> Edit
+- Added create_interface function to expression arguments
 
 **Bug fixes**
 
