@@ -3,7 +3,7 @@ import os
 from netdef.Shared.SharedConfig import Config
 from netdef.Shared import SharedConfig
 
-PROJ = "./tests/shared/sharedconfig"
+PROJ = os.path.dirname(__file__)
 
 def test_config_basic():
 
@@ -44,7 +44,7 @@ def test_config_paths():
     """)
 
     assert conf("install", "path") == os.path.dirname(SharedConfig.__file__)
-    assert conf("proj", "path") == "./tests/shared/sharedconfig"
+    assert conf("proj", "path") == PROJ
 
 def test_config_config():
     conf = Config("test", "..", PROJ, """

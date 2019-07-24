@@ -5,7 +5,7 @@ from netdef.Controllers import BaseController, Controllers
 
 class BaseAsyncController(BaseController.BaseController):
     """
-    .. caution:: Development Status :: 4 - Beta
+    .. tip:: Development Status :: 5 - Production/Stable
 
     """
     def __init__(self, name, shared):

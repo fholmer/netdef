@@ -1,14 +1,16 @@
 import time
 import datetime
 import asyncio
-from . import BaseController, Controllers
+from . import BaseAsyncController, Controllers
 from ..Sources.BaseSource import StatusCode
 from .ping import ping
 
 @Controllers.register("CommTestController")
-class CommTestController(BaseController.BaseController):
+class CommTestController(BaseAsyncController.BaseAsyncController):
     """
     .. tip:: Development Status :: 5 - Production/Stable
+
+    CommTestController will start tcp-polling and 
 
     """
     def __init__(self, name, shared):
@@ -23,53 +25,54 @@ class CommTestController(BaseController.BaseController):
         # ping: async ping
         # tcpip: async tcpip socket connect
         self.test_type = config(self.name, "test_type", "tcpip")
-
-        self.loop = asyncio.new_event_loop()
-        
+       
         # denne låsen skal begrense antall åpne forbindelser
         self.access_socket = asyncio.Semaphore(self.max_concurrent_sockets, loop=self.loop)
 
-        # dette signalet mottas når program avsluttes
-        self.interrupt_loop = asyncio.locks.Event(loop=self.loop)
 
-    def loop_incoming_until_interrupt(self):
-        while not self.has_interrupt():
-            self.loop_incoming() # dispatch handle_* functions
-        self.interrupt_loop.set()
+    async def loop_outgoing_until_interrupt(self):
+        """
+        Main coroutine. loops until interrupt is set.
+        """
 
-    @asyncio.coroutine
-    def loop_outgoing_until_interrupt(self):
-        yield from asyncio.sleep(2, loop=self.loop)
+        await asyncio.sleep(2, loop=self.loop)
 
         while not self.has_interrupt():
             # poller på self.intervall
             sources = list(self.get_sources().values())
-            tasks = tuple((self._commtest_tcp_connect(item) for item in sources))
-            yield from asyncio.gather(*tasks, loop=self.loop)
+            tasks = tuple((self.commtest_tcp_connect(item) for item in sources))
+            await asyncio.gather(*tasks, loop=self.loop)
             try:
-                yield from asyncio.wait_for(self.interrupt_loop.wait(), self.interval, loop=self.loop)
+                await asyncio.wait_for(self.interrupt_loop.wait(), self.interval, loop=self.loop)
             except asyncio.TimeoutError:
                 pass 
 
+
     def run(self):
-        "Main loop. Will exit when receiving interrupt signal"
+        """
+        Main thread loop. Will exit when receiving interrupt signal
+        Sets up 
+        """
         self.logger.info("Running")
+
         # kjører polling av self.incoming synkront i egen tråd
         self.loop.run_in_executor(None, self.loop_incoming_until_interrupt)
+
         # kjører async polling av sockets
         self.loop.run_until_complete(self.loop_outgoing_until_interrupt())
         self.logger.info("Stopped")
+
 
     def handle_add_source(self, incoming):
         self.logger.debug("'Add source' event for %s", incoming.key)
         self.add_source(incoming.key, incoming)
 
-    @asyncio.coroutine
-    def _commtest_tcp_connect(self, item):
+
+    async def commtest_tcp_connect(self, item):
         if hasattr(item, "unpack_host_and_port"):
             host, port = item.unpack_host_and_port()
 
-            yield from self.access_socket.acquire()
+            await self.access_socket.acquire()
 
             prev_st = item.status_code
             time_begin = time.time()
@@ -77,7 +80,7 @@ class CommTestController(BaseController.BaseController):
             # async ping
             if self.test_type == "ping":
                 try:
-                    delay = yield from ping.async_ping(host, timeout=self.timeout)
+                    delay = await ping.async_ping(host, timeout=self.timeout)
                     delay = round(delay, 3)
                     available = True
                 except TimeoutError:
@@ -86,7 +89,7 @@ class CommTestController(BaseController.BaseController):
                     
             # test tcp port
             else:
-                available = yield from ping.tcp_port_test_async(host, port, self.timeout, loop=self.loop)
+                available = await ping.tcp_port_test_async(host, port, self.timeout, loop=self.loop)
                 delay = round(time.time() - time_begin, 3)
 
             self.access_socket.release()
