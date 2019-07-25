@@ -317,6 +317,8 @@ class SubHandler():
         source_value = item.Value.Value
         if item.SourceTimestamp is None:
             item.SourceTimestamp = datetime.datetime.utcnow()
+        if item.ServerTimestamp is None:
+            item.ServerTimestamp = item.SourceTimestamp
         source_time = item.SourceTimestamp
         source_status_ok = item.StatusCode.value == 0
         self.logger.debug("nodeid:%s, value:%s, time:%s, ok:%s, uacode:%s", nodeid, source_value, source_time, source_status_ok, item.StatusCode.value)
