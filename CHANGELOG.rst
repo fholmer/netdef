@@ -1,7 +1,7 @@
 1.0.4-dev1
 ==========
 
-2019-07-22
+2019-07-25
 
 **Enhancements**
 
@@ -13,6 +13,7 @@
 - Added an experimental ini parser
 - Source value can be changed from webadmin --> Sources --> Edit
 - Added create_interface function to expression arguments
+- Added persistent storage to InternalController
 
 **Bug fixes**
 
@@ -24,6 +25,7 @@
   had to be equal.
 - OPCUAClientController: specify security mode in configfile
 - OPCUAServerController: reject X509IdentityToken
+- OPCUAServerController: force timestamp on values (from clients) where timestamp is none
 
 **Incompatible API changes**
 

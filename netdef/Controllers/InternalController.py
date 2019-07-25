@@ -1,5 +1,6 @@
 import logging
 import datetime
+import os
 from . import BaseController, Controllers
 from ..Sources.BaseSource import StatusCode
 
@@ -15,6 +16,7 @@ class InternalController(BaseController.BaseController):
         self.logger.info("init")
         self.send_events = self.shared.config.config(self.name, "send_events", 0)
         self.send_init_event = self.shared.config.config(self.name, "send_init_event", 0)
+        self.persistent_value = self.shared.config.config(self.name, "persistent_value", 0)
 
     def run(self):
         "Main loop. Will exit when receiving interrupt signal"
@@ -22,19 +24,43 @@ class InternalController(BaseController.BaseController):
         while not self.has_interrupt():
             self.loop_incoming() # dispatch handle_* functions
             self.loop_outgoing() # dispatch poll_* functions
+        
+        if self.persistent_value:
+            self.logger.info("Write cache to disk ...")
+            self.store_to_disk()
         self.logger.info("Stopped")
+
+    def store_to_disk(self):
+        cache_dir = os.path.join("db", "internal")
+        if not os.path.isdir(cache_dir):
+            os.makedirs(cache_dir)
+        for source in self.get_sources().values():
+            if source.can_unpack_value(""):
+                data = source.pack_value(source.value)
+                cache = os.path.join(cache_dir, source.key)
+                with open(cache, "wb") as f:
+                    f.write(data)
 
     def handle_add_source(self, incoming):
         self.logger.debug("'Add source' event for %s", incoming.key)
         self.add_source(incoming.key, incoming)
+
+        init_value = {}
+        if self.persistent_value:
+            cache = os.path.join("db", "internal", incoming.key)
+            if os.path.isfile(cache) and incoming.can_unpack_value(""):
+                with open(cache, "rb") as f:
+                    data = f.read()
+                    init_value = incoming.unpack_value(data)
         
         if not self.send_events:
             incoming.status_code = StatusCode.INITIAL
-            incoming.get = {}
-
+            incoming.get = init_value
+            incoming.source_time = datetime.datetime.utcnow()
         if self.send_init_event:
             incoming.status_code = StatusCode.INITIAL
-            incoming.get = {}
+            incoming.get = init_value
+            incoming.source_time = datetime.datetime.utcnow()
             self.send_outgoing(incoming)
 
 
