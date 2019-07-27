@@ -50,6 +50,7 @@ class BaseController():
         "Setup the message queue and timeout"
         self.incoming = self.shared.queues.get_messages_to_controller(self.name)
         self.messagetypes = self.shared.queues.MessageType
+        self.appstatetypes = self.shared.queues.AppStateType
         self.queue_timeout = 0.1
 
     def add_interrupt(self, interrupt):
@@ -176,6 +177,8 @@ class BaseController():
                     self.handle_add_parser(incoming)
                 elif messagetype == self.messagetypes.TICK:
                     self.handle_tick(incoming)
+                elif messagetype == self.messagetypes.APP_STATE:
+                    self.handle_app_state(incoming)
                 else:
                     raise NotImplementedError
                 self.incoming.task_done()
@@ -188,6 +191,27 @@ class BaseController():
         Answer the tick message
         """
         incoming.tick()
+
+    def handle_app_state(self, app_state):
+        """
+        Override if controller need to react to application states
+        """
+        if app_state == self.appstatetypes.RUNNING:
+            self.handle_app_state_running()
+        elif app_state == self.appstatetypes.SETUP:
+            self.handle_app_state_setup()
+
+    def handle_app_state_running(self):
+        """
+        Override if controller need to react to running state
+        """
+        self.logger.debug("Entering running state")
+
+    def handle_app_state_setup(self):
+        """
+        Override if controller need to react to setup state
+        """
+        self.logger.debug("Entering setup state")
 
     def handle_add_parser(self, incoming):
         "Add parser to controller if not already exists"

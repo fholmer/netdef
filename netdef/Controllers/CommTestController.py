@@ -35,7 +35,7 @@ class CommTestController(BaseAsyncController.BaseAsyncController):
         Main coroutine. loops until interrupt is set.
         """
 
-        await asyncio.sleep(2, loop=self.loop)
+        await self.enter_running_state.wait()
 
         while not self.has_interrupt():
             # poller på self.intervall
@@ -74,7 +74,6 @@ class CommTestController(BaseAsyncController.BaseAsyncController):
 
             await self.access_socket.acquire()
 
-            prev_st = item.status_code
             time_begin = time.time()
 
             # async ping
@@ -86,7 +85,7 @@ class CommTestController(BaseAsyncController.BaseAsyncController):
                 except TimeoutError:
                     available = False
                     delay = round(time.time() - time_begin, 3)
-                    
+
             # test tcp port
             else:
                 available = await ping.tcp_port_test_async(host, port, self.timeout, loop=self.loop)
@@ -94,12 +93,10 @@ class CommTestController(BaseAsyncController.BaseAsyncController):
 
             self.access_socket.release()
 
-            item.get = delay, available
-            item.source_time = datetime.datetime.utcnow()
+            new_val = delay, available
+            stime = datetime.datetime.utcnow()
+            status_ok = True
+            cmp_oldnew = False
 
-            if prev_st == StatusCode.NONE:
-                item.status_code = StatusCode.INITIAL
-            else:
-                item.status_code = StatusCode.GOOD
-
+        if self.update_source_instance_value(item, new_val, stime, status_ok, cmp_oldnew):
             self.send_outgoing(item)

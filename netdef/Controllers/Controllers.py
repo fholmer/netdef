@@ -83,11 +83,13 @@ class Controllers():
 
         for name in self.items.keys():
             self.shared.queues.add_controller(name)
+            self.shared.queues.send_setup_state_to_controller(name)
 
         activate_aliases = self.shared.config.get_dict("controller_aliases")
         for name, origin in activate_aliases.items():
             if origin in self.items:
                 self.items[name] = self.items[origin]
                 self.shared.queues.add_controller(name)
+                self.shared.queues.send_setup_state_to_controller(name)
             else:
                 self.logging.error("%s not found for alias %s in configfile", origin, name)

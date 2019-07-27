@@ -18,6 +18,7 @@ class BaseAsyncController(BaseController.BaseController):
 
         # dette signalet mottas når program avsluttes
         self.interrupt_loop = asyncio.locks.Event(loop=self.loop)
+        self.enter_running_state = asyncio.locks.Event(loop=self.loop)
 
     def loop_incoming_until_interrupt(self):
         # denne funksjonen kjører som en vanlig blokkerende tråd i asyncio
@@ -25,8 +26,16 @@ class BaseAsyncController(BaseController.BaseController):
             self.loop_incoming() # dispatch handle_* functions
 
         # her må vi fortelle asyncio at det er på tide å stoppe
-        self.interrupt_loop.set()
+        async def set_event(event):
+            event.set()
+        asyncio.run_coroutine_threadsafe(set_event(self.interrupt_loop), loop=self.loop)
 
+    def handle_app_state_running(self):
+        async def set_event(event):
+            event.set()
+        asyncio.run_coroutine_threadsafe(set_event(self.enter_running_state), loop=self.loop)
+        super().handle_app_state_running()
+        
     async def run_async_on_interrupt(self, callback):
         await self.interrupt_loop.wait()
         await callback()

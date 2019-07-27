@@ -52,6 +52,7 @@ class ThreadedEngine(BaseEngine.BaseEngine):
 
         log.info("Start controllers")
         for name, obj in self._controllers.instances.items():
+            self.shared.queues.send_running_state_to_controller(name)
             obj.add_interrupt(self._interrupt)
             thr = Thread(target=obj.run, name=name)
             thr.start()

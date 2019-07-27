@@ -3,23 +3,46 @@ from enum import Enum
 import logging
 
 # mesage types
-# only ADD_SOURCE, ADD_PARSER, WRITE_SOURCE, RUN_EXPRESSION er implementert
 
 class MessageType(Enum):
-    READ_ALL = 1  # not implementet yet
+    READ_ALL = 1  # not implemented yet
+    "**warning:** Not implemented yet"
+
     ADD_SOURCE = 2
-    READ_SOURCE = 3  # not implementet yet
+    "Instruct the controller to update the given source's value from external datasource"
+
+    READ_SOURCE = 3  # not implemented yet
+    "**warning:** Not implemented yet"
+
     WRITE_SOURCE = 4
+    "Instruct the controller to update external datasource from the given source's value"
+
     RUN_EXPRESSION = 5
+    "Instruct the rule or engine to execute the given expression's function"
+
     ADD_PARSER = 6
-    REMOVE_SOURCE = 7  # not implementet yet
+    "Instruct the controller to use the given source class as a parser"
+
+    REMOVE_SOURCE = 7  # not implemented yet
+    "**warning:** Not implemented yet"
+
     TICK = 8
+    "Instruct the controller to send a reply"
+
+    APP_STATE = 9
+    "Inform the controller of application state"
+
+class AppStateType(Enum):
+    SETUP = 1
+    RUNNING = 2
 
 class SharedQueues():
     """
     Message queues for all controllers, rules and the engine
     """
     MessageType = MessageType
+    AppStateType = AppStateType
+    
     def __init__(self, maxsize=0):
         self.maxsize = maxsize
         self.logger = logging.getLogger(__name__)
@@ -139,3 +162,25 @@ class SharedQueues():
                 source_instance,
                 controllername
             )
+
+    def send_setup_state_to_controller(self, controllername):
+        """
+        Send a APP_STATE message to given controller
+
+        :param controllername: the controller
+
+        """
+        self.messages_to_controller[controllername].put_nowait(
+            (MessageType.APP_STATE, AppStateType.SETUP)
+        )
+
+    def send_running_state_to_controller(self, controllername):
+        """
+        Send a APP_STATE message to given controller
+
+        :param controllername: the controller
+
+        """
+        self.messages_to_controller[controllername].put_nowait(
+            (MessageType.APP_STATE, AppStateType.RUNNING)
+        )

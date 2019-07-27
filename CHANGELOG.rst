@@ -14,6 +14,7 @@
 - Source value can be changed from webadmin --> Sources --> Edit
 - Added create_interface function to expression arguments
 - Added persistent storage to InternalController
+- Added new message type APP_STATE
 
 **Bug fixes**
 

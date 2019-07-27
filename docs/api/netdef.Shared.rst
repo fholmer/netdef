@@ -26,11 +26,16 @@ netdef.Shared package
     :undoc-members:
     :show-inheritance:
 
+.. autoclass:: netdef.Shared.SharedQueues.AppStateType
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 .. automodule:: netdef.Shared.SharedQueues
     :members:
     :undoc-members:
     :show-inheritance:
-    :exclude-members: MessageType
+    :exclude-members: MessageType, AppStateType
 
 .. automodule:: netdef.Shared.SharedSources
     :members:
