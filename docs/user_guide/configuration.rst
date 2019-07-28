@@ -80,384 +80,442 @@ move application secrets into its own config file:
 Built-in configs
 ----------------
 
-.. list-table:: Built-in configs
+.. list-table:: General configs
    :header-rows: 1
    :widths: 5 5 5 85
    
-   * - | Section
-     - | Key
-     - | Default
-     - | Description
+   * - Section
+     - Key
+     - Default
+     - Description
 
-   * - | general
-     - | identifier
-     - | [appident]
-     - | Name of application.
-       | [appident] is the unique name of your
-       | application. The name have to match in
-       | order for your application to accept the
-       | config file.
+   * - general
+     - identifier
+     - [appident]
+     - Name of application.
+       
+       * **[appident]** -- is the unique name of your
+         application. The name have to match in
+         order for your application to accept the
+         config file.
 
-   * - | general
-     - | version
-     - | 1 
-     - | Version of your configfile. If you have to
-       | break compatibility in the future you can
-       | bump the config version to reject
-       | outdated config files
+   * - general
+     - version
+     - 1 
+     - Version of your configfile. If you have to
+       break compatibility in the future you can
+       bump the config version to reject
+       outdated config files
 
-   * - | config
-     - | [unique key]
-     - | [filename]
-     - | Name of a configfile to be parsed.
-       | [unique key] is just a unique key and
-       | [filepath] is the actual filename.
-       | File path relative to project folder.
+   * - config
+     - [unique key]
+     - [filename]
+     - Name of a configfile to be parsed.
 
-   * - | ExpressionExecutor
-     - | max_workers
-     - | [cpu_count * 10]
-     - | Number of thread pool workers to be
-       | available in
-       | :class:`netdef.Engines.ThreadedEngine`
+       * **[unique key]** -- is just a unique key
+       * **[filepath]** -- is the actual filename.
+         File path relative to project folder.
+       
+       .. code-block:: ini
+          :caption: Example
 
+          [config]
+          my_conf = config/my_configuration.conf
+          more_things = config/more_configs.conf
 
-   * - | logging
-     - | logglevel
-     - | 20
-     - | Default logging level for the application
+   * - logging
+     - logglevel
+     - 20
+     - Default logging level for the application
 
-   * - | logging
-     - | loggformat
-     - | %(asctime)-15s
-       | %(levelname)-9s:
-       | %(name)-11s:
-       | %(message)s
-     - | Logging format for the application
+       * **1** -- All
+       * **10** -- Debug
+       * **20** -- Info
+       * **30** -- Warning
+       * **40** -- Error
+       * **50** -- Critical
 
-   * - | logging
-     - | loggdatefmt
-     - | %Y-%m-%d
-       | %H:%M:%S
-     - | Date time format
+   * - logging
+     - loggformat
+     - %(asctime)-15s
+       %(levelname)-9s:
+       %(name)-11s:
+       %(message)s
+     - Logging format for the application
 
-   * - | logging
-     - | to_console
-     - | 1
-     - | 1: Write output to stdout
-       | 0: Suppress output to stdout
+   * - logging
+     - loggdatefmt
+     - %Y-%m-%d
+       %H:%M:%S
+     - Date time format
 
-   * - | logging
-     - | to_file
-     - | 0
-     - | 1: Write output to logfile
-       | 0: Disable logfile
+   * - logging
+     - to_console
+     - 1
+     - 
+       * **0** -- Suppress output to stdout
+       * **1** -- Write output to stdout
 
-   * - | logging
-     - | loggfile
-     - | log/application.log
-     - | Path to logfile is relative to
-       | project folder.
+   * - logging
+     - to_file
+     - 0
+     - 
+       * **0** -- Disable logfile
+       * **1** -- Write output to logfile
 
-   * - | logginglevels
-     - | werkzeug
-     - | 40
-     - | Logging level of werkzeug module is set
-       | to *warning*
+   * - logging
+     - loggfile
+     - log/application.log
+     - Path to logfile is relative to
+       project folder.
 
-   * - | queues
-     - | maxsize
-     - | 0
-     - | Default queue size for all shared queues
-       | 0: No limit
+   * - logginglevels
+     - [module name]
+     - 20
+     - * **[module name]** is the name of a python module that is using the
+         logging module
+       
+       Values:
 
-   * - | rules
-     - | [unique key]
-     - | 0
-     - | [unique key] is the unique name of a
-       | :class:`netdef.Rules.BaseRule`
-       | 1: enabled
-       | 0: disabled
-       |
-       | Example:
-       | [rules]
-       | CSVRule = 1
+       * **1** -- All
+       * **10** -- Debug
+       * **20** -- Info
+       * **30** -- Warning
+       * **40** -- Error
+       * **50** -- Critical
 
-   * - | controllers
-     - | [unique key]
-     - | 0
-     - | [unique key] is the unique name of a
-       | :class:`netdef.Controllers.BaseController`
-       | 1: enabled
-       | 0: disabled
-       |
-       | Example:
-       | [controllers]
-       | InternalController = 1
+       .. code-block:: ini
+          :caption: Example
 
-   * - | sources
-     - | [unique key]
-     - | 0
-     - | [unique key] is the unique name of a
-       | :class:`netdef.Sources.BaseSource`
-       | 1: enabled
-       | 0: disabled
-       |
-       | Example:
-       | [sources]
-       | IntegerSource = 1
+          [logginglevels]
+          werkzeug = 40
+          InternalController = 10
 
-   * - | controller_aliases
-     - | [unique key]
-     - | [controllername]
-     - | Create multiple controller
-       | instances of same class
-       | 
-       | Example:
-       | 
-       | [controllers]
-       | CommTestController = 1
-       |
-       | [controller_aliases]
-       | FastPingController=CommTestController
-       | SlowPingController=CommTestController
+   * - logginglevels
+     - werkzeug
+     - 40
+     - Logging level of werkzeug module is set
+       to *warning*
 
-   * - | source_aliases
-     - | [unique key]
-     - | [sourcename]
-     - | Create multiple sources based on
-       | an existing source
-       |
-       | Example:
-       |
-       | [sources]
-       | IntegerSource = 1
-       |
-       | [source_aliases]
-       | IntStatusSource = IntegerSource
-       | IntCommandSource = IntegerSource
+   * - queues
+     - maxsize
+     - 0
+     - Default queue size for all shared queues
+       
+       * **0** -- No limit
+       * **>0** -- Size limit
+
+   * - rules
+     - [unique key]
+     - 0
+     - [unique key] is the unique name of a
+       :class:`BaseRule<netdef.Rules.BaseRule>`
+
+       * **0** -- disabled
+       * **1** -- enabled
+
+       .. code-block:: ini
+          :caption: Example
+
+           [rules]
+           CSVRule = 1
+
+   * - controllers
+     - [unique key]
+     - 0
+     - [unique key] is the unique name of a
+       :class:`BaseController<netdef.Controllers.BaseController>`
+       
+       * **0** -- disabled
+       * **1** -- enabled
+       
+       .. code-block:: ini
+          :caption: Example
+
+          [controllers]
+          InternalController = 1
+
+   * - sources
+     - [unique key]
+     - 0
+     - [unique key] is the unique name of a
+       :class:`BaseSource<netdef.Sources.BaseSource>`
+       
+       * **0** -- disabled
+       * **1** -- enabled
+       
+       .. code-block:: ini
+          :caption: Example
+
+          [sources]
+          IntegerSource = 1
+
+.. list-table:: Aliases
+   :header-rows: 1
+   :widths: 5 5 5 85
+
+   * - Section
+     - Key
+     - Default
+     - Description
+
+   * - controller_aliases
+     - [unique key]
+     - [controllername]
+     - Create multiple controller
+       instances of same class
+       
+       .. code-block:: ini
+          :caption: Example
+        
+          [controllers]
+          CommTestController = 1
+         
+          [controller_aliases]
+          FastPingController=CommTestController
+          SlowPingController=CommTestController
+
+   * - source_aliases
+     - [unique key]
+     - [sourcename]
+     - Create multiple sources based on
+       an existing source
+       
+       .. code-block:: ini
+          :caption: Example
+
+          [sources]
+          IntegerSource = 1
+       
+          [source_aliases]
+          IntStatusSource = IntegerSource
+          IntCommandSource = IntegerSource
+
+.. list-table:: Thread pool configs
+   :header-rows: 1
+   :widths: 5 5 5 85
+   
+   * - Section
+     - Key
+     - Default
+     - Description
+
+   * - ExpressionExecutor
+     - max_workers
+     - [cpu_count * 10]
+     - Number of thread pool workers to be
+       available in
+       :class:`netdef.Engines.ThreadedEngine`
 
 .. list-table:: Webadmin
    :header-rows: 1
    :widths: 5 5 5 85
 
-   * - | Section
-     - | Key
-     - | Default
-     - | Description
+   * - Section
+     - Key
+     - Default
+     - Description
 
-   * - | webadmin
-     - | Config
-     - | Default
-     - | Description
+   * - webadmin
+     - Config
+     - Default
+     - Description
      
-   * - | webadmin
-     - | host
-     - | 0.0.0.0
-     - | Webserver host address
+   * - webadmin
+     - host
+     - 0.0.0.0
+     - Webserver host address
      
-   * - | webadmin
-     - | port
-     - | 8000
-     - | Webserver tcp port
+   * - webadmin
+     - port
+     - 8000
+     - Webserver tcp port
      
-   * - | webadmin
-     - | user
-     - | admin
-     - | Username
+   * - webadmin
+     - user
+     - admin
+     - Username
      
-   * - | webadmin
-     - | password
-     - | 
-     - | Plain text password. If password_hash is set
-       | then this option is ignored.
+   * - webadmin
+     - password
+     - 
+     - Plain text password. If password_hash is set
+       then this option is ignored.
      
-   * - | webadmin
-     - | password_hash
-     - | 
-     - | Password hash generated with
-       | ``python -m netdef -ga`` command
+   * - webadmin
+     - password_hash
+     - 
+     - Password hash generated with
+       ``python -m netdef -ga`` command
      
-   * - | webadmin
-     - | secret_key
-     - | 
-     - | Secret flask session key.
-       | Can be generated with
-       | ``python -m netdef -ga``
+   * - webadmin
+     - secret_key
+     - 
+     - Secret flask session key.
+       Can be generated with
+       ``python -m netdef -ga``
      
-   * - | webadmin
-     - | on
-     - | 1
-     - | Enable Webadmin.
-       | 1: enabled.
-       | 0: disabled.
+   * - webadmin
+     - on
+     - 1
+     - Enable Webadmin.
+       
+       * **0** -- disabled.
+       * **1** -- enabled.
      
-   * - | webadmin
-     - | home_on
-     - | 1
-     - | Enable Webadmin->Home.
-       | 1: enabled.
-       | 0: disabled.
+   * - webadmin
+     - home_on
+     - 1
+     - Enable :menuselection:`Webadmin-->Home`.
      
-   * - | webadmin
-     - | config_on
-     - | 1
-     - | Enable Webadmin->Config.
-       | 1: enabled.
-       | 0: disabled.
+   * - webadmin
+     - config_on
+     - 1
+     - Enable :menuselection:`Webadmin-->Config`.
      
-   * - | webadmin
-     - | installationrepo_on
-     - | 1
-     - | Enable Webadmin->Tools-Update.
-       | 1: enabled.
-       | 0: disabled.
+   * - webadmin
+     - installationrepo_on
+     - 1
+     - Enable :menuselection:`Webadmin-->Tools-Update`.
      
-   * - | webadmin
-     - | tools_on
-     - | 1
-     - | Enable Webadmin->Tools.
-       | 1: enabled.
-       | 0: disabled.
+   * - webadmin
+     - tools_on
+     - 1
+     - Enable :menuselection:`Webadmin-->Tools`.
      
-   * - | webadmin
-     - | settings_on
-     - | 1
-     - | Enable Webadmin->Settings.
-       | 1: enabled.
-       | 0: disabled.
+   * - webadmin
+     - settings_on
+     - 1
+     - Enable :menuselection:`Webadmin-->Settings`.
      
-   * - | webadmin
-     - | sources_on
-     - | 1
-     - | Enable Webadmin->Sources.
-       | 1: enabled.
-       | 0: disabled.
+   * - webadmin
+     - sources_on
+     - 1
+     - Enable :menuselection:`Webadmin-->Sources`.
      
-   * - | webadmin
-     - | expressions_on
-     - | 1
-     - | Enable Webadmin->Expressions.
-       | 1: enabled.
-       | 0: disabled.
+   * - webadmin
+     - expressions_on
+     - 1
+     - Enable :menuselection:`Webadmin-->Expressions`.
      
-   * - | webadmin
-     - | statistics_on
-     - | 1
-     - | Enable Webadmin->Statistics.
-       | 1: enabled.
-       | 0: disabled.
+   * - webadmin
+     - statistics_on
+     - 1
+     - Enable :menuselection:`Webadmin-->Statistics`.
      
-   * - | webadmin
-     - | ssl_certificate
-     - | 
-     - | File path to ssl certificate.
-       | Required if ssl_on=1.
+   * - webadmin
+     - ssl_certificate
+     - 
+     - File path to ssl certificate.
+       Required if ``ssl_on=1``.
      
-   * - | webadmin
-     - | ssl_certificate_key
-     - | 
-     - | File path to ssl certificate key.
-       | Required if ssl_on=1.
+   * - webadmin
+     - ssl_certificate_key
+     - 
+     - File path to ssl certificate key.
+       Required if ``ssl_on=1``.
      
-   * - | webadmin
-     - | ssl_on
-     - | 0
-     - | Enable https. 1: enabled. 0: disabled.
+   * - webadmin
+     - ssl_on
+     - 0
+     - Enable https.
      
-   * - | webadmin_views
-     - | [viewident]
-     - | 0
-     - | [viewident] is the unique name of a
-       | :class:`netdef.Engines.webadmin.MyBaseView`
-       | 1: enabled.
-       | 0: disabled.
-       | 
-       | Example:
-       | [webadmin_views]
-       | Home = 1
+   * - webadmin_views
+     - [viewident]
+     - 0
+     - [viewident] is the unique name of a
+       :class:`MyBaseView<netdef.Engines.webadmin.MyBaseView>`
 
-   * - | webadmin_views
-     - | Home
-     - | 1
-     - | Enable Home view.
+       * **0** -- disabled.
+       * **1** -- enabled.
 
-   * - | webadmin_views
-     - | FileModel
-     - | 1
-     - | Enable FileModel view.
+       .. code-block:: ini
+          :caption: Example
 
-   * - | webadmin_views
-     - | SettingsModel
-     - | 1
-     - | Enable SettingsModel view.
+          [webadmin_views]
+          Home = 1
 
-   * - | webadmin_views
-     - | SourcesModel
-     - | 1
-     - | Enable SourcesModel view.
+   * - webadmin_views
+     - Home
+     - 1
+     - Enable Home view.
 
-   * - | webadmin_views
-     - | ExpressionsView
-     - | 1
-     - | Enable ExpressionsView view.
+   * - webadmin_views
+     - FileModel
+     - 1
+     - Enable FileModel view.
 
-   * - | webadmin_views
-     - | StatisticsModel
-     - | 1
-     - | Enable StatisticsModel view.
+   * - webadmin_views
+     - SettingsModel
+     - 1
+     - Enable SettingsModel view.
 
-   * - | webadmin_views
-     - | Tools
-     - | 1
-     - | Enable Tools view.
+   * - webadmin_views
+     - SourcesModel
+     - 1
+     - Enable SourcesModel view.
+
+   * - webadmin_views
+     - ExpressionsView
+     - 1
+     - Enable ExpressionsView view.
+
+   * - webadmin_views
+     - StatisticsModel
+     - 1
+     - Enable StatisticsModel view.
+
+   * - webadmin_views
+     - Tools
+     - 1
+     - Enable Tools view.
 
 
 .. list-table:: Upgrade application
    :header-rows: 1
    :widths: 5 5 5 85
 
-   * - | Section
-     - | Key
-     - | Default
-     - | Description
+   * - Section
+     - Key
+     - Default
+     - Description
      
-   * - | auto_update
-     - | on
-     - | 0
+   * - auto_update
+     - on
+     - 0
+     - 
+
+   * - auto_update
+     - no_index
+     - 0
+     -
+
+   * - auto_update
+     - pre_release
+     - 0
+     -
+
+   * - auto_update
+     - force_reinstall
+     - 0
+     -
+
+   * - auto_update
+     - find_links
+     - 
+     -
+
+   * - auto_update
+     - trusted_host
+     - 
      - |
 
-   * - | auto_update
-     - | no_index
-     - | 0
-     - |
+   * - auto_update
+     - minimal_timeout
+     - 0
+     -
 
-   * - | auto_update
-     - | pre_release
-     - | 0
-     - |
-
-   * - | auto_update
-     - | force_reinstall
-     - | 0
-     - |
-
-   * - | auto_update
-     - | find_links
-     - | 
-     - |
-
-   * - | auto_update
-     - | trusted_host
-     - | 
-     - |
-
-   * - | auto_update
-     - | minimal_timeout
-     - | 0
-     - |
-
-   * - | auto_update
-     - | package
-     - | [appident]
-     - |
+   * - auto_update
+     - package
+     - [appident]
+     -

@@ -31,6 +31,7 @@ Here is a basic example:
 
 .. list-table:: [webadmin]
    :header-rows: 1
+   :widths: 5 5 90
    
    * - Config
      - Default
@@ -55,40 +56,44 @@ Here is a basic example:
      - Secret flask session key. Can be generated with ``python -m netdef -ga``
    * - on
      - 1
-     - Enable Webadmin. 1 = enabled. 0 = disabled.
+     - Enable Webadmin.
+
+       * **0** -- disabled.
+       * **1** -- enabled.
+       
    * - home_on
      - 1
-     - Enable Webadmin->Home. 1 = enabled. 0 = disabled.
+     - Enable :menuselection:`Webadmin-->Home`.
    * - config_on
      - 1
-     - Enable Webadmin->Config. 1 = enabled. 0 = disabled.
+     - Enable :menuselection:`Webadmin-->Config`.
    * - installationrepo_on
      - 1
-     - Enable Webadmin->Tools-Update. 1 = enabled. 0 = disabled.
+     - Enable :menuselection:`Webadmin-->Tools-Update`.
    * - tools_on
      - 1
-     - Enable Webadmin->Tools. 1 = enabled. 0 = disabled.
+     - Enable :menuselection:`Webadmin-->Tools`.
    * - settings_on
      - 1
-     - Enable Webadmin->Settings. 1 = enabled. 0 = disabled.
+     - Enable :menuselection:`Webadmin-->Settings`.
    * - sources_on
      - 1
-     - Enable Webadmin->Sources. 1 = enabled. 0 = disabled.
+     - Enable :menuselection:`Webadmin-->Sources`.
    * - expressions_on
      - 1
-     - Enable Webadmin->Expressions. 1 = enabled. 0 = disabled.
+     - Enable :menuselection:`Webadmin-->Expressions`.
    * - statistics_on
      - 1
-     - Enable Webadmin->Statistics. 1 = enabled. 0 = disabled.
+     - Enable :menuselection:`Webadmin-->Statistics`.
    * - ssl_certificate
      - 
-     - File path to ssl certificate. Required if ssl_on=1.
+     - File path to ssl certificate. Required if ``ssl_on=1``.
    * - ssl_certificate_key
      - 
-     - File path to ssl certificate key. Required if ssl_on=1.
+     - File path to ssl certificate key. Required if ``ssl_on=1``.
    * - ssl_on
      - 0
-     - Enable https. 1 = enabled. 0 = disabled.
+     - Enable https.
 
 
 Override root endpoint
@@ -125,8 +130,8 @@ webadmin WSGI app and register a new endpoint at '/'
         engine.stop()
         ...
 
-Override Webadmin->Home
------------------------
+Override :menuselection:`Webadmin-->Home`
+-----------------------------------------
 
 Copy the default html template.
 
@@ -193,12 +198,12 @@ Now you only have to override the Home View by creating following file:
                 sys_version=str(platform.version())
             )
 
-- At line 13 we replace the default Webadmin->Home with your own
+- At line 13 we replace the default :menuselection:`Webadmin-->Home` with your own
 - At line 17 we override the default Home class with our extended functionality
 
 
-Override Webadmin->Tools
-------------------------
+Override :menuselection:`Webadmin-->Tools`
+------------------------------------------
 
 Copy the default html template.
 
@@ -261,5 +266,5 @@ Now you only have to override the Tools View by creating following file:
                 )
             )
 
-- At line 5 we replace the default Webadmin->Tools with your own
+- At line 5 we replace the default :menuselection:`Webadmin-->Tools` with your own
 - At line 9 we override the default Tools class with our extended functionality

@@ -1,0 +1,10 @@
+/* https://github.com/readthedocs/sphinx_rtd_theme/issues/117#issuecomment-153083280 */
+
+@media screen and (min-width: 767px) {
+    .wy-table-responsive table td {
+       white-space: normal !important;
+    }
+    .wy-table-responsive {
+       overflow: visible !important;
+    }
+ }
