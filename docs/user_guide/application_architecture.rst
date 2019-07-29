@@ -42,6 +42,6 @@ The example below shows 4 simultaneous controllers and 2 simultaneous rules:
 The main task of the application is to:
 
 * Obtain external data using one or more *controllers*.
-* Retrieving values ​​from external data and activating *expressions* that
+* Retrieving values from external data and activating *expressions* that
   evaluate the values.
 * Transmit data based on the result of the *expression*

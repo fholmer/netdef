@@ -189,7 +189,7 @@ class BaseSource():
 
     def pack_value(self, value):
         """ 
-        Function that converts key and values ​​into a format that the source uses.
+        Function that converts key and values into a format that the source uses.
         Can be overridden and adapted to the controller it is to be used in.
 
         Example::

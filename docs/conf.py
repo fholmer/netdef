@@ -96,6 +96,7 @@ html_theme = 'sphinx_rtd_theme'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+html_show_copyright = False
 html_context = {
     'css_files': [
         '_static/theme_overrides.css'
@@ -134,7 +135,7 @@ latex_elements = {
 latex_documents = [
     (master_doc, 'netdef.tex',
      u'netdef Documentation',
-     u'Frode Holmer', 'manual'),
+     u'Frode Holmer', 'howto'),
 ]
 
 

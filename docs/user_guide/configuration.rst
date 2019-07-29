@@ -82,7 +82,7 @@ Built-in configs
 
 .. list-table:: General configs
    :header-rows: 1
-   :widths: 5 5 5 85
+   :widths: 20 15 15 50
    
    * - Section
      - Key
@@ -252,7 +252,7 @@ Built-in configs
 
 .. list-table:: Aliases
    :header-rows: 1
-   :widths: 5 5 5 85
+   :widths: 20 15 15 50
 
    * - Section
      - Key
@@ -293,7 +293,7 @@ Built-in configs
 
 .. list-table:: Thread pool configs
    :header-rows: 1
-   :widths: 5 5 5 85
+   :widths: 20 15 15 50
    
    * - Section
      - Key
@@ -309,7 +309,7 @@ Built-in configs
 
 .. list-table:: Webadmin
    :header-rows: 1
-   :widths: 5 5 5 85
+   :widths: 20 15 15 50
 
    * - Section
      - Key
@@ -473,7 +473,7 @@ Built-in configs
 
 .. list-table:: Upgrade application
    :header-rows: 1
-   :widths: 5 5 5 85
+   :widths: 20 15 15 50
 
    * - Section
      - Key

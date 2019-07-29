@@ -31,7 +31,7 @@ Here is a basic example:
 
 .. list-table:: [webadmin]
    :header-rows: 1
-   :widths: 5 5 90
+   :widths: 15 15 70
    
    * - Config
      - Default
