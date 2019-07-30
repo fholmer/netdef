@@ -77,8 +77,8 @@ move application secrets into its own config file:
     password = ${client:password}
 
 
-Built-in configs
-----------------
+Default configs
+---------------
 
 .. list-table:: General configs
    :header-rows: 1
@@ -519,3 +519,8 @@ Built-in configs
      - package
      - [appident]
      -
+
+Built-in Controllers and Rules
+------------------------------
+
+You can look opp the correct :doc:`/api/configs` in API Reference

@@ -1,6 +1,10 @@
 Built-in configs
 ==================
 
+.. contents::
+   :depth: 3
+   :local:
+
 Controller configs
 ------------------
 
@@ -66,6 +70,11 @@ XmlRpcController
    :language: ini
    :caption: config/default.conf
 
+ConcurrentWebRequestController
+++++++++++++++++++++++++++++++
+.. literalinclude:: ../controller-configs/ConcurrentWebRequestController.conf
+   :language: ini
+   :caption: config/default.conf
 
 
 Rule configs

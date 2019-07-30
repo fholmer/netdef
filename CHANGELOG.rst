@@ -1,7 +1,7 @@
 1.0.4-dev1
 ==========
 
-2019-07-25
+2019-07-30
 
 **Enhancements**
 
@@ -15,6 +15,7 @@
 - Added create_interface function to expression arguments
 - Added persistent storage to InternalController
 - Added new message type APP_STATE
+- Added Alpha version of ConcurrentWebRequestController
 
 **Bug fixes**
 
