@@ -63,6 +63,7 @@ class OPCUAServerController(BaseController.BaseController):
         endpoint = config("endpoint", "no_endpoint")
         certificate = config("certificate", "")
         private_key = config("private_key", "")
+        name = config("name", "FreeOpcUa Python Server")
         uri = config("uri", "http://examples.freeopcua.github.io")
         root_object_name = config("root_object_name", "TEST")
         separator = config("separator", ".")
@@ -111,6 +112,8 @@ class OPCUAServerController(BaseController.BaseController):
             server = Server(iserver=CustomInternalServer())
             server.iserver.set_parent(server)
 
+        server.set_application_uri(uri)
+        server.name = name
         server.set_endpoint(endpoint)
         server.allow_remote_admin(False)
 
