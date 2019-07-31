@@ -1,0 +1,38 @@
+@startuml
+skinparam componentStyle uml2
+
+frame "netdef.Controllers" {
+  [OPCUAServerController]
+  [ModbusServerController]
+  [InternalController]
+  [CrontabController]
+}
+
+database "netdef.Shared.SharedQueues" {
+  queue queue as Q1
+  queue queue as Q2
+  queue queue as Q3
+  queue queue as Q4
+  queue queue as Q5
+  queue queue as Q6
+  queue queue as Q7
+}
+
+frame "netdef.Rules" {
+  [CSVRule]
+  [INIRule]
+}
+
+frame "netdef.Engines" {
+  [ThreadedEngine]
+}
+
+[OPCUAServerController] <-down- Q1 : Incoming
+[ModbusServerController] <-down- Q2 : Incoming
+[InternalController] <-down- Q3 : Incoming
+[CrontabController] <-down- Q4 : Incoming
+[CSVRule] <-up- Q5 : Incoming
+[INIRule] <-up- Q6 : Incoming
+[ThreadedEngine] <-up- Q7 : Incoming
+
+@enduml

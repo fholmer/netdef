@@ -1,0 +1,71 @@
+@startuml
+skinparam componentStyle uml2
+
+frame "netdef.Controllers" {
+  [OPCUAServerController]
+}
+
+database "netdef.Shared.SharedQueues" {
+  queue queue as Q1
+  queue queue as Q2
+  queue queue as Q3
+}
+
+frame "netdef.Rules" {
+  [CSVRule]
+}
+
+frame "netdef.Engines" {
+  [ThreadedEngine]
+}
+
+usecase U1 [
+  <b>1:
+  Send APP_STATE
+  to Controller
+]
+
+usecase U2 [
+  <b>2:
+  Send ADD_SOURCE and
+  ADD_PARSER to Controller
+]
+
+usecase U3 [
+  <b>3:
+  Sends RUN_EXPRESSION
+  to Rule
+]
+
+usecase U4 [
+  <b>4:
+  Sends RUN_EXPRESSION
+  to ThreadedEngine
+]
+
+usecase U5 [
+  <b>5:
+  Send WRITE_SOURCE
+  to Controller
+]
+
+[OPCUAServerController] <-down- Q1 : Incoming
+[CSVRule] <-up- Q2 : Incoming
+[ThreadedEngine] <-down- Q3 : Incoming
+
+[ThreadedEngine] .down.> U1
+U1 .down.> Q1
+
+[CSVRule] .up.> U2
+U2 .up.> Q1
+
+[OPCUAServerController] .down.> U3
+U3 .down.> Q2
+
+[CSVRule] .up.> U4
+U4 .up.> Q3
+
+[ThreadedEngine] .down.> U5
+U5 .down.> Q1
+
+@enduml

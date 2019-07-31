@@ -1,47 +1,75 @@
 Application architecture
 ========================
 
-When you create an application in Netdef, your project package will get
-the following structure:
+Your application consists of:
 
-.. code-block:: bash
+* Exactly one :term:`engine`.
+* At least one :term:`rule`.
+* At least one :term:`source`.
+* At least one :term:`controller`.
+* At least one :term:`expression`.
 
-    /Project-dir
-        /proj_package/
-            /Controllers
-            /Engines
-            /Expressions
-            /Interfaces
-            /Rules
-            /Sources
+**Glossary**
 
-Your application consists of one ``engine``, one or more ``rule``, one or
-more ``source`` and one or more ``controller``. The ``engine`` is an instance
-of the :class:`netdef.Engines.ThreadedEngine` class, the ``rule`` is an
-instance of classes that are inherited from :class:`netdef.Rules.BaseRule`,
-``source`` is an instance of classes inherited from
-:class:`netdef.Sources.BaseSource`, and ``controller`` is an instance of
-classes inherited from :class:`netdef.Controllers.BaseController`. All instances
-have their own "inbox" (see :class:`netdef.Shared.SharedQueues.SharedQueues`)
-and the instances communicate with each other by registering messages in the
-recipient's inbox. The most important message types in your application are
-``ADD_SOURCE``, ``ADD_PARSER``, ``WRITE_SOURCE`` and ``RUN_EXPRESSION``.
-See :class:`netdef.Shared.SharedQueues.MessageType`
+.. glossary::
 
-The message flow will in most cases be as follows: *Rules* will
-send ``ADD_SOURCE`` to *controllers* at startup. *Controllers* will send
-``RUN_EXPRESSION`` back to *rules* on data changes. *Rules* will then
-collect *expressions* to be evaluated due to the data change and send
-``RUN_EXPRESSION`` to the *engine*. If the *expressions* generate data changes a
-``WRITE_SOURCE`` message is sent to *controllers*. 
+    engine
+        The ``engine`` is an instance of 
+        :class:`netdef.Engines.ThreadedEngine`.
 
-The example below shows 4 simultaneous controllers and 2 simultaneous rules:
+    rule
+        A ``rule`` is an instance derived from
+        :class:`netdef.Rules.BaseRule`.
 
-.. image :: ../_static/overview.png
+    source
+        A ``source`` is an instance derived from
+        :class:`netdef.Sources.BaseSource`.
 
-The main task of the application is to:
+    controller
+        A ``controller`` is an instance derived from 
+        :class:`netdef.Controllers.BaseController`.
 
-* Obtain external data using one or more *controllers*.
-* Retrieving values from external data and activating *expressions* that
-  evaluate the values.
-* Transmit data based on the result of the *expression*
+    expression
+        A python callable that is executed by ``engine`` when a associated
+        source changes its value. The associated sources are arguments
+        to the callable. See :class:`netdef.Engines.expression.Expression`.
+
+**Shared queues**
+
+All instances have their own *incoming* queue. This queue is available
+to the other instances in the shared object.
+See :class:`netdef.Shared.SharedQueues.SharedQueues`
+
+.. image :: ../_static/uml/shared_queues.svg
+
+The instances communicate with each other by registering messages in the
+recipient's queue. The example below shows a project with one controller
+and one rule:
+
+.. image :: ../_static/uml/shared_queues_message_example_1.svg
+
+The most important message types in your application are
+``APP_STATE``, ``ADD_SOURCE``, ``ADD_PARSER``, ``WRITE_SOURCE`` and
+``RUN_EXPRESSION``. See :class:`netdef.Shared.SharedQueues.MessageType`
+
+The message flow will in most cases be as follows:
+
+    At application initialization:
+
+    * The :term:`engine` will send ``APP_STATE`` to all active controllers.
+    * Every :term:`rule` will send ``ÀDD_PARSER`` or/and ``ADD_SOURCE``
+      to a specific :term:`controller` depending on what is in the configuration
+      files.
+    * The :term:`engine` will send a new ``APP_STATE`` to all active controllers.
+
+    Repeats until application is terminated:
+
+    * Every :term:`controller` will send ``RUN_EXPRESSION`` back to a specific
+      :term:`rule` on data changes.
+    * The specific :term:`rule` will then collect the associated
+      :term:`expression` to be evaluated depending on given data change and
+      send ``RUN_EXPRESSION`` to the :term:`engine`.
+    * If the :term:`expression` generate a new data change then a
+      ``WRITE_SOURCE`` message is sent back directly to :term:`controller`.
+
+.. image :: ../_static/uml/message_flow_with_external.svg

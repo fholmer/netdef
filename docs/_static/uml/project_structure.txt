@@ -1,0 +1,13 @@
+@startsalt
+{
+{T
+ + Project-Dir
+ +++ proj_package
+ +++++ Controllers
+ +++++ Engines
+ +++++ Interfaces
+ +++++ Rules
+ +++++ Sources
+}
+}
+@endsalt

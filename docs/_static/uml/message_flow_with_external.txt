@@ -1,0 +1,79 @@
+@startuml
+header SharedQueues
+title Message flow
+participant ThreadedEngine
+participant Rule
+participant Controller
+
+== Initialization ==
+
+ThreadedEngine -> Controller : APP_STATE, AppStateType.SETUP
+
+== Setup ==
+
+... Parsing config files ...
+
+Rule -> Controller : ADD_PARSER, source class
+Rule -> Controller : ADD_SOURCE, source 1
+Rule -> Controller : ADD_SOURCE, source 2
+Rule -> Controller : ADD_SOURCE, source [n]
+
+... Parsing finished ...
+
+ThreadedEngine -> Controller : APP_STATE, AppStateType.RUNNING
+
+== Running ==
+create database External
+Controller --> External : [optional]\nSetup subscription\nfor source [n]
+
+== Loop { ==
+
+Controller <--> External : [optional]\nPolling
+Controller <- External : Data received
+
+rnote over Controller
+  Parses / Unpacks
+  external data format
+  and updates value of
+  source [n]
+end rnote
+
+Controller -> Rule : RUN_EXPRESSION, source [n]
+note right
+  Value change
+  in source [n]
+end note
+
+Rule -> ThreadedEngine : RUN_EXPRESSION, expression [n]
+note right
+  Looks up the expression
+  for given source and
+  passes it to ThreadedEngine
+end note
+
+rnote over ThreadedEngine
+  Executes expression [n]
+  in ThreadPoolExecutor
+end rnote
+
+...
+
+ThreadedEngine -> Controller : WRITE_SOURCE, source [n], value, timestamp
+note left
+  If expression
+  produces a
+  value change
+end note
+
+
+rnote over Controller
+  Packs value into
+  external data
+  format
+end rnote
+
+Controller -> External : Data sent
+
+== } ==
+
+@enduml

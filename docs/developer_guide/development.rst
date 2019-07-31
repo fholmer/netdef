@@ -53,24 +53,24 @@ Get `Python`_ and `Mercurial`_
 
 Get sources:
 
-.. code-block:: console
+.. code-block:: doscon
 
-    hg clone https://fholmer@bitbucket.org/fholmer/netdef
-    cd netdef
+    > hg clone https://fholmer@bitbucket.org/fholmer/netdef
+    > cd netdef
 
 Setup an virtual environment:
 
-.. code-block:: console
+.. code-block:: doscon
 
-    py -3 -m venv venv
-    venv\Scripts\activate
+    > py -3 -m venv venv
+    > venv\Scripts\activate
 
 Build sdist and wheel
 
-.. code-block:: console
+.. code-block:: doscon
 
-    python setup.py sdist
-    python setup.py bdist_wheel
+    > python setup.py sdist
+    > python setup.py bdist_wheel
 
 
 .. _Python: https://www.python.org/downloads/windows/
@@ -90,10 +90,13 @@ Install requirements
     $ sudo apt-get install build-essential python3-dev
 
     # requirements for pdf
-    $ apt-get install texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended latexmk
+    $ sudo apt-get install texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended latexmk
 
     # requirements for pdf multi language
-    $ apt-get install texlive-lang-european texlive-lang-english
+    $ sudo apt-get install texlive-lang-european texlive-lang-english
+
+    # requirements for UML diagram
+    $ sudo apt-get install plantuml
 
 Setup virtual environment:
 
@@ -109,3 +112,14 @@ Build docs:
     $ cd docs
     $ make html
     $ make latexpdf
+
+
+UML diagrams:
+
+.. note::
+
+    This is only needed if UML diagrams is out of date:
+    
+    .. code-block:: console
+    
+        $ plantuml -tsvg docs/_static/uml/
