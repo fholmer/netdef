@@ -1,5 +1,3 @@
-.. highlight:: shell
-
 ============
 Installation
 ============
@@ -9,49 +7,85 @@ Netdef is implemented in `Python`__ and supports Python 3.5.3+.
 __ https://docs.python-guide.org/
 
 
-Debian
-------
+**Prerequisites**
 
-Prerequisites::
+  * Debian:
 
-    # python 3.5 +
-    $ sudo apt-get install python3 python3-pip python3-venv
+    Python3 requirements can be installed by typing:
 
-    # requirements for building psutil
-    $ sudo apt-get install build-essential python3-dev
+    .. code-block:: console
 
-Create an Virtual environment::
+        $ sudo apt-get install python3 python3-pip python3-venv
 
-    $ python3 -m venv venv
+    Requirements for building psutil:
+    
+    .. code-block:: console
 
-Activate the environment::
+        $ sudo apt-get install build-essential python3-dev
 
-    $ source venv/bin/activate
+    Ensure you have installed python 3.5.3 or newer.
+    You can check this by typing:
 
-Install Netdef::
+    .. code-block:: console
 
-    $ pip install netdef
+        $ python3 -V
+        Python 3.5.3
 
+  * Windows:
+  
+    Ensure you have installed Python 3.5.3 or newer.
+    You can check this by opening command prompt and type:
 
-Windows
--------
+    .. code-block:: doscon
 
-Prerequisites:
-
-Get `Python`__
-
-__ https://www.python.org/downloads/windows/
-
-Create an Virtual environment::
-
-    py -3 -m venv venv
-
-Activate the environment::
-
-    venv\Scripts\activate
-
-Install Netdef::
-
-    pip install netdef
+        > py -3 -V
+        Python 3.5.3
+    
+    If ``py.exe`` is not found then you have to download and install
+    `Python <https://www.python.org/downloads/windows/>`_ 3.5.3 or newer.
 
 
+**Create an Virtual environment**
+
+  * Linux:
+
+    .. code-block:: console
+
+        $ python3 -m venv venv
+
+  * Windows:
+
+    .. code-block:: doscon
+
+        > py -3 -m venv venv
+
+
+**Activate the environment**
+
+  * Linux:
+
+    .. code-block:: console
+
+        $ source venv/bin/activate
+
+  * Windows:
+
+
+    .. code-block:: doscon
+
+        > venv\Scripts\activate
+
+
+**Install Netdef**
+
+  * Linux:
+
+    .. code-block:: console
+
+        $ pip install netdef
+
+  * Windows:
+
+    .. code-block:: doscon
+
+        > pip install netdef
