@@ -20,16 +20,18 @@ class GenericApplicationService(win32serviceutil.ServiceFramework):
         self.running = True
         self.application() 
 
-def get_service(svc_name, exe_name, app_callback):
+def get_service(svc_name, exe_name, app_callback, template_callback=None):
     """
     .. note::
-        This function is only implemented in Windows
+        This function is only implemented for Windows and Systemd based linux
+        distributions
     
     Returns the Service-class to use as argument in :func:`run_service`
 
     :param svc_name: name of the service
     :param exe_name: filename of the service
     :param app_callback: a function that will start your application
+    :param template_callback: a function that returns template config
     :return: :class:`GenericApplicationService`
 
     Example::
@@ -39,9 +41,17 @@ def get_service(svc_name, exe_name, app_callback):
         def run_app():
             from . import main
 
-        application_service = get_service("First-App", "First-App-Service.exe", run_app)
+        def get_template_config():
+            from . import defaultconfig
+            return defaultconfig.template_config_string
+
+        application_service = get_service("First-App", "First-App-Service", run_app, get_template_config)
         run_service(application_service)
     """
+
+    if not pathlib.Path(exe_name).suffix:
+        exe_name = str(pathlib.Path(exe_name).with_suffix('.exe'))
+
     class ApplicationService(GenericApplicationService):
         _svc_name_ = svc_name
         _svc_display_name_ = svc_name
@@ -53,7 +63,8 @@ def get_service(svc_name, exe_name, app_callback):
 def run_service(app_service_class):
     """
     .. note::
-        This function is only implemented in Windows
+        This function is only implemented for Windows and Systemd based linux
+        distributions
 
     :param app_service_class: service class from :func:`get_service`
 
@@ -66,7 +77,11 @@ def run_service(app_service_class):
         def run_app():
             from . import main
 
-        application_service = get_service("First-App", "First-App-Service.exe", run_app)
+        def get_template_config():
+            from . import defaultconfig
+            return defaultconfig.template_config_string
+
+        application_service = get_service("First-App", "First-App-Service", run_app, get_template_config)
         run_service(application_service)
     """
     

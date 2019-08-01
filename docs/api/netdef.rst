@@ -19,6 +19,15 @@ netdef.service
     :undoc-members:
     :show-inheritance:
 
+netdef.systemd_service
+----------------------
+
+.. automodule:: netdef.systemd_service
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 netdef.utils
 ------------
 

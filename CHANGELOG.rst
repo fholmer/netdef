@@ -16,6 +16,7 @@
 - Added persistent storage to InternalController
 - Added new message type APP_STATE
 - Added Alpha version of ConcurrentWebRequestController
+- Added simple installer for Systemd services
 
 **Bug fixes**
 
