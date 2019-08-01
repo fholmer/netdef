@@ -1,7 +1,8 @@
 Application architecture
 ========================
 
-Your application consists of:
+When you create an application using the Netdef framework your application
+consists of:
 
 * Exactly one :term:`engine`.
 * At least one :term:`rule`.
@@ -17,22 +18,39 @@ Your application consists of:
         The ``engine`` is an instance of 
         :class:`netdef.Engines.ThreadedEngine`.
 
+        .. image :: ../_static/uml/classes_engines.png
+
     rule
         A ``rule`` is an instance derived from
         :class:`netdef.Rules.BaseRule`.
+
+        .. image :: ../_static/uml/classes_rules.png
 
     source
         A ``source`` is an instance derived from
         :class:`netdef.Sources.BaseSource`.
 
+        .. image :: ../_static/uml/classes_sources.png
+
     controller
         A ``controller`` is an instance derived from 
         :class:`netdef.Controllers.BaseController`.
+
+        .. image :: ../_static/uml/classes_controllers.png
 
     expression
         A python callable that is executed by ``engine`` when a associated
         source changes its value. The associated sources are arguments
         to the callable. See :class:`netdef.Engines.expression.Expression`.
+
+        .. code-block:: python
+
+          # Example:
+          def expression(arg1, arg2):
+              print("expression was called")
+              print("This is a netdef.Engines.expression.Expression.Argument:", arg1)
+              print("This is the associated source instance:", arg1.instance)
+              print("The name of the associated controller:", arg1.instance.controller)
 
 **Shared queues**
 
@@ -40,13 +58,13 @@ All instances have their own *incoming* queue. This queue is available
 to the other instances in the shared object.
 See :class:`netdef.Shared.SharedQueues.SharedQueues`
 
-.. image :: ../_static/uml/shared_queues.svg
+.. image :: ../_static/uml/shared_queues.png
 
 The instances communicate with each other by registering messages in the
 recipient's queue. The example below shows a project with one controller
 and one rule:
 
-.. image :: ../_static/uml/shared_queues_message_example_1.svg
+.. image :: ../_static/uml/shared_queues_message_example_1.png
 
 The most important message types in your application are
 ``APP_STATE``, ``ADD_SOURCE``, ``ADD_PARSER``, ``WRITE_SOURCE`` and
@@ -72,4 +90,4 @@ The message flow will in most cases be as follows:
     * If the :term:`expression` generate a new data change then a
       ``WRITE_SOURCE`` message is sent back directly to :term:`controller`.
 
-.. image :: ../_static/uml/message_flow_with_external.svg
+.. image :: ../_static/uml/message_flow_with_external.png

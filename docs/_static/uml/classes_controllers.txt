@@ -1,0 +1,18 @@
+@startuml
+
+package netdef.Controllers {
+    abstract class BaseController {
+        {abstract} run()
+        {abstract} handle_add_source()
+        {abstract} handle_write_source()
+    }
+    class SomeController {
+        +run()
+        +handle_add_source()
+        +handle_write_source()
+    }
+}
+
+SomeController -|> BaseController
+
+@enduml

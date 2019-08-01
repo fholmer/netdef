@@ -1,0 +1,35 @@
+@startuml
+
+package netdef.Sources {
+    abstract class BaseSource {
+        +key
+        +source
+        +rule
+        +controller
+
+        -get_value
+        -get_source_time
+        -get_status_code
+        -get_origin
+
+        -set_value
+        -set_source_time
+        -set_status_code
+        -set_origin
+        -set_callback
+    }
+
+    class SomeSource {
+        +key
+        +source
+        +rule
+        +controller
+
+        +some_pack_function()
+        +some_unpack_function()
+    }
+}
+
+SomeSource -|> BaseSource
+
+@enduml

@@ -1,4 +1,5 @@
 @startuml
+scale 680 width
 header SharedQueues
 title Message flow
 participant ThreadedEngine

@@ -1,4 +1,5 @@
 @startuml
+scale 680 width
 skinparam componentStyle uml2
 
 frame "netdef.Controllers" {

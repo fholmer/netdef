@@ -37,10 +37,6 @@ extensions = [
     'sphinx.ext.viewcode'
 ]
 
-# latex does not support svg images
-if not set(sys.argv).isdisjoint(["latexpdf", "latex"]):
-    extensions.append('sphinx.ext.imgconverter')
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 

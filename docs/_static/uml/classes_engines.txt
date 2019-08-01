@@ -1,0 +1,35 @@
+@startuml
+
+package netdef.Engines {
+    abstract class BaseEngine {
+        {abstract} load()
+        {abstract} init()
+        {abstract} start()
+        {abstract} stop()
+        {abstract} wait()
+        {abstract} block()
+    }
+
+    class ThreadedEngine {
+        +load()
+        +init()
+        +start()
+        +stop()
+        +wait()
+        +block()
+    }
+
+    class ThreadedWebGuiEngine {
+        +load()
+        +init()
+        +start()
+        +stop()
+        +wait()
+        +block()
+    }
+}
+
+ThreadedEngine -|> BaseEngine
+ThreadedWebGuiEngine -|> ThreadedEngine
+
+@enduml

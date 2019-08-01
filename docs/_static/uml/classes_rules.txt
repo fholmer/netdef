@@ -1,0 +1,20 @@
+@startuml
+
+
+package netdef.Rules {
+    abstract class BaseRule {
+        {abstract} setup()
+        {abstract} run()
+        {abstract} handle_run_expression()
+    }
+
+    class SomeRule {
+        +setup()
+        +run()
+        +handle_run_expression()
+    }
+}
+
+SomeRule -|> BaseRule
+
+@enduml
