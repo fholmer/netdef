@@ -24,6 +24,17 @@ sys.path.insert(0, os.path.abspath('..'))
 
 import netdef
 
+autodoc_mock_imports = [
+    'yaml',
+    'waitress',
+    'win32serviceutil',
+    'win32service',
+    'servicemanager',
+    'crontab',
+    'paho',
+    'opcua.server.user_manager',
+]
+
 # -- General configuration ---------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -166,6 +177,4 @@ texinfo_documents = [
      'One line description of project.',
      'Miscellaneous'),
 ]
-
-
 
