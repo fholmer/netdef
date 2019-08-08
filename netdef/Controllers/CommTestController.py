@@ -10,7 +10,32 @@ class CommTestController(BaseAsyncController.BaseAsyncController):
     """
     .. tip:: Development Status :: 5 - Production/Stable
 
-    CommTestController will start tcp-polling and 
+    This class will send TCP or ICMP ping requests based on sources received in
+    ADD_SOURCE messages and store the result into given sources. When result
+    is stored into a source this class will send the changed source in a
+    RUN_EXPRESSION message to the source's rule.
+
+    :param str name: Name of controller
+    :param netdef.Shared shared: Instance of applications shared object.
+
+    Configuration:
+        * **timeout** -- Connection timeout in seconds
+        * **interval** -- Poll interval in seconds
+        * **test_type** -- Available types: [tcpip, ping]
+        * **max_concurrent_sockets** -- Max number of simultaneous
+          open sockets.
+        * **disable** -- If disabled this controller will enter running
+          state but all messages will be discarded.
+    
+    Defaults:
+        .. code-block:: ini
+
+            [CommTestController]
+            timeout = 2
+            interval = 10
+            test_type = tcpip
+            max_concurrent_sockets = 1000
+            disable = 0
 
     """
     def __init__(self, name, shared):
@@ -19,6 +44,11 @@ class CommTestController(BaseAsyncController.BaseAsyncController):
         config = self.shared.config.config
         self.interval = config(self.name, "interval", 10)
         self.timeout = config(self.name, "timeout", 2)
+        self.disable = config(self.name, "disable", 0)
+
+        if self.disable:
+            self.logger.info("Disabled. All messages will be discarded.")
+
         # hvor mange forbindelser kan være åpne samtidig?
         self.max_concurrent_sockets = config(self.name, "max_concurrent_sockets", 1000)
 
@@ -38,6 +68,7 @@ class CommTestController(BaseAsyncController.BaseAsyncController):
         await self.enter_running_state.wait()
 
         while not self.has_interrupt():
+
             # poller på self.intervall
             sources = list(self.get_sources().values())
             tasks = tuple((self.commtest_tcp_connect(item) for item in sources))
@@ -55,12 +86,18 @@ class CommTestController(BaseAsyncController.BaseAsyncController):
         """
         self.logger.info("Running")
 
-        # kjører polling av self.incoming synkront i egen tråd
-        self.loop.run_in_executor(None, self.loop_incoming_until_interrupt)
+        if self.disable:  # to disable: empty queue by calling self.fetch_one_incoming
+            while not self.has_interrupt():
+                messagetype, incoming = self.fetch_one_incoming()
+                if messagetype and messagetype == self.messagetypes.TICK:
+                    self.handle_tick(incoming)
+        else:
+            # kjører polling av self.incoming synkront i egen tråd
+            self.loop.run_in_executor(None, self.loop_incoming_until_interrupt)
 
-        # kjører async polling av sockets
-        self.loop.run_until_complete(self.loop_outgoing_until_interrupt())
-        self.logger.info("Stopped")
+            # kjører async polling av sockets
+            self.loop.run_until_complete(self.loop_outgoing_until_interrupt())
+            self.logger.info("Stopped")
 
 
     def handle_add_source(self, incoming):
