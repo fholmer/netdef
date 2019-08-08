@@ -34,7 +34,7 @@ def test_basics():
     assert item == (MessageType.ADD_SOURCE, "src1")
 
     item = ctr.fetch_one_incoming()
-    assert item is None
+    assert item == (None, None)
 
     # send_outgoing
 
