@@ -144,16 +144,19 @@ class BaseController():
     def fetch_one_incoming(self):
         """
         Returns one message from the queue.
+
+        :returns: tuple of (messagetype, incoming)
+        :rtype: tuple(netdef.Shared.SharedQueues.MessageType, netdef.Sources.BaseSource.BaseSource)
         """
         try:
             if not self.has_interrupt():
-                item = self.incoming.get(block=True, timeout=self.queue_timeout)
+                messagetype, incoming = self.incoming.get(block=True, timeout=self.queue_timeout)
                 self._statistics_update_last_minute(1)
-                return item
+                return messagetype, incoming
 
         except queue.Empty:
             self._statistics_update_last_minute(0)
-            return None
+            return None, None
 
     def loop_incoming(self):
         """

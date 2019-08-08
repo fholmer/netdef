@@ -34,6 +34,7 @@
 
 - OPCUAServerController: startup statuscode changed from BadNoData to BadWaitingForInitialData
 - BaseRule: rule_name_from_key no longer accept * as a rule name
+- BaseController: fetch_one_incoming returns tuple
 
 1.0.3
 =====
