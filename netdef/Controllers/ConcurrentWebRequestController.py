@@ -120,11 +120,12 @@ class ConcurrentWebRequestController(BaseAsyncController.BaseAsyncController):
                 auth = aiohttp.BasicAuth(user, passw)
             else:
                 auth = None
+            timeout = aiohttp.ClientTimeout(total=item.get_client_session_timeout())
             session = aiohttp.ClientSession(
                 cookie_jar=aiohttp.CookieJar(unsafe=True),
                 auth=auth,
                 loop=self.loop,
-                timeout=item.get_client_session_timeout())
+                timeout=timeout)
             item.add_client_session(session)
         return session
 
