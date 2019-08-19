@@ -1,8 +1,20 @@
+"""
+``netdef.systemd_service`` can also be invoked directly using the -m switch of
+the interpreter with proj_path as argument.
+    
+This example installs the project in current directory as a service:
+
+.. code-block:: python
+
+    $ python -m netdef.systemd_service -i .
+
+"""
+
 import pathlib
 import os
 import sys
 import shutil
-from argparse import ArgumentParser
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from collections import namedtuple
 
 ApplicationService = namedtuple('ApplicationService', ['svc_name', 'exe_name', 'app_callback', 'template_callback'])
@@ -136,8 +148,15 @@ def install_service(proj_path, service_file, svc_name, user):
     # check folder access
     if not os.access(str(service_file.parent), os.W_OK):
         print("Operation failed. Cannot write to {}/".format(service_file.parent))
-        print("Try again using sudo or log in as root.")
-        print("TIP: Use full path to executable:  $", " ".join(["sudo"] + sys.argv))
+        print("Try again using sudo or login as root.")
+
+        if sys.argv[0] == __file__:
+            # when "python -m netdef.systemd_service"
+            args = [sys.executable, '-m', 'netdef.systemd_service'] + sys.argv[1:]
+        else:
+            args = sys.argv
+
+        print("TIP: Use full path to executable:  $", " ".join(["sudo"] + args))
         return
 
     exec_dir = pathlib.Path(sys.executable).parent
@@ -202,3 +221,26 @@ def install_service(proj_path, service_file, svc_name, user):
     print("Reload systemd:     ", "$ systemctl --system daemon-reload")
     print("Enable the service: ", "$ systemctl enable " + service_name)
     print("Start the service:  ", "$ systemctl start " + service_name)
+
+if __name__ == '__main__':
+    default_name = str(pathlib.Path(".").expanduser().absolute().name)
+
+    cmd_parser = ArgumentParser(add_help=True, formatter_class=ArgumentDefaultsHelpFormatter)
+    cmd_parser.add_argument('proj_path', type=pathlib.Path, help='path to project directory')
+    cmd_parser.add_argument('-i', '--install', action='store_true', help='install as systemd service')
+    cmd_parser.add_argument('-u', '--user', action='store', help='install as given user', default=os.getlogin())
+    cmd_parser.add_argument('-n', '--name', action='store', help='application name', default=default_name)
+    args = cmd_parser.parse_args()
+
+    app_service_class = get_service(args.name, args.name, None, None)
+
+    service_file = pathlib.Path("/etc/systemd/system").joinpath(app_service_class.exe_name)
+    proj_path = args.proj_path.expanduser().absolute()
+    os.chdir(str(proj_path))
+
+    if args.install:
+        install_service(proj_path, service_file, app_service_class.svc_name, args.user)
+    else:
+        cmd_parser.print_usage()
+        print("Proj path: {}".format(proj_path))
+        print("use argument -i, --install to install as service")
