@@ -4,6 +4,7 @@ Netdef
 * Documentation: https://netdef.readthedocs.io/en/latest/
 * Bitbucket: https://bitbucket.org/fholmer/netdef
 * GitHub: https://github.com/fholmer/netdef
+* GitLab: https://gitlab.com/fholmer/netdef
 * PyPI: https://pypi.org/project/netdef/
 * License: GNU Lesser General Public License v3 or later (LGPLv3+)
 
@@ -19,28 +20,35 @@ Features
 
 * Abstract base classes for creating custom controllers, sources and rules
 * The configuration is done using configparser with extended interpolation
-* Start a new netdef project with cookiecutter. Templates available at https://bitbucket.org/fholmer/cookiecutter-netdef.
+* Start a new netdef project with
+  `cookiecutter <https://pypi.org/project/cookiecutter>`_ or
+  `make-project <https://pypi.org/project/make>`_.
+  Templates available at https://bitbucket.org/fholmer/cookiecutter-netdef.
+* Built-in Controllers:
 
-Built-in Controllers:
+  * OpcUa server / client (`freeopcua <https://pypi.org/project/opcua>`_)
+  * TcpModbus server / client (`pymodbus <https://pypi.org/project/pymodbus>`_)
+  * icmp ping / url ping
+  * XmlRpc client
+  * trigger events by using crontab format
+    (`crontab <https://pypi.org/project/crontab>`_)
+  * disk, memory and CPU monitoring
+    (`psutil <https://pypi.org/project/psutil>`_)
+  * MQTT client (using a simple messaging format called DataAccess)
+    (`paho-mqtt <https://pypi.org/project/paho-mqtt>`_)
+  * Simple RESTJson client
 
-* OpcUa server / client ([freeopcua](https://pypi.org/project/freeopcua/))
-* TcpModbus server / client ([pymodbus](https://pypi.org/project/pymodbus/))
-* icmp ping / url ping
-* XmlRpc client
-* trigger events by using crontab format ([crontab](https://pypi.org/project/crontab/))
-* disk, memory and CPU monitoring ([psutil](https://pypi.org/project/psutil/))
-* MQTT client (using a simple messaging format called DataAccess) ([paho-mqtt](https://pypi.org/project/paho-mqtt/))
-* Simple RESTJson client
+* Built-in Rules:
 
-Built-in Rules:
+  * Generic CSV config parser
+  * Generic INI config parser
+  * Generic Yaml config parser
 
-* Generic CSV config parser
+* Built-in application engines:
 
-Built-in application engines:
-
-* threaded engine with stdout/stderr only
-* threaded engine with web-interface (webadmin)
-* serve webadmin behind nginx reverse proxy
+  * threaded engine with stdout/stderr only
+  * threaded engine with web-interface (webadmin)
+  * serve webadmin behind nginx reverse proxy
 
 Use Cases
 ---------

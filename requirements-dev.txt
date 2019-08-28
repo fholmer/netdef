@@ -2,7 +2,7 @@ pyinstaller
 pylint
 pytest
 pytest-asyncio
-Sphinx
+Sphinx==1.*
 sphinx-rtd-theme
 twine
 wheel
