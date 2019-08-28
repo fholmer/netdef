@@ -1,3 +1,11 @@
+1.0.5.dev1
+==========
+
+**Bug fixes**
+
+- Webadmin: Changed height of file edit textarea to 20 rows
+
+
 1.0.4
 =====
 

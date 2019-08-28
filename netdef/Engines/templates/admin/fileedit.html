@@ -1,0 +1,5 @@
+{% extends 'admin/file/form.html' %}
+
+{% block fa_form %}
+    {{ lib.render_form(form, dir_url, form_opts=form.FormOpts(widget_args={'content':{'rows':20}})) }}
+{% endblock %}

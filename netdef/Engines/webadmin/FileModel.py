@@ -1,6 +1,7 @@
 
 import pathlib
 from flask_admin.contrib import fileadmin
+from flask_admin.form import FormOpts
 from .MyBaseView import MyBaseView
 from . import Views
 
@@ -35,6 +36,12 @@ class Files(MyBaseView, fileadmin.FileAdmin):
 
     # har overstyrt list_row_actions for å legge til en download-knapp.
     list_template = "admin/filelist.html"
+    edit_template = 'admin/fileedit.html'
+
+    def get_edit_form(self):
+        ef = super().get_edit_form()
+        ef.FormOpts = FormOpts
+        return ef
 
     def is_accessible_path(self, path):
         # skjuler alle filer som slutter med .lock
