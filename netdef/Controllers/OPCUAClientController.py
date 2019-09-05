@@ -33,6 +33,14 @@ class OPCUAClientController(BaseController.BaseController):
         username = self.config("user", "")
         password = self.config("password", "")
 
+        name = self.config("name", "Pure Python Client")
+        description = self.config("description", name)
+        application_uri = self.config("application_uri", "urn:freeopcua:client")
+        product_uri = self.config("product_uri", "urn:freeopcua.github.io:client")
+
+        secure_channel_timeout = self.config("secure_channel_timeout", 3600000)  # 1 hour
+        session_timeout = self.config("session_timeout", 3600000)  # 1 hour
+
         self.security_string = "" # format: Policy,Mode,certificate,private_key
 
         if self.config("basic128rsa15_sign_on", 0):
@@ -57,6 +65,15 @@ class OPCUAClientController(BaseController.BaseController):
             self.security_string = ""
 
         self.client = opcua.Client(endpoint, connection_timeout)
+
+        self.client.description = description
+        self.client.name = name
+        self.client.application_uri = application_uri
+        self.client.product_uri = product_uri
+
+        self.client.secure_channel_timeout = secure_channel_timeout
+        self.client.session_timeout = session_timeout
+
 
         if username:
             self.client.set_user(username)

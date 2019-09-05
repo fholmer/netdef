@@ -1,6 +1,10 @@
 1.0.5.dev1
 ==========
 
+**Enhancements**
+
+- OPCUAClientController: Improved configuration
+
 **Bug fixes**
 
 - Webadmin: Changed height of file edit textarea to 20 rows
