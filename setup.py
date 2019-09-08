@@ -41,7 +41,7 @@ MAIN_PACKAGE = 'netdef'
 def get_list_from_file(*fullfilepath):
     return open(path.join(*fullfilepath), "r").read().splitlines()
 
-with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
