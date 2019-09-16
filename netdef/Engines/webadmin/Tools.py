@@ -140,7 +140,13 @@ class Tools(MyBaseView):
     @expose("/logfile/")
     def logfile(self):
         try:
-            return "<pre>" + open("log/application.log").read() + "</pre>"
+            logfile = open("log/application.log")
+            tail_from = logfile.seek(0, 2) - 1048576
+            if tail_from < 0:
+                tail_from = 0
+            logfile.seek(tail_from, 0)
+            logfile.readline()
+            return "<pre>" + logfile.read() + "</pre>"
         except Exception as error:
             return str(error)
 
