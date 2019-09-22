@@ -5,6 +5,7 @@
 
 - OPCUAClientController: Improved configuration
 - OPCUAServerController: Added legacy support for basic128rsa15 and basic256.
+- Webadmin: Added SecuritySettingsView
 
 **Bug fixes**
 

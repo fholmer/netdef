@@ -1,3 +1,5 @@
+import binascii
+import os
 from flask import url_for, redirect, request, current_app
 from wtforms import form, fields, validators
 import werkzeug.security
@@ -13,6 +15,27 @@ def shutdown_server():
     if func is None:
         raise RuntimeError('Cannot shutdown. Not running with the Werkzeug Server')
     func()
+
+def check_user_and_pass(app, password):
+    # check if pwhash is used
+    admin_pw_hash = app.config["ADMIN_PASSWORD_HASH"]
+    admin_pw_hash = admin_pw_hash.replace("$$", "$")
+
+    if admin_pw_hash:
+        if werkzeug.security.check_password_hash(admin_pw_hash, password):
+            return True
+    else:
+        # fallback til plaintext
+        admin_password = app.config["ADMIN_PASSWORD"]
+        if password == admin_password:
+            return True
+    return False
+
+def create_pass(password):
+    return werkzeug.security.generate_password_hash(password).replace("$", "$$")
+
+def create_new_secret():
+    return binascii.hexlify(os.urandom(16)).decode('ascii')
 
 class MyAdminIndexView(flask_admin.AdminIndexView):
     restarting = 0
@@ -83,18 +106,8 @@ class LoginForm(form.Form):
         if user is None:
             raise validators.ValidationError('Invalid user')
         
-        # sjekker om pwhash er benyttet
-        admin_pw_hash = current_app.config["ADMIN_PASSWORD_HASH"]
-        admin_pw_hash = admin_pw_hash.replace("$$", "$")
-
-        if admin_pw_hash:
-             if not werkzeug.security.check_password_hash(admin_pw_hash, self.password.data):
-                raise validators.ValidationError('Invalid password')
-        else:
-            # fallback til plaintext
-            admin_password = current_app.config["ADMIN_PASSWORD"]
-            if self.password.data != admin_password:
-                raise validators.ValidationError('Invalid password')
+        if not check_user_and_pass(current_app, self.password.data):
+            raise validators.ValidationError('Invalid password')
 
     def get_user(self):
         admin_user = current_app.config["ADMIN_USER"]

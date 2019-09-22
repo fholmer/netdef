@@ -1,0 +1,56 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block body %}
+{{ super() }}
+
+<div class="row-fluid">
+
+    <div>
+        {% if current_user.is_authenticated %}
+
+
+        {% block webadmin_security_settings %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">Webadmin</div>
+            <div class="panel-body">
+
+                {% if conf_ok %}
+
+                <form class="form-horizontal" method="POST" action="">
+                    {{ lib.render_form(form, "") }}
+                </form>
+
+                {% else %}
+                
+                <span>
+                    To enable this module please add following line to <b>default.conf</b>:
+                    <pre>
+                        [config]
+                        security_conf = config/security.conf
+                    </pre>
+                    And restart application
+                </span>
+
+                {% endif %}
+        
+
+            </div>
+        </div>
+
+        {% endblock webadmin_security_settings %}
+
+        {% block extra_security_settings %}
+        {% endblock extra_security_settings %}
+
+        {% else %}
+
+            Not logged in
+            
+        {% endif %}
+
+    </div>
+
+</div>
+{% endblock body %}
