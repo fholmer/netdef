@@ -1,9 +1,10 @@
-1.0.5.dev1
+1.0.5.dev2
 ==========
 
 **Enhancements**
 
 - OPCUAClientController: Improved configuration
+- OPCUAServerController: Added legacy support for basic128rsa15 and basic256.
 
 **Bug fixes**
 

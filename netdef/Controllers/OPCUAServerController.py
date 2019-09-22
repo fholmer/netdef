@@ -1,13 +1,17 @@
 import logging
 import datetime
+# import time
 import werkzeug.security
 from opcua import Server, ua
 from opcua.common.callback import CallbackType
 from opcua.common import utils
+from opcua.crypto import security_policies
 from opcua.server.internal_server import InternalServer, InternalSession
 from opcua.server.user_manager import UserManager
 from netdef.Controllers import BaseController, Controllers
 from netdef.Sources.BaseSource import StatusCode
+
+# from netdef.Shared.Internal import Statistics
 
 class CustomInternalSession(InternalSession):
     "This custom InternalSession will block anonymous access"
@@ -19,19 +23,47 @@ class CustomInternalSession(InternalSession):
             raise utils.ServiceError(ua.StatusCodes.BadIdentityTokenRejected)
         return super().activate_session(params)
 
-class CustomInternalServer(InternalServer):
-    """
-    This custom InternalServer will block anonymous access.
-    How to use::
-    
-        from opcua import Server
-        server = Server(iserver=CustomInternalServer())
-        server.iserver.set_parent(server)
-    """
-    def set_parent(self, parent):
-        self._parent = parent
-    def create_session(self, name, user=UserManager.User.Anonymous, external=False):
-        return CustomInternalSession(self, self.aspace, self.subscription_service, name, user=user, external=external)
+
+class CustomServer(Server):
+    def _setup_server_nodes(self):
+        super()._setup_server_nodes()
+        if self._security_policy != [ua.SecurityPolicyType.NoSecurity]:
+            if not (self.certificate and self.private_key):
+                return
+
+            if ua.SecurityPolicyType.Basic128Rsa15_SignAndEncrypt in self._security_policy:
+                self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
+                                    ua.MessageSecurityMode.SignAndEncrypt)
+                self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
+                                                               ua.MessageSecurityMode.SignAndEncrypt,
+                                                               self.certificate,
+                                                               self.private_key)
+                                     )
+            if ua.SecurityPolicyType.Basic128Rsa15_Sign in self._security_policy:
+                self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
+                                    ua.MessageSecurityMode.Sign)
+                self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
+                                                               ua.MessageSecurityMode.Sign,
+                                                               self.certificate,
+                                                               self.private_key)
+                                     )
+            if ua.SecurityPolicyType.Basic256_SignAndEncrypt in self._security_policy:
+                self._set_endpoints(security_policies.SecurityPolicyBasic256,
+                                    ua.MessageSecurityMode.SignAndEncrypt)
+                self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
+                                                               ua.MessageSecurityMode.SignAndEncrypt,
+                                                               self.certificate,
+                                                               self.private_key)
+                                     )
+            if ua.SecurityPolicyType.Basic256_Sign in self._security_policy:
+                self._set_endpoints(security_policies.SecurityPolicyBasic256,
+                                    ua.MessageSecurityMode.Sign)
+                self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
+                                                               ua.MessageSecurityMode.Sign,
+                                                               self.certificate,
+                                                               self.private_key)
+                                     )
+
 
 @Controllers.register("OPCUAServerController")
 class OPCUAServerController(BaseController.BaseController):
@@ -107,10 +139,10 @@ class OPCUAServerController(BaseController.BaseController):
         initial_values_is_quality_good = config("initial_values_is_quality_good", 0)
 
         if anonymous_on:
-            server = Server()
+            server = CustomServer()
         else:
-            server = Server(iserver=CustomInternalServer())
-            server.iserver.set_parent(server)
+            server = CustomServer(iserver=InternalServer(session_cls=CustomInternalSession))
+            server.iserver._parent = server
 
         server.set_application_uri(uri)
         server.name = name
@@ -169,8 +201,20 @@ class OPCUAServerController(BaseController.BaseController):
         subhandler = SubHandler(self)
         self.subscription = self.server.create_subscription(100, subhandler)
 
+        # prev = time.time()
+
         while not self.has_interrupt():
             self.loop_incoming() # dispatch handle_* functions
+            # if time.time() > prev:
+            #     prev = time.time() + 60
+
+            #     _report = "subs len:{}\n".format(len(self.server.iserver.subscription_service.subscriptions))
+
+            #     for k, s in self.server.iserver.subscription_service.subscriptions.items():
+            #         _report += " {}: noack len: {}".format(k, len(s._not_acknowledged_results))
+
+            #     if Statistics.on:
+            #         Statistics.set(self.name + ".debug.no_ack", _report)
 
         self.server.stop()
         self.logger.info("Stopped")
