@@ -4,7 +4,10 @@ from threading import Lock
 from enum import Enum
 
 class Mode(Enum):
-    LIST_ALL = 1
+    FIRST = 1
+    LAST = 2
+    LIST_ALL = 3
+
 
 class Collector():
     def __init__(self, fn, wait, mode):
@@ -13,7 +16,7 @@ class Collector():
         self.wait = wait
         self.buffer = queue.Queue()
         self.lock = Lock()
-        if self.mode != Mode.LIST_ALL:
+        if not self.mode in (Mode.FIRST, Mode.LAST, Mode.LIST_ALL):
             raise NotImplementedError
 
     def __call__(self, *args):
@@ -25,7 +28,12 @@ class Collector():
             while not self.buffer.empty():
                 _args.append(self.buffer.get_nowait())
             self.lock.release()
-            self.fn(*zip(*_args))
+            if self.mode == Mode.FIRST:
+                self.fn(*_args[0])
+            elif self.mode == Mode.LAST:
+                self.fn(*_args[-1])
+            elif self.mode == Mode.LIST_ALL:
+                self.fn(*zip(*_args))
 
 def collect(wait, mode):
     """
