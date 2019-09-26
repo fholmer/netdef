@@ -7,7 +7,8 @@ class Mode(Enum):
     FIRST = 1
     LAST = 2
     LIST_ALL = 3
-
+    FIRST_WITH_EVENT = 4
+    LAST_WITH_EVENT = 5
 
 class Collector():
     def __init__(self, fn, wait, mode):
@@ -16,7 +17,7 @@ class Collector():
         self.wait = wait
         self.buffer = queue.Queue()
         self.lock = Lock()
-        if not self.mode in (Mode.FIRST, Mode.LAST, Mode.LIST_ALL):
+        if not self.mode in (Mode.FIRST, Mode.LAST, Mode.LIST_ALL,Mode.FIRST_WITH_EVENT, Mode.LAST_WITH_EVENT):
             raise NotImplementedError
 
     def __call__(self, *args):
@@ -34,6 +35,13 @@ class Collector():
                 self.fn(*_args[-1])
             elif self.mode == Mode.LIST_ALL:
                 self.fn(*zip(*_args))
+            elif self.mode in (Mode.FIRST_WITH_EVENT, Mode.LAST_WITH_EVENT):
+                events = [src for arg in _args for src in arg if src.update or src.new]
+                if self.mode == Mode.FIRST_WITH_EVENT:
+                    self.fn(*_args[0], events)
+                elif self.mode == Mode.LAST_WITH_EVENT:
+                    self.fn(*_args[-1], events)
+
 
 def collect(wait, mode):
     """
