@@ -4,21 +4,39 @@ import servicemanager
 import pathlib
 import os
 import sys
+import logging
+from multiprocessing import Process, freeze_support
+
+logger = logging.getLogger(__name__)
 
 class GenericApplicationService(win32serviceutil.ServiceFramework):
     application = None
     
     def __init__(self, args):
         super().__init__(args)
-        self.running = True
+        self.running = False
+        self.process = None
+        logger.info("Init")
         
     def SvcStop(self):
-        self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
+        logger.info("Stopping")
         self.running = False
+        self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
+        self.process.terminate()
         
     def SvcDoRun(self):
+        logger.info("Starting")
         self.running = True
-        self.application() 
+        #self.application()
+        freeze_support()
+        while self.running:
+            if self.process:
+                logger.info("Restarting")
+            self.process = Process(target=self.application)
+            self.process.start()
+            self.process.join()
+        logger.info("Stopped")
+        self.ReportServiceStatus(win32service.SERVICE_STOPPED)
 
 def get_service(svc_name, exe_name, app_callback, template_callback=None):
     """
