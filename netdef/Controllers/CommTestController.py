@@ -1,6 +1,7 @@
 import time
 import datetime
 import asyncio
+import encodings.idna
 from . import BaseAsyncController, Controllers
 from ..Sources.BaseSource import StatusCode
 from .ping import ping
