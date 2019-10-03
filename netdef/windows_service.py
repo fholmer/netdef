@@ -7,6 +7,8 @@ import sys
 import logging
 from multiprocessing import Process, freeze_support
 
+freeze_support()
+
 logger = logging.getLogger(__name__)
 
 class GenericApplicationService(win32serviceutil.ServiceFramework):
@@ -28,7 +30,6 @@ class GenericApplicationService(win32serviceutil.ServiceFramework):
         logger.info("Starting")
         self.running = True
         #self.application()
-        freeze_support()
         while self.running:
             if self.process:
                 logger.info("Restarting")
