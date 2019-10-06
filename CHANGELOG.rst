@@ -1,11 +1,11 @@
-1.0.5.dev2
+1.0.5.dev3
 ==========
 
 **Enhancements**
 
 - OPCUAClientController: Improved configuration
 - OPCUAServerController: Added legacy support for basic128rsa15 and basic256.
-- Webadmin: Added SecuritySettingsView
+- Webadmin: Added SecurityWebadminView
 
 **Bug fixes**
 

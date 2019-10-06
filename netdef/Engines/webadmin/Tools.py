@@ -99,11 +99,15 @@ class Tools(MyBaseView):
         now = datetime.datetime.utcnow()
         app_diff = now - APP_STARTUP
         sys_diff = now - SYS_STARTUP
+        shared = current_app.config['SHARED']
+        security_panel_on = shared.config.config("webadmin", "security_webadmin_on", 0)
+
         return self.render(
             'tools.html',
             app_uptime=str(app_diff),
             sys_uptime=str(sys_diff),
-            sys_version=str(platform.version())
+            sys_version=str(platform.version()),
+            security_panel_on=security_panel_on
         )
 
     @expose("/autoupgrade/")

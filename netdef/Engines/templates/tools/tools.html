@@ -41,6 +41,25 @@
 
         {% endblock application_panel %}
 
+        {% block security_panel %}
+        {% if security_panel_on %}
+        <div class="panel panel-default">
+            <div class="panel-heading">Security</div>
+            <div class="panel-body">
+                <div class="container">
+                    <div class="row">
+                        <a href="../security_webadmin/" class="btn btn-default col-md-2" role="button">
+                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                            Webadmin
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endblock security_panel %}
+
+
         {% block system_panel %}
 
         <div class="panel panel-default">

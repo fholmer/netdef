@@ -32,7 +32,7 @@ class Config():
 
         _config = ConfigParser(interpolation=ExtendedInterpolation())
 
-        #Dette trikset gjør at option-nøkkel forblir case-sensitive
+        #This trick allows the option key to remain case-sensitive
         _config.optionxform = str
 
         self._config = _config
@@ -43,8 +43,8 @@ class Config():
 
         _config.read_string(default_config_string)
 
-        # dersom getfilesystemencoding returnerer ascii så vil vi ikke kunne lese konfigfiler med eksotiske tegn.
-        # vi må derfor velge noe annet; getdefaultencoding() er et godt valg
+        # if getfilesystemencoding returns ascii then we will not be able to read config files with exotic characters.
+        # we must therefore choose something else; getdefaultencoding ()
         self.conf_encoding = sys.getfilesystemencoding()
         if self.conf_encoding == "ascii":
             self.conf_encoding = sys.getdefaultencoding()
@@ -58,8 +58,8 @@ class Config():
             for ident, path in self.get_dict("config").items():
                 self._config.read(path, encoding=self.conf_encoding)
 
-        # denne filen skal ikke være redigerbare fra web eller filsystem
-        # brukes til å låse bestemte konfiger. må derfor leses sist.
+        # this file should not be editable from "Config Files" in webadmin.
+        # Used to lock specific configurations. must therefore be read last.
         self._config.read(
             "{config_path}/default.lock".format(
                 config_path=config_path

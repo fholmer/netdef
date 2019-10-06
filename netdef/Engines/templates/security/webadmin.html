@@ -13,7 +13,7 @@
         {% block webadmin_security_settings %}
 
         <div class="panel panel-default">
-            <div class="panel-heading">Webadmin</div>
+            <div class="panel-heading">Security Webadmin</div>
             <div class="panel-body">
 
                 {% if conf_ok %}
@@ -28,7 +28,7 @@
                     To enable this module please add following line to <b>default.conf</b>:
                     <pre>
                         [config]
-                        security_conf = config/security.conf
+                        webadmin_conf = config/webadmin.conf
                     </pre>
                     And restart application
                 </span>

@@ -36,7 +36,7 @@ class Views():
         activate_views["ExpressionsView"] = 1
         activate_views["StatisticsModel"] = 1
         activate_views["Tools"] = 1
-        activate_views["SecuritySettingsView"] = 1
+        activate_views["SecurityWebadminView"] = 1
         activate_views.update(self.shared.config.get_dict("webadmin_views"))
 
         for name, activate in activate_views.items():
