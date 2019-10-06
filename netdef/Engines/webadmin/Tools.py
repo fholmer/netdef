@@ -87,6 +87,12 @@ def setup(admin, view=None):
     section = "webadmin"
     config = admin.app.config['SHARED'].config.config
     webadmin_tools_on = config(section, "tools_on", 1)
+
+    admin.app.config["tools_panels"] = {
+        "tools_on": webadmin_tools_on,
+        "security_panel_on": 0
+    }
+
     if webadmin_tools_on:
         if not view:
             view = Tools(name='Tools', endpoint='tools')
@@ -99,15 +105,13 @@ class Tools(MyBaseView):
         now = datetime.datetime.utcnow()
         app_diff = now - APP_STARTUP
         sys_diff = now - SYS_STARTUP
-        shared = current_app.config['SHARED']
-        security_panel_on = shared.config.config("webadmin", "security_webadmin_on", 0)
 
         return self.render(
             'tools.html',
             app_uptime=str(app_diff),
             sys_uptime=str(sys_diff),
             sys_version=str(platform.version()),
-            security_panel_on=security_panel_on
+            tools_panels=current_app.config['tools_panels']
         )
 
     @expose("/autoupgrade/")

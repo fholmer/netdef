@@ -1,13 +1,8 @@
-import sys
-import datetime
-import subprocess
-import platform
-import pathlib
 import configparser
 import functools
 import glob
 from wtforms import Form, StringField, PasswordField, validators, BooleanField, SelectField
-from flask import current_app, url_for, redirect, request, flash, stream_with_context, Response
+from flask import current_app, request, flash
 from flask_admin import expose
 from .AdminIndex import check_user_and_pass, create_pass, create_new_secret
 from .MyBaseView import MyBaseView
@@ -18,14 +13,17 @@ def setup(admin, view=None):
     section = "webadmin"
     config = admin.app.config['SHARED'].config.config
     webadmin_security_on = config(section, "security_webadmin_on", 0)
+    admin.app.config["tools_panels"]["security_panel_on"] = 1
+    admin.app.config["tools_panels"]["webadmin_security_on"] = webadmin_security_on
 
     if webadmin_security_on:
         if not view:
-            view = SecurityWebadminView(name='Security', endpoint='security_webadmin')
+            view = SecurityWebadminView(name='Security Webadmin', endpoint='security_webadmin')
         admin.app.register_blueprint(view.create_blueprint(admin))
         # admin.add_view(view)
 
 webadmin_conf = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
+webadmin_conf.optionxform = str
 webadmin_conf.add_section("webadmin")
 
 default = {
@@ -68,13 +66,24 @@ class SecurityWebadminView(MyBaseView):
     @expose("/", methods=['GET', 'POST'])
     def index(self):
         config = current_app.config["SHARED"].config
-
         conf_file = config("config", "webadmin_conf", "", add_if_not_exists=False)
         conf_ok = conf_file.startswith("config")
-
         webadmin_conf.read(conf_file, encoding=config.conf_encoding)
 
         form = SecurityForm(request.form)
+
+        for key in form.ssl_certificate.choices:
+            if key[0] == form.ssl_certificate.data:
+                break
+        else:
+            form.ssl_certificate.choices.append((form.ssl_certificate.data, form.ssl_certificate.data))
+
+        for key in form.ssl_certificate_key.choices:
+            if key[0] == form.ssl_certificate_key.data:
+                break
+        else:
+            form.ssl_certificate_key.choices.append((form.ssl_certificate_key.data, form.ssl_certificate_key.data))
+
         if request.method == 'POST' and form.validate():
             if form.old_password.data:
                 if check_user_and_pass(current_app, form.old_password.data):

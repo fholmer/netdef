@@ -1,0 +1,56 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block body %}
+{{ super() }}
+
+<div class="row-fluid">
+
+    <div>
+        {% if current_user.is_authenticated %}
+
+
+        {% block builtin_controllers_settings %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">Builtin controllers settings</div>
+            <div class="panel-body">
+
+                {% if conf_ok %}
+
+                <form class="form-horizontal" method="POST" action="">
+                    {{ lib.render_form(form, "") }}
+                </form>
+
+                {% else %}
+                
+                <span>
+                    To enable this module please add following line to <b>default.conf</b>:
+                    <pre>
+                        [SecurityBuiltinControllersView]
+                        conf_file = config/security.conf
+                    </pre>
+                    And restart application
+                </span>
+
+                {% endif %}
+        
+
+            </div>
+        </div>
+
+        {% endblock builtin_controllers_settings %}
+
+        {% block extra_builtin_controllers_settings %}
+        {% endblock extra_builtin_controllers_settings %}
+
+        {% else %}
+
+            Not logged in
+            
+        {% endif %}
+
+    </div>
+
+</div>
+{% endblock body %}
