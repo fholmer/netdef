@@ -13,10 +13,10 @@ def setup(admin, view=None):
     section = "webadmin"
     config = admin.app.config['SHARED'].config.config
     webadmin_security_on = config(section, "security_webadmin_on", 0)
-    admin.app.config["tools_panels"]["security_panel_on"] = 1
-    admin.app.config["tools_panels"]["webadmin_security_on"] = webadmin_security_on
 
     if webadmin_security_on:
+        admin.app.config["tools_panels"]["webadmin_security_on"] = 1
+        admin.app.config["tools_panels"]["security_panel_on"] = 1
         if not view:
             view = SecurityWebadminView(name='Security Webadmin', endpoint='security_webadmin')
         admin.app.register_blueprint(view.create_blueprint(admin))

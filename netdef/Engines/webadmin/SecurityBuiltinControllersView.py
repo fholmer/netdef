@@ -12,10 +12,11 @@ from . import Views
 def setup(admin, view=None):
     config = admin.app.config['SHARED'].config.config
     security_builtin_controllers_on = config("webadmin", "security_builtin_controllers_on", 1)
-    admin.app.config["tools_panels"]["security_panel_on"] = 1
-    admin.app.config["tools_panels"]["security_builtin_controllers_on"] = security_builtin_controllers_on
 
     if security_builtin_controllers_on:
+        admin.app.config["tools_panels"]["security_panel_on"] = 1
+        admin.app.config["tools_panels"]["security_builtin_controllers_on"] = 1
+
         if not view:
             view = SecurityBuiltinControllersView(name='Security', endpoint='security_builtin_controllers')
         admin.app.register_blueprint(view.create_blueprint(admin))
