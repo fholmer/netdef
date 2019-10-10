@@ -1,7 +1,6 @@
 import logging
 import csv
 import pathlib
-from .utils import import_file
 
 from . import BaseRule, Rules
 
@@ -42,11 +41,7 @@ class CSVRule(BaseRule.BaseRule):
         log.info(rel_pyfile)
         log.info(rel_csvfile)
 
-        expression_module = import_file(
-            str(pathlib.Path(abs_root).joinpath(rel_pyfile)),
-            self.name,
-            name
-        )
+        expression_module = self.get_module_from_string(rel_pyfile, __package__, abs_root, self.name, name)
 
         # parse csv og py.modulen. gjøre disse søkbare og
         # lett tilgjengelig i Rules-klassen

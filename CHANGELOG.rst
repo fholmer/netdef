@@ -12,7 +12,7 @@
 - Webadmin: Changed height of file edit textarea to 20 rows
 - Webadmin: Fixed routing.BuildError when you don't have the permission
   to access the requested resource.
-
+- CSVRule: expression can now be a modulename or a python-file
 
 1.0.4
 =====
