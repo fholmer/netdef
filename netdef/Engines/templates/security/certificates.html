@@ -1,0 +1,50 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/lib.html' as lib with context %}
+
+{% block body %}
+{{ super() }}
+
+<div class="row-fluid">
+
+    <div>
+        {% if current_user.is_authenticated %}
+
+        {% block security_certificates %}
+
+        <div class="panel panel-default">
+            <div class="panel-heading">SSL Certificates</div>
+            <div class="panel-body">
+
+                {% if conf_ok %}
+
+                <form class="form-horizontal" method="POST" action="">
+                    {{ lib.render_form(form, "") }}
+                </form>
+
+                {% else %}
+                
+                <span>
+                    openssl is not available
+                </span>
+
+                {% endif %}
+        
+
+            </div>
+        </div>
+
+        {% endblock security_certificates %}
+
+        {% block extra_security_certificates %}
+        {% endblock extra_security_certificates %}
+
+        {% else %}
+
+            Not logged in
+            
+        {% endif %}
+
+    </div>
+
+</div>
+{% endblock body %}
