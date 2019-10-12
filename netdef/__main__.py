@@ -2,8 +2,6 @@ from argparse import ArgumentParser
 import getpass
 import pathlib
 import os
-import subprocess
-import shutil
 
 def run_app():
     from . import main
@@ -105,20 +103,19 @@ def generate_webadmin_auth(interactive=True):
     :param bool interactive: ask for user/pass if True. Generate automatically if not.
 
     """
-    import werkzeug.security
-    import binascii
+    from .Engines import utils
 
-    secret_key = binascii.hexlify(os.urandom(16)).decode('ascii')
+    secret_key = utils.create_new_secret()
 
     if interactive:
         admin_user = input("new admin username: ")
         admin_pw = getpass.getpass("new admin password: ")
     else:
         admin_user = "admin"
-        admin_pw = binascii.hexlify(os.urandom(8)).decode('ascii')
+        admin_pw = utils.create_new_secret()
         print("generated password: {}".format(admin_pw))
-
-    admin_pw_hash = werkzeug.security.generate_password_hash(admin_pw).replace("$", "$$")
+                    
+    admin_pw_hash = utils.create_pass(admin_pw)
     print("[webadmin]")
     print("user = {}".format(admin_user))
     print("password_hash = {}".format(admin_pw_hash))
@@ -139,26 +136,17 @@ def generate_certificate(interactive=True):
     :param bool interactive: ask for CN if True.
     """
 
-    if shutil.which("openssl") is None:
+    from .Engines import utils
+
+    if not utils.can_generate_certs():
         print("Operation failed. openssl not available in system path.")
         return
-    
-    pem_file = "certificate.pem"
-    key_file = "certificate.pem.key"
-    der_file = "certificate.der"
-    derkey_file = "certificate.der.key"
 
-    cmd_req_pem = [
-        "openssl", "req", "-x509", "-sha256", "-newkey", "rsa:2048", "-keyout",
-        key_file, "-out", pem_file, "-days", "3650", "-nodes"
-        ]
-
-    cmd_der = [
-        "openssl", "x509", "-outform", "der", "-in", pem_file, "-out", der_file
-        ]
-    cmd_der_key = [
-        "openssl", "rsa", "-outform", "der", "-in", key_file, "-out", derkey_file
-        ]
+    pem_file = utils.default_pem_file
+    key_file = utils.default_key_file
+    der_file = utils.default_der_file
+    derkey_file = utils.default_derkey_file
+    common_name = ""
 
     if interactive:
         for fn in (pem_file, key_file, der_file, derkey_file):
@@ -169,16 +157,9 @@ def generate_certificate(interactive=True):
                     return
         cn = input("Common name: ")
         if cn:
-            cmd_req_pem.append("-subj")
-            cmd_req_pem.append("/CN={:s}".format(cn))
-        else:
-            cmd_req_pem.append("-batch")
-    else:
-        cmd_req_pem.append("-batch")
-    
-    subprocess.run(cmd_req_pem)
-    subprocess.run(cmd_der)
-    subprocess.run(cmd_der_key)
+            common_name = cn
+
+    utils.generate_overwrite_certificates(pem_file, key_file, der_file, derkey_file, common_name)
 
 def framework_entrypoint():
     """

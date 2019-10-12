@@ -4,7 +4,7 @@ import glob
 from wtforms import Form, StringField, PasswordField, validators, BooleanField, SelectField
 from flask import current_app, request, flash
 from flask_admin import expose
-from .AdminIndex import check_user_and_pass, create_pass, create_new_secret
+from ..utils import check_user_and_pass, create_pass, create_new_secret
 from .MyBaseView import MyBaseView
 from . import Views
 

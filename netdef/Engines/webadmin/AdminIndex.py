@@ -2,10 +2,10 @@ import binascii
 import os
 from flask import url_for, redirect, request, current_app
 from wtforms import form, fields, validators
-import werkzeug.security
 import flask_admin
 from flask_admin import helpers, expose
 import flask_login
+from .. import utils
 from ... import __version__ as version
 
 def shutdown_server():
@@ -15,27 +15,6 @@ def shutdown_server():
     if func is None:
         raise RuntimeError('Cannot shutdown. Not running with the Werkzeug Server')
     func()
-
-def check_user_and_pass(app, password):
-    # check if pwhash is used
-    admin_pw_hash = app.config["ADMIN_PASSWORD_HASH"]
-    admin_pw_hash = admin_pw_hash.replace("$$", "$")
-
-    if admin_pw_hash:
-        if werkzeug.security.check_password_hash(admin_pw_hash, password):
-            return True
-    else:
-        # fallback til plaintext
-        admin_password = app.config["ADMIN_PASSWORD"]
-        if password == admin_password:
-            return True
-    return False
-
-def create_pass(password):
-    return werkzeug.security.generate_password_hash(password).replace("$", "$$")
-
-def create_new_secret():
-    return binascii.hexlify(os.urandom(16)).decode('ascii')
 
 class MyAdminIndexView(flask_admin.AdminIndexView):
     restarting = 0
@@ -106,7 +85,7 @@ class LoginForm(form.Form):
         if user is None:
             raise validators.ValidationError('Invalid user')
         
-        if not check_user_and_pass(current_app, self.password.data):
+        if not utils.check_user_and_pass(current_app, self.password.data):
             raise validators.ValidationError('Invalid password')
 
     def get_user(self):
