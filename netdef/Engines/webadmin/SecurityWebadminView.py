@@ -1,7 +1,7 @@
 import configparser
 import functools
 import glob
-from wtforms import Form, StringField, PasswordField, validators, BooleanField, SelectField
+from wtforms import Form, StringField, PasswordField, validators, SelectField
 from flask import current_app, request, flash
 from flask_admin import expose
 from ..utils import check_user_and_pass, create_pass, create_new_secret
@@ -56,7 +56,7 @@ class SecurityForm(Form):
             validators.EqualTo('confirm', message='Passwords must match')(form, field)
 
     confirm = PasswordField('Repeat Password')
-    new_flask_secret = BooleanField("Renew session cookie")
+    new_flask_secret = SelectField("Renew session cookie", choices=[("no", "No"), ("yes", "Yes")])
     ssl_on = SelectField("HTTPS On", default=default["ssl_on"], choices=[("0", "Off"), ("1", "On")])
     ssl_certificate = SelectField('SSL Certificate', default=default["ssl_certificate"], choices=choices_crts)
     ssl_certificate_key = SelectField('SSL Key', default=default["ssl_certificate_key"], choices=choices_keys)
@@ -95,7 +95,7 @@ class SecurityWebadminView(MyBaseView):
                 else:
                     flash('Current password is invalid.')
 
-            if form.new_flask_secret.data:
+            if form.new_flask_secret.data == "yes":
                 secret = create_new_secret()
                 webadmin_conf.set("webadmin", "secret_key", secret)
 
