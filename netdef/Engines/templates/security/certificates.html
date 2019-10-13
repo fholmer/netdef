@@ -18,7 +18,7 @@
                 {% if conf_ok %}
 
                 <form class="form-horizontal" method="POST" action="">
-                    {{ lib.render_form(form, "") }}
+                    {{ lib.render_form(form, "",form_opts=form.form_opts) }}
                 </form>
 
                 {% else %}
