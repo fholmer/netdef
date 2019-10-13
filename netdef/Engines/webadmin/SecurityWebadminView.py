@@ -34,9 +34,6 @@ default = {
 }
 
 class SecurityForm(Form):
-    choices_crts = [("", "None")] + [(c,c) for c in glob.glob("**/*.pem", recursive=True)]
-    choices_keys = [("", "None")] + [(c,c) for c in glob.glob("**/*.key", recursive=True)]
-
     login = StringField('Login', [validators.Required()], default=default["user"])
     old_password = PasswordField('Current password')
 
@@ -58,11 +55,14 @@ class SecurityForm(Form):
     confirm = PasswordField('Repeat Password')
     new_flask_secret = SelectField("Renew session cookie", choices=[("no", "No"), ("yes", "Yes")])
     ssl_on = SelectField("HTTPS On", default=default["ssl_on"], choices=[("0", "Off"), ("1", "On")])
-    ssl_certificate = SelectField('SSL Certificate', default=default["ssl_certificate"], choices=choices_crts)
-    ssl_certificate_key = SelectField('SSL Key', default=default["ssl_certificate_key"], choices=choices_keys)
+    ssl_certificate = SelectField('SSL Certificate', default=default["ssl_certificate"], choices=[])
+    ssl_certificate_key = SelectField('SSL Key', default=default["ssl_certificate_key"], choices=[])
 
 
 class SecurityWebadminView(MyBaseView):
+    choices_crts = [("", "None")] + [(c,c) for c in glob.glob("**/*.pem", recursive=True)]
+    choices_keys = [("", "None")] + [(c,c) for c in glob.glob("**/*.key", recursive=True)]
+
     @expose("/", methods=['GET', 'POST'])
     def index(self):
         config = current_app.config["SHARED"].config
@@ -72,16 +72,20 @@ class SecurityWebadminView(MyBaseView):
 
         form = SecurityForm(request.form)
 
-        for key in form.ssl_certificate.choices:
-            if key[0] == form.ssl_certificate.data:
-                break
-        else:
+        selection_exists = False
+        for choice in self.choices_crts:
+            form.ssl_certificate.choices.append(choice)
+            if choice[0] == form.ssl_certificate.data:
+                selection_exists = True
+        if not selection_exists:
             form.ssl_certificate.choices.append((form.ssl_certificate.data, form.ssl_certificate.data))
 
-        for key in form.ssl_certificate_key.choices:
-            if key[0] == form.ssl_certificate_key.data:
-                break
-        else:
+        selection_exists = False
+        for choice in self.choices_keys:
+            form.ssl_certificate_key.choices.append(choice)
+            if choice[0] == form.ssl_certificate_key.data:
+                selection_exists = True
+        if not selection_exists:
             form.ssl_certificate_key.choices.append((form.ssl_certificate_key.data, form.ssl_certificate_key.data))
 
         if request.method == 'POST' and form.validate():
