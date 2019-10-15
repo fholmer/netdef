@@ -66,8 +66,8 @@ class SecurityForm(Form):
 
 
 class SecurityWebadminView(MyBaseView):
-    choices_crts = [("", "None")] + [(c,c) for c in glob.glob("**/*.pem", recursive=True)]
-    choices_keys = [("", "None")] + [(c,c) for c in glob.glob("**/*.key", recursive=True)]
+    choices_crts = [("", "None")] + [(c,c) for c in glob.glob("ssl/certs/*", recursive=True)]
+    choices_keys = [("", "None")] + [(c,c) for c in glob.glob("ssl/private/*", recursive=True)]
 
     @expose("/", methods=['GET', 'POST'])
     def index(self):
@@ -77,7 +77,7 @@ class SecurityWebadminView(MyBaseView):
         webadmin_conf.read(conf_file, encoding=config.conf_encoding)
 
         form = SecurityForm(request.form)
-
+        
         selection_exists = False
         for choice in self.choices_crts:
             form.ssl_certificate.choices.append(choice)

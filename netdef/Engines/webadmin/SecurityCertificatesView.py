@@ -1,7 +1,7 @@
 import configparser
 import functools
 import glob
-from wtforms import Form, StringField, PasswordField, validators, SelectField
+from wtforms import Form, StringField, PasswordField, validators, SelectField, IntegerField
 from flask import current_app, request, flash
 from flask_admin import expose
 from flask_admin.form import FormOpts, rules
@@ -30,6 +30,7 @@ _der_key = utils.default_derkey_file
 _form_rules = (
     rules.Header("Certificates"),
     rules.Field("cn"),
+    rules.Field("days"),
     rules.Field("pem_cert"),
     rules.Field("pem_key"),
     rules.Field("der_cert"),
@@ -51,6 +52,7 @@ class SecurityCertificatesForm(Form):
         validators=[validators.Regexp("^[a-zA-Z0-9._-]*$", message="valid chars: a-z, A-Z, 0-9, ._-")],
         render_kw={"placeholder": "Hostname, DNS, IP-address or leave it blank"}
     )
+    days = IntegerField("Days valid", default=3650)
     pem_cert = SelectField('PEM cert', default=_pem_cert, choices=[(_pem_cert, _pem_cert)])
     pem_key =  SelectField('PEM key',  default=_pem_key, choices=[(_pem_key, _pem_key)])
     der_cert = SelectField('DER cert', default=_der_cert, choices=[(_der_cert, _der_cert)])
@@ -71,17 +73,18 @@ class SecurityCertificatesView(MyBaseView):
         form = SecurityCertificatesForm(request.form)
 
         if request.method == 'POST' and form.validate():
-            flash("Generating certs...", category="info")
-            
-            utils.generate_overwrite_certificates(
+            res = utils.generate_overwrite_certificates(
                 _pem_cert,
                 _pem_key,
                 _der_cert,
                 _der_key,
-                form.cn.data
+                form.cn.data,
+                form.days.data
             )
-
-            flash("New certs generated successfully", category="success")
+            if res:
+                flash(res, category="warning")
+            else:
+                flash("New certs generated successfully", category="success")
 
         return self.render(
             'security/certificates.html',

@@ -26,10 +26,10 @@ def check_user_and_pass(app, password):
     return False
 
 # default cert filenames:
-default_pem_file = "certificate.pem"
-default_key_file = "certificate.pem.key"
-default_der_file = "certificate.der"
-default_derkey_file = "certificate.der.key"
+default_pem_file = os.path.join("ssl", "certs", "certificate.pem")
+default_key_file = os.path.join("ssl", "private", "certificate.pem.key")
+default_der_file = os.path.join("ssl", "certs", "certificate.der")
+default_derkey_file = os.path.join("ssl", "private", "certificate.der.key")
 
 def can_generate_certs():
     if shutil.which("openssl") is None:
@@ -38,10 +38,10 @@ def can_generate_certs():
         return True
 
 
-def generate_overwrite_certificates(pem_file, key_file, der_file, derkey_file, common_name):
+def generate_overwrite_certificates(pem_file, key_file, der_file, derkey_file, common_name, days=3650):
     cmd_req_pem = [
         "openssl", "req", "-x509", "-sha256", "-newkey", "rsa:2048", "-keyout",
-        key_file, "-out", pem_file, "-days", "3650", "-nodes"
+        key_file, "-out", pem_file, "-days", str(days), "-nodes"
         ]
 
     cmd_der = [
@@ -51,13 +51,25 @@ def generate_overwrite_certificates(pem_file, key_file, der_file, derkey_file, c
         "openssl", "rsa", "-outform", "der", "-in", key_file, "-out", derkey_file
         ]
 
+    os.makedirs(os.path.join("ssl", "certs"), exist_ok=True)
+    os.makedirs(os.path.join("ssl", "private"), exist_ok=True)
+
     if common_name:
         cmd_req_pem.append("-subj")
         cmd_req_pem.append("/CN={:s}".format(common_name))
     else:
         cmd_req_pem.append("-batch")
-    
-    subprocess.run(cmd_req_pem)
-    subprocess.run(cmd_der)
-    subprocess.run(cmd_der_key)
 
+    res = subprocess.run(cmd_req_pem, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if res.returncode != 0:
+        return "{}\n{}".format(res.stdout, res.stderr)
+
+    res = subprocess.run(cmd_der, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if res.returncode != 0:
+        return "{}\n{}".format(res.stdout, res.stderr)
+
+    res = subprocess.run(cmd_der_key, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if res.returncode != 0:
+        return "{}\n{}".format(res.stdout, res.stderr)
+
+    return ""

@@ -150,7 +150,7 @@ def generate_certificate(interactive=True):
 
     if interactive:
         for fn in (pem_file, key_file, der_file, derkey_file):
-            if pathlib.Path(pem_file).is_file():
+            if pathlib.Path(fn).is_file():
                 res = input("{} already exists. Overwrite? ([Y]/n) ".format(fn)).lower()
                 if not (res == "" or res == "y"):
                     print("Operation aborted by user")
@@ -159,7 +159,14 @@ def generate_certificate(interactive=True):
         if cn:
             common_name = cn
 
-    utils.generate_overwrite_certificates(pem_file, key_file, der_file, derkey_file, common_name)
+    res = utils.generate_overwrite_certificates(pem_file, key_file, der_file, derkey_file, common_name)
+    if res:
+        print("Error")
+        print(res)
+    else:
+        print("New certs generated successfully:")
+        for fn in (pem_file, key_file, der_file, derkey_file):
+            print(fn)
 
 def framework_entrypoint():
     """

@@ -35,8 +35,8 @@ def getdef(key, val):
     return func
 
 class OPCUAServerControllerForm(Form):
-    choices_crts = [("", "None")] + [(c,c) for c in glob.glob("**/*.der", recursive=True)]
-    choices_keys = [("", "None")] + [(c,c) for c in glob.glob("**/*.key", recursive=True)]
+    choices_crts = [("", "None")] + [(c,c) for c in glob.glob("ssl/certs/*", recursive=True)]
+    choices_keys = [("", "None")] + [(c,c) for c in glob.glob("ssl/private/*", recursive=True)]
     choices_on = [("0", "Off"), ("1", "On")]
 
     user = StringField('User', default=getdef("user", "user"))
