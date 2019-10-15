@@ -77,6 +77,9 @@ class SecurityWebadminView(MyBaseView):
         webadmin_conf.read(conf_file, encoding=config.conf_encoding)
 
         form = SecurityForm(request.form)
+
+        form.ssl_certificate.choices.clear()
+        form.ssl_certificate_key.choices.clear()
         
         selection_exists = False
         for choice in self.choices_crts:
