@@ -25,12 +25,15 @@ def setup(admin, view=None):
 webadmin_conf = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
 webadmin_conf.optionxform = str
 webadmin_conf.add_section("webadmin")
+webadmin_conf.add_section("auto_update")
 
 default = {
     "user": functools.partial(webadmin_conf.get, "webadmin", "user", fallback="admin"),
     "ssl_on": functools.partial(webadmin_conf.get, "webadmin", "ssl_on", fallback="0"),
     "ssl_certificate": functools.partial(webadmin_conf.get, "webadmin", "ssl_certificate", fallback=""),
-    "ssl_certificate_key": functools.partial(webadmin_conf.get, "webadmin", "ssl_certificate_key", fallback="")
+    "ssl_certificate_key": functools.partial(webadmin_conf.get, "webadmin", "ssl_certificate_key", fallback=""),
+    "update_on": functools.partial(webadmin_conf.get, "auto_update", "on", fallback=0),
+    "update_pre_release": functools.partial(webadmin_conf.get, "auto_update", "pre_release", fallback=0),
 }
 
 class SecurityForm(Form):
@@ -57,6 +60,9 @@ class SecurityForm(Form):
     ssl_on = SelectField("HTTPS On", default=default["ssl_on"], choices=[("0", "Off"), ("1", "On")])
     ssl_certificate = SelectField('SSL Certificate', default=default["ssl_certificate"], choices=[])
     ssl_certificate_key = SelectField('SSL Key', default=default["ssl_certificate_key"], choices=[])
+
+    update_on = SelectField("Package upgrade", default=default["update_on"], choices=[("0", "Disable"), ("1", "Enable")])
+    update_pre_release = SelectField("Accept pre-releases", default=default["update_pre_release"], choices=[("0", "No"), ("1", "Yes")])
 
 
 class SecurityWebadminView(MyBaseView):
@@ -106,6 +112,10 @@ class SecurityWebadminView(MyBaseView):
             webadmin_conf.set("webadmin", "ssl_on", form.ssl_on.data)
             webadmin_conf.set("webadmin", "ssl_certificate", form.ssl_certificate.data)
             webadmin_conf.set("webadmin", "ssl_certificate_key", form.ssl_certificate_key.data)
+
+            webadmin_conf.set("auto_update", "on", form.update_on.data)
+            webadmin_conf.set("auto_update", "pre_release", form.update_pre_release.data)
+
             webadmin_conf.write(open(conf_file, 'w'))
 
             flash("Changes to '{}' saved successfully.".format(conf_file), category="success")
