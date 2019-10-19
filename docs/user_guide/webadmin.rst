@@ -3,11 +3,20 @@ Webadmin
 ========
 
 Webadmin is a simple web interface to configure and debug your application.
-You can customize basic behavour in ``default.conf``:
+You can customize basic behavour in ``default.conf``. It is recommended to
+add these options in its own file ``webadmin.conf`` and reference this file
+in ``default.conf``
 
 Here is a basic example:
 
 .. code-block:: ini
+   :caption: default.conf
+
+    [config]
+    webadmin_conf = config/webadmin.conf
+
+.. code-block:: ini
+   :caption: webadmin.conf
 
     [webadmin]
     host = 0.0.0.0
@@ -25,76 +34,15 @@ Here is a basic example:
     sources_on = 1
     expressions_on = 1
     statistics_on = 1
+    security_webadmin_on = 1
+    security_certificates_on = 1
     ssl_certificate = 
     ssl_certificate_key = 
     ssl_on = 0
 
-.. list-table:: [webadmin]
-   :header-rows: 1
-   :widths: 15 15 70
-   
-   * - Config
-     - Default
-     - Description
-   * - host
-     - 0.0.0.0
-     - Webserver host address
-   * - port
-     - 8000
-     - Webserver tcp port
-   * - user
-     - admin
-     - Username
-   * - password
-     - 
-     - Plain text password. If password_hash is set then this option is ignored.
-   * - password_hash
-     - 
-     - Password hash generated with ``python -m netdef -ga`` command
-   * - secret_key
-     - 
-     - Secret flask session key. Can be generated with ``python -m netdef -ga``
-   * - on
-     - 1
-     - Enable Webadmin.
-
-       * **0** -- disabled.
-       * **1** -- enabled.
-       
-   * - home_on
-     - 1
-     - Enable :menuselection:`Webadmin-->Home`.
-   * - config_on
-     - 1
-     - Enable :menuselection:`Webadmin-->Config`.
-   * - installationrepo_on
-     - 1
-     - Enable :menuselection:`Webadmin-->Tools-Update`.
-   * - tools_on
-     - 1
-     - Enable :menuselection:`Webadmin-->Tools`.
-   * - settings_on
-     - 1
-     - Enable :menuselection:`Webadmin-->Settings`.
-   * - sources_on
-     - 1
-     - Enable :menuselection:`Webadmin-->Sources`.
-   * - expressions_on
-     - 1
-     - Enable :menuselection:`Webadmin-->Expressions`.
-   * - statistics_on
-     - 1
-     - Enable :menuselection:`Webadmin-->Statistics`.
-   * - ssl_certificate
-     - 
-     - File path to ssl certificate. Required if ``ssl_on=1``.
-   * - ssl_certificate_key
-     - 
-     - File path to ssl certificate key. Required if ``ssl_on=1``.
-   * - ssl_on
-     - 0
-     - Enable https.
-
+.. include:: configuration.rst
+  :start-after: config-webadmin-marker-start
+  :end-before: config-webadmin-marker-end
 
 Override root endpoint
 ----------------------

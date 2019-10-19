@@ -307,6 +307,8 @@ Default configs
        available in
        :class:`netdef.Engines.ThreadedEngine`
 
+.. config-webadmin-marker-start
+
 .. list-table:: Webadmin
    :header-rows: 1
    :widths: 20 15 15 50
@@ -374,14 +376,31 @@ Default configs
      - Enable :menuselection:`Webadmin-->Config`.
      
    * - webadmin
-     - installationrepo_on
-     - 1
-     - Enable :menuselection:`Webadmin-->Tools-Update`.
-     
-   * - webadmin
      - tools_on
      - 1
      - Enable :menuselection:`Webadmin-->Tools`.
+
+   * - webadmin
+     - installationrepo_on
+     - 1
+     - Enable :menuselection:`Webadmin-->Tools-->Upgrade`.
+
+   * - webadmin
+     - security_webadmin_on
+     - 1 or 0
+     - Enable :menuselection:`Webadmin-->Tools-->Webadmin`.
+
+       .. code-block:: ini
+       
+         [config]
+         webadmin_conf=config/webadmin.conf
+       
+       The default value is 1 if *webadmin_conf* exists in *[config]*
+
+   * - webadmin
+     - security_certificates_on
+     - 1
+     - Enable :menuselection:`Webadmin-->Tools-->Certificates`.
      
    * - webadmin
      - settings_on
@@ -469,6 +488,8 @@ Default configs
      - Tools
      - 1
      - Enable Tools view.
+
+.. config-webadmin-marker-end
 
 
 .. list-table:: Upgrade application

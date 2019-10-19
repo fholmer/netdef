@@ -11,8 +11,11 @@ from . import Views
 @Views.register("SecurityWebadminView")
 def setup(admin, view=None):
     section = "webadmin"
-    config = admin.app.config['SHARED'].config.config
-    webadmin_security_on = config(section, "security_webadmin_on", 0)
+    config = admin.app.config['SHARED'].config
+    conf_file = config("config", "webadmin_conf", "", add_if_not_exists=False)
+    conf_ok = conf_file.startswith("config")
+
+    webadmin_security_on = config(section, "security_webadmin_on", int(conf_ok))
 
     if webadmin_security_on:
         admin.app.config["tools_panels"]["webadmin_security_on"] = 1

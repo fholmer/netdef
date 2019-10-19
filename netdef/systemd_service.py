@@ -4,7 +4,7 @@ the interpreter with proj_path as argument.
     
 This example installs the project in current directory as a service:
 
-.. code-block:: python
+.. code-block:: console
 
     $ python -m netdef.systemd_service -i .
 

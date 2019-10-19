@@ -123,6 +123,22 @@ Tools
     :undoc-members:
     :show-inheritance:
 
+SecurityWebadminView
+--------------------
+
+.. automodule:: netdef.Engines.webadmin.SecurityWebadminView
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+SecurityCertificatesView
+------------------------
+
+.. automodule:: netdef.Engines.webadmin.SecurityCertificatesView
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 Views
 -----
 
