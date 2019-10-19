@@ -1,4 +1,4 @@
-1.0.5.dev3
+1.0.5.dev4
 ==========
 
 **Enhancements**
@@ -6,6 +6,8 @@
 - OPCUAClientController: Improved configuration
 - OPCUAServerController: Added legacy support for basic128rsa15 and basic256.
 - Webadmin: Added SecurityWebadminView and SecurityCertificatesView
+- ModbusServerController: Attempt to bind to socket for one minute before
+  throwing exception. (Handle CLOSE_WAIT state)
 
 **Bug fixes**
 

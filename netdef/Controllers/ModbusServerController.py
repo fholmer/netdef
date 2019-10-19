@@ -1,5 +1,6 @@
 import logging
 import datetime
+import time
 
 from pymodbus.server.sync import ModbusSocketFramer, ModbusTcpServer
 from pymodbus.device import ModbusDeviceIdentification
@@ -51,7 +52,20 @@ class ModbusServerController(BaseController.BaseController):
         # vi får heller ikke signalisert shutdown.
         # ved å overstyre noen funksjoner i serveren kan vi løse dette
         # dette er gjort i MyController
-        self.server = MyController(self.context, framer, identity, (host, port), controller=self)
+        self.server = self.init_server(self.context, framer, identity, host, port)
+
+    def init_server(self, context, framer, identity, host, port):
+        for i in range(5):
+            if i > 0:
+                time.sleep(10)
+            try:
+                return MyController(context, framer, identity, (host, port), controller=self)
+                break
+            except OSError as error:
+                self.logger.error("%s. Retry in 10 sec.", repr(error))
+        else:
+            return MyController(context, framer, identity, (host, port), controller=self)
+
 
     def get_modbus_server_context(self):
         """
