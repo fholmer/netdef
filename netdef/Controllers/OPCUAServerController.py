@@ -184,6 +184,7 @@ class OPCUAServerController(BaseController.BaseController):
         self.sep = separator
         self.ns = namespace
         self.items = []
+        self.subscription = None
 
         if initial_values_is_quality_good:
             self.initial_status_code = ua.StatusCodes.Good
@@ -241,7 +242,8 @@ class OPCUAServerController(BaseController.BaseController):
             varnode.set_writable()
 
         self.add_source(nodeid, (incoming, varnode))
-        self.subscription.subscribe_data_change(varnode)
+        if self.subscription:
+            self.subscription.subscribe_data_change(varnode)
 
 
     def handle_write_source(self, incoming, value, source_time):
