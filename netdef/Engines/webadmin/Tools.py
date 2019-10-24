@@ -39,17 +39,6 @@ def stdout_from_terminal_as_generator(*command, err_msg=None, pre="", post=""):
         else:
             yield str(error)
 
-def verify_update(cmd):
-    if not len(cmd) > 4:
-        return False
-    elif not cmd[0].endswith("python"):
-        return False
-    elif cmd[1] != '-m':
-        return False
-    elif cmd[2] != 'pip':
-        return False
-    return True
-
 def get_update_cmd(
             executable,
             no_index,
@@ -171,9 +160,6 @@ class Tools(MyBaseView):
                 *self.auto_update_args
             )
 
-        if not verify_update(auto_update_cmd):
-            return "ERROR: Update aborted. update command is rejected"
-        
         return Response(
             stream_with_context(
                 stdout_from_terminal_as_generator(*auto_update_cmd)

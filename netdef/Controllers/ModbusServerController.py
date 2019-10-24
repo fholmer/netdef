@@ -53,6 +53,7 @@ class ModbusServerController(BaseController.BaseController):
         # ved å overstyre noen funksjoner i serveren kan vi løse dette
         # dette er gjort i MyController
         self.server = self.init_server(self.context, framer, identity, host, port)
+        self.logger.info("listen %s, port %s", host, port)
 
     def init_server(self, context, framer, identity, host, port):
         for i in range(5):
