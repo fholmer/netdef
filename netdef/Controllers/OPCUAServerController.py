@@ -255,7 +255,7 @@ class OPCUAServerController(BaseController.BaseController):
 
         # Check if datatype is compatible with varianttype
         if isinstance(varianttype, ua.VariantType):
-            if varianttype == ua.VariantType.String and isinstance(value, (str, None)):
+            if varianttype == ua.VariantType.String and (isinstance(value, str) or value is None)):
                 pass # string can be None or str
             elif not isinstance(value, type(ua.get_default_value(varianttype))):
                 self.logger.error("%s: Value %s is not compatible with datatype %r", nodeid, incoming.value_as_string, varianttype)
