@@ -16,6 +16,10 @@
   to access the requested resource.
 - CSVRule: expression can now be a modulename or a python-file
 
+**Incompatible API changes**
+
+- InternalController: changed persistent storage filenames
+
 1.0.4
 =====
 

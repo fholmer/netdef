@@ -1,6 +1,7 @@
 import logging
 import datetime
 import os
+import hashlib
 from . import BaseController, Controllers
 from ..Sources.BaseSource import StatusCode
 
@@ -30,6 +31,10 @@ class InternalController(BaseController.BaseController):
             self.store_to_disk()
         self.logger.info("Stopped")
 
+    @staticmethod
+    def get_cache_filename(key):
+        return hashlib.sha256(key.encode("utf8", errors="ignore")).hexdigest()
+
     def store_to_disk(self):
         cache_dir = os.path.join("db", "internal")
         if not os.path.isdir(cache_dir):
@@ -37,7 +42,7 @@ class InternalController(BaseController.BaseController):
         for source in self.get_sources().values():
             if source.can_unpack_value(""):
                 data = source.pack_value(source.value)
-                cache = os.path.join(cache_dir, source.key)
+                cache = os.path.join(cache_dir, self.get_cache_filename(source.key))
                 with open(cache, "wb") as f:
                     f.write(data)
 
@@ -47,7 +52,7 @@ class InternalController(BaseController.BaseController):
 
         init_value = {}
         if self.persistent_value:
-            cache = os.path.join("db", "internal", incoming.key)
+            cache = os.path.join("db", "internal",  self.get_cache_filename(incoming.key))
             if os.path.isfile(cache) and incoming.can_unpack_value(""):
                 with open(cache, "rb") as f:
                     data = f.read()
