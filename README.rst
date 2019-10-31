@@ -60,17 +60,13 @@ different data format.
 Getting started
 ---------------
 
-First install cookiecutter and netdef templates::
+First install make-project::
 
-    $ python3 -m venv cookiecutter/
-    $ cookiecutter/bin/pip install cookiecutter
-    $ hg clone https://bitbucket.org/fholmer/cookiecutter-netdef cookiecutter/cookiecutter-netdef
+    $ python3 -m pip --user install make
 
 Create your first application::
 
-    $ cookiecutter/bin/cookiecutter cookiecutter/cookiecutter-netdef/cookiecutter-minimal-app
-
-Cookiecutter and netdef-templates can now be removed if you wish.
+    $ python3 -m make project gl:fholmer/cookiecutter-netdef/cookiecutter-minimal-app First-App
 
 Setup your application::
 

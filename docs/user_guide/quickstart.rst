@@ -6,28 +6,25 @@ Netdef will require a specific project structure:
 .. literalinclude:: ../tutorial_first_app/project-structure.txt
    :language: text
 
-Pre made project templates are available using cookiecutter
+Pre made project templates are available using make-project or cookiecutter
 
-First install cookiecutter and netdef templates:
+Make-project
+------------
+
+First install make-project:
 
 .. code-block:: console
 
-    $ pip install cookiecutter
-    $ hg clone https://bitbucket.org/fholmer/cookiecutter-netdef
-
-If you don't have `pip`_ installed, this `Python installation guide`_ can guide
-you through the process.
+    $ python3 -m pip install make
 
 Create your first application:
 
 .. code-block:: console
 
-    $ cookiecutter cookiecutter-netdef/cookiecutter-minimal-app
+    $ python3 -m make project gl:fholmer/cookiecutter-netdef/cookiecutter-minimal-app First-App
 
 The rest of this documentation assumes that your application is called First-App
 
-.. _pip: https://pip.pypa.io
-.. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
 
 Setup your application
 ----------------------
