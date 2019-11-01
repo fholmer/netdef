@@ -1,15 +1,14 @@
 import win32serviceutil
 import win32service
+import win32console
 import servicemanager
 import pathlib
 import os
 import sys
-import logging
 from multiprocessing import Process, freeze_support
+import traceback
 
 freeze_support()
-
-logger = logging.getLogger(__name__)
 
 class GenericApplicationService(win32serviceutil.ServiceFramework):
     application = None
@@ -18,26 +17,49 @@ class GenericApplicationService(win32serviceutil.ServiceFramework):
         super().__init__(args)
         self.running = False
         self.process = None
-        logger.info("Init")
         
     def SvcStop(self):
-        logger.info("Stopping")
         self.running = False
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
-        self.process.terminate()
-        
+        try:
+            pids = win32console.GetConsoleProcessList()
+        except:
+            pids = tuple()
+        try:
+            pid = self.process.pid
+
+            if not pid in pids:
+                win32console.AttachConsole(self.process.pid)
+
+            win32console.GenerateConsoleCtrlEvent(
+                win32console.CTRL_C_EVENT,
+                self.process.pid
+            )
+
+            if not pid in pids:
+                win32console.FreeConsole()
+        except:
+            servicemanager.LogErrorMsg(traceback.format_exc())
+
     def SvcDoRun(self):
-        logger.info("Starting")
         self.running = True
         #self.application()
+        servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,
+                              servicemanager.PYS_SERVICE_STARTED,
+                              (self._svc_name_, ''))
         while self.running:
-            if self.process:
-                logger.info("Restarting")
+            #if self.process:
+            #    logger.info("Restarting")
             self.process = Process(target=self.application)
             self.process.start()
-            self.process.join()
-        logger.info("Stopped")
-        self.ReportServiceStatus(win32service.SERVICE_STOPPED)
+            try:
+                self.process.join()
+            except KeyboardInterrupt:
+                pass
+
+        servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,
+                              servicemanager.PYS_SERVICE_STOPPED,
+                              (self._svc_name_, ''))
 
 def get_service(svc_name, exe_name, app_callback, template_callback=None):
     """
