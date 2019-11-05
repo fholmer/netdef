@@ -6,12 +6,27 @@ from collections import OrderedDict
 VIEWDICT = OrderedDict()
 
 def register(name):
+    """
+    A decorator to register webadmin views. Example::
+
+        from netdef.Engines.webadmin import Views
+
+        @Views.register("NewView")
+        def setup(admin, view=None):
+            if not view:
+                view = NewView(name='NewView', endpoint='newview')
+            admin.add_view(view)
+            ...
+    """
     def classdecorator(name, cls):
         VIEWDICT[name] = cls
         return cls
     return functools.partial(classdecorator, name)
 
 class Views():
+    """
+    A collection of all loaded webadmin views
+    """
     def __init__(self, shared=None):
         self.items = VIEWDICT
         self.add_shared_object(shared)

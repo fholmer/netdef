@@ -23,6 +23,13 @@ from .utils import get_module_from_string
 # motor = threadedengine
 #
 
+# Reference in this context is a string that identifies a source
+# "source.get_reference()". This is NOT the same as id(source)!
+# The purpose of .get_reference is explained in Sources / BaseSource.py
+# If you want to get hold of all expressions affected by a source
+# then you can use "source.get_reference ()".
+
+
 class BaseRule():
     """
     Abstract class for rules.
@@ -36,12 +43,7 @@ class BaseRule():
         self.init_queue()
         self.add_interrupt(None)
         self.logger = logging.getLogger("BaseRule")
-
-        # Reference i denne konteksten er en string som identifiserer en kilde
-        # altså "source.get_reference()". Dette er altså IKKE id(source)!
-        # Hensikten med .get_reference er forklart i Sources/BaseSource.py
-        # Hvis du skal ha tak i alle uttrkk som blir berørt av en kilde
-        # så bruk "source.get_reference()" som nøkkel i denne her:
+        
         self.stats_unique_sources = 0
         self.stats_unique_expressions = 0
 
@@ -73,7 +75,6 @@ class BaseRule():
     def loop_incoming(self):
         """ Get every message from the queue and dispatch the associated handler function
         """
-        # Hoved-loop. sjekker incoming-køen og utfører RUN_EXPRESSION-meldinger
         try:
             while not self.has_interrupt():
                 if Statistics.on:
@@ -97,13 +98,6 @@ class BaseRule():
             5. Link source instances to expression.
             6. Send ADD_SOURCE and ADD_PARSER to controllers
         """
-        # Implementer følgende:
-        #       1. Åpne og lese en konfigfil
-        #       2. Opprett SourceInfo for kildene funnet i konfig
-        #       3. Opprett instanse av uttrykk funnet i konfig
-        #       4. Opprett kildeinstanser ut fra data i SourceInfo
-        #       5. Knytt opp kildeinstanse til uttrykk.
-        #       6. Send ADD_SOURCE og ADD_PARSER til kontroller
         raise NotImplementedError
 
 
@@ -136,9 +130,6 @@ class BaseRule():
         :param str controller_name: controller name as string
 
         """
-        #  Sender ADD_PARSER til kontroller. Kontroller bruker disse 
-        # klassenes statiske funksjoner til å dekode / enkode verdier etc.
-        # Brukes i parsing av konfigfil.
 
         if not controller_name:
             controller_name = self.source_and_controller_from_key(source_name)[1]
@@ -194,8 +185,6 @@ class BaseRule():
         :returns: instance of source
 
         """
-        # Bruker kildenavnet til å finne klassen. lager instanse av 
-        # klassen. returnerer kildeinstansen.
 
         source_class = self.shared.sources.classes.get_item(source_name)
 
@@ -214,7 +203,7 @@ class BaseRule():
 
         :returns: list or None
         """
-        # Finner alle uttrykkene som er koblet til kilden.
+
         ref = instance.get_reference()
         shared_expr = self.shared.expressions.instances
 
@@ -252,7 +241,7 @@ class BaseRule():
         :raises ValueError: if controller does not exists
 
         """
-        # Finner kildenavn og kontrollernavn fra variabelen *key*
+
         available_controllers = self.shared.queues.available_controllers
         available_sources = self.shared.sources.classes.items
         if key in available_sources:
@@ -292,15 +281,6 @@ class BaseRule():
         :param str controller_name: controller as string
 
         """
-        # """ det er ikke alltid lett for en kontroller å forstå hva slags
-        #     data som en kilde anser som verdi. Noen kontrollere vet ikke
-        #     hvilken kilde som skal ha dataene engang...
-        #     Men kildeklassen har statiske funksjoner som kontrolleren kan
-        #     bruke til å finne ut av disse tingene!
-        #     Løsningen er at kildeklassen registreres i kontrolleren som
-        #     "parser". Så i denne konteksten er parser og kildeklasse egentlig det
-        #     samme.
-        # """
         self.add_class_to_controller(source_name, controller_name)
 
     @staticmethod
@@ -315,10 +295,6 @@ class BaseRule():
         2. Associate the sources with expressions as arguments
         3. Finds sources and sends them to controllers with ADD_SOURCE message
         """
-        # Funksjon som gjør litt for mange ting:
-        # 1. Oppdaterer shared.expressions.instances (indirekte via self.maintain_searches)
-        # 2. Knytter kildene til uttrykket som argumenter
-        # 3. Finner kilder og sender dem til kontroller med ADD_SOURCE
 
         if not isinstance(expr_info, ExpressionInfo):
             raise TypeError("Expected ExpressionInfo, got %s" % type(expr_info))
@@ -340,7 +316,7 @@ class BaseRule():
             # 1.
             already_present = self.has_existing_instance(arg)
             if already_present:
-                arg = self.get_existing_instance(arg) # erstatt arg med eksisterende instanse
+                arg = self.get_existing_instance(arg) # replace arg with existing instance
 
             self.maintain_searches(arg, expr)
             # 2.
@@ -381,10 +357,7 @@ class BaseRule():
         exists. This is important, because we do not want more
         than one source instance for each value...
         """
-        # returnerer True hvis kilden vi jobber med allerede
-        # finnes. Dette er viktig, for vi ønsker ikke flere
-        # instanser av en kilde som egentlig refererer til samme
-        # verdi... 
+
         return self.shared.sources.instances.has_item_ref(source_instance.get_reference())
         
     def get_existing_instance(self, source_instance):
@@ -412,7 +385,7 @@ class BaseRule():
 
     def setup_done(self):
         "Update useful statistics"
-        # Bare oppdatering av interessant data....
+
         self._expressions_setup_functions.clear()
         if Statistics.on:
             ns = self.name + "."
@@ -426,8 +399,7 @@ class SourceInfo():
     """ This is a data class that *describes* a source. The rule
         shall create a source instance based on this *description*
     """
-    # Dette er en dataklasse som *beskriver* en kilde. Regelmotoren
-    # skal opprette en kildeinstanse basert på denne infoen her.
+
     __slots__ = ["typename", "key", "controller", "defaultvalue"]
     def __init__(self, typename, key, controller=None, defaultvalue=None):
         self.key = key
@@ -451,8 +423,7 @@ class ExpressionInfo():
     """ This is a data class that *describes* an expression. The rule
         shall create an expression  based on this *description*
     """
-    # Dette er en dataklasse som *beskriver* et uttrykk. Regelmotoren
-    # skal opprette et uttrykk basert på denne infoen her.
+
     __slots__ = ["module", "func", "arguments", "setup"]
     def __init__(self, module, arguments, func="expression", setup="setup"):
 

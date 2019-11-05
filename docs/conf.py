@@ -29,6 +29,7 @@ autodoc_mock_imports = [
     'waitress',
     'win32serviceutil',
     'win32service',
+    'win32console',
     'servicemanager',
     'crontab',
     'paho',

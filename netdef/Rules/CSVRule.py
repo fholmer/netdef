@@ -32,6 +32,9 @@ class CSVRule(BaseRule.BaseRule):
         self.setup_done()
 
     def setup_csv_rule(self, name):
+        """
+            Parse CSV file. 
+        """
         log.info("loading %s", name)
         abs_root = self.shared.config("proj", "path")
         rel_pyfile = self.shared.config(name, "py").strip('"')
@@ -43,15 +46,12 @@ class CSVRule(BaseRule.BaseRule):
 
         expression_module = self.get_module_from_string(rel_pyfile, __package__, abs_root, self.name, name)
 
-        # parse csv og py.modulen. gjøre disse søkbare og
-        # lett tilgjengelig i Rules-klassen
-
         abs_csvfile = str(pathlib.Path(abs_root).joinpath(rel_csvfile))
 
         start_of_csv = 0
 
         with open(abs_csvfile, encoding=encoding) as csvfile:
-            # støtte for excel sin sep= header
+            # support the excel spesific sep= header
             firstline = csvfile.readline()
             if firstline.startswith("sep="):
                 start_of_csv = csvfile.tell()

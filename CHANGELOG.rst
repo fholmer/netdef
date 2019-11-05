@@ -15,6 +15,9 @@
 - Webadmin: Fixed routing.BuildError when you don't have the permission
   to access the requested resource.
 - CSVRule: expression can now be a modulename or a python-file
+- Fixed Windows service.
+- OPCUAServerController: Fixed TypeError
+- OPCUAServerController: Only add subscription if exists
 
 **Incompatible API changes**
 
