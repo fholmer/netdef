@@ -26,7 +26,7 @@ Get sources:
 
 .. code-block:: console
 
-    $ hg clone https://fholmer@bitbucket.org/fholmer/netdef
+    $ hg clone git+ssh://git@gitlab.com:fholmer/netdef.git
     $ cd netdef
 
 Setup virtual environment:
@@ -55,7 +55,7 @@ Get sources:
 
 .. code-block:: doscon
 
-    > hg clone https://fholmer@bitbucket.org/fholmer/netdef
+    > hg clone git+ssh://git@gitlab.com:fholmer/netdef.git
     > cd netdef
 
 Setup an virtual environment:

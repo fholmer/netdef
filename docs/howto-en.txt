@@ -12,7 +12,7 @@ install into a virtual environment with all dependencies and frozen versions:
 
 install into a virtual environment as a sub-project:
   $ source venv/bin/activate
-  $ hg clone [bitbucket-link] ./netdef
+  $ hg clone [source-link] ./netdef
   $ echo "netdef=../netdef" >> .hgsub
   $ pip install -r ./netdef/requirements-dev.txt
   $ pip install -r ./netdef/requirements-minimal.txt

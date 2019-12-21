@@ -51,14 +51,14 @@ setup(
                  'data holders (Sources) and config parsers (Rules). '
                  'Also includes a web interface for configuration and troubleshooting.'),
     long_description=long_description,
-    url='https://bitbucket.org/fholmer/netdef',
+    url='https://gitlab.com/fholmer/netdef',
     author='Frode Holmer',
     author_email='fholmer+netdef@gmail.com',
     license='GNU Lesser General Public License v3 or later',
     keywords='Application Framework Networking Monitoring',    
 
     project_urls={
-        "Source Code": "https://bitbucket.org/fholmer/netdef",
+        "Source Code": "https://gitlab.com/fholmer/netdef",
         "Documentation": "https://netdef.readthedocs.io/en/latest/"
     },
 
