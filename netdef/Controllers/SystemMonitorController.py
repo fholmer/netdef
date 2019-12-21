@@ -11,18 +11,45 @@ from netdef.Shared.Internal import Statistics
 from ..Sources.SystemMonitorSource import bytes2human, SystemMonitorSource, SystemMonitorByteSource, SystemMonitorPercentSource
 
 def get_vm():
+    """
+    Helperfunction.
+    
+    :returns: psutil.virtual_memory
+    """
     return psutil.virtual_memory()
 
 def get_proc():
+    """
+    Helperfunction.
+
+    :returns: psutil.Process
+    """
     return psutil.Process()
 
 def get_clean_mount_point_name(node):
+    """
+    Replace / or \\ with .
+
+    Example:
+
+    .. code-block:: python
+
+        for disk in psutil.disk_partitions():
+            print (get_clean_mount_point_name(disk.mountpoint))
+    
+    :param str node: name of mountpoint
+
+    :returns: new node name
+    """
     if "/" in node:
         return 'root' + node.replace("/", ".").rstrip(".")
     elif "\\" in node:
         return node.replace(":\\", "").rstrip(".")
+    else:
+        return node
 
 def statistics_update(item):
+    "Write internal statistics to the Statistics singleton if activated"
     if Statistics.on:
         Statistics.set(
             item.key,
@@ -36,19 +63,36 @@ class DataItem():
     __slots__ = ('key', 'source_type', 'interval', 'func', 'args', 'next')
     def __init__(self, source_type, key, interval, func, args=None):
         self.source_type = source_type
+        "Reference to a SystemMonitorSource class"
+
         self.key = key
+        "Unique identifier"
+
         self.interval = interval
+        "Poll interval"
+
         self.func = func
+        "Callback to retrieve value"
+
         self.args = args
+        "Arguments for :attr:`self.func` callback"
+
         self.next = 0
+        "Next scheduled call to :attr:`self.func`"
 
     def get_value(self):
+        """
+        Returns value of :attr:`self.func` callback
+        """
         if self.args:
             return self.func(*self.args)
         else:
             return self.func()
 
     def ready(self):
+        """
+        Returns True if interval for this item has elapsed.
+        """
         now = time.time()
         if now >= self.next:
             self.next = (now + self.interval)
@@ -56,6 +100,18 @@ class DataItem():
         return False
 
 def get_data_items_dict(mempoll, cpupoll, poll, checkdisk, diskpoll):
+    """
+    Create a dict with items to monitor.
+
+    :param int mempoll: poll interval for memory callbacks
+    :param int cpupoll: poll interval for cpu callbacks
+    :param int poll: general poll interval
+    :param bool checkdisk: Set True to poll disk drives
+    :param int diskpoll: poll interval for disk drives
+
+    :returns: dict of :class:`DataItem`
+
+    """
     NO = SystemMonitorSource
     BY = SystemMonitorByteSource
     PE = SystemMonitorPercentSource
@@ -144,6 +200,9 @@ class SystemMonitorController(BaseController.BaseController):
         self.logger.debug("'Write source' event to %s. value: %s at: %s", incoming.key, value, source_time)
 
     def poll_data(self):
+        """
+        Iter the dict of :class:`DataItem` and get values.
+        """
         stime = datetime.datetime.utcnow()
         status_ok = True
         for dataitem in self.data_items.values():

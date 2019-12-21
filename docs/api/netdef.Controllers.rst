@@ -50,9 +50,9 @@ CommTestController
     :members:
     :show-inheritance:
 
-----------------------
-Events by date or time
-----------------------
+------------
+Local events
+------------
 
 CrontabController
 -----------------
@@ -61,15 +61,19 @@ CrontabController
     :members:
     :show-inheritance:
 
-----------------------
-User controlled events
-----------------------
-
 InternalController
 ------------------
 
 .. automodule:: netdef.Controllers.InternalController
     :members:
+    :show-inheritance:
+
+SystemMonitorController
+-----------------------
+
+.. automodule:: netdef.Controllers.SystemMonitorController
+    :members:
+    :undoc-members:
     :show-inheritance:
 
 --------------------
