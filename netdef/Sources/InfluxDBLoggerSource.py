@@ -1,32 +1,36 @@
 from netdef.Sources import BaseSource, Sources
-from netdef.Interfaces.DefaultInterface import DefaultInterface
+from netdef.Interfaces.InfluxDBLoggerInterface import InfluxDBLoggerInterface, Value
 
 @Sources.register("InfluxDBLoggerSource")
 class InfluxDBLoggerSource(BaseSource.BaseSource):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.interface = DefaultInterface
+        self.interface = InfluxDBLoggerInterface
     
     def unpack_measurement(self):
         return self.key
 
     @staticmethod
-    def make_points(item, value, source_time):
+    def make_points(interface, measurement, value, source_time, status_code):
         points = [{
-            "measurement": item.key,
+            "measurement": measurement,
             "time": source_time,
             "tags": {
-                "key": item.key,
-                "rule": item.rule,
-                "source": item.source,
-                "controller": item.controller
+                "key": interface.key,
+                "rule": interface.rule,
+                "source": interface.source,
+                "controller": interface.controller
             },
             "fields": {
                 "value": value,
-                "status_code": str(item.status_code)
+                "status_code": str(status_code)
             }
         }]
         return points
 
-    def get_points(self, value, source_time):
-        return self.make_points(self, value, source_time)
+    def get_points(self, data, source_time, status_code):
+        if isinstance(data, Value):
+            return self.make_points(data, self.key, data.value, data.source_time, data.status_code)
+        else:
+            return self.make_points(self, self.key, data, source_time, status_code)
+

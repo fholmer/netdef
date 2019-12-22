@@ -48,14 +48,20 @@ class InfluxDBLoggerController(BaseController.BaseController):
 
     def handle_add_source(self, incoming):
         self.logger.debug("'Add source' event for %s", incoming.key)
-        if hasattr(incoming, "unpack_measurement"):
+        if isinstance(incoming, InfluxDBLoggerSource):
             self.add_source(incoming.unpack_measurement(), incoming)
 
     def handle_write_source(self, incoming, value, source_time):
-        if hasattr(incoming, "get_points"):
-            points = incoming.get_points(value, source_time)
+        if isinstance(incoming, InfluxDBLoggerSource):
+            points = incoming.get_points(value, source_time, incoming.status_code)
         else:
-            points = InfluxDBLoggerSource.make_points(incoming, value, source_time)
+            points = InfluxDBLoggerSource.make_points(
+                incoming,
+                incoming.key,
+                value,
+                source_time,
+                incoming.status_code
+            )
 
         try:
             if not self.client.write_points(points):
@@ -63,7 +69,7 @@ class InfluxDBLoggerController(BaseController.BaseController):
                     "Write error on influxdb db:%s measurement:%s value:%s time:%s",
                     self.client._database, incoming.key, value, source_time
                     )
-        except InfluxDBServerError as write_error:
+        except (InfluxDBServerError, RequestException) as write_error:
             self.logger.exception(write_error)
             self.logger.error(
                 "Server error on influxdb db:%s measurement:%s value:%s time:%s",
