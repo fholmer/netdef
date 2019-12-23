@@ -14,9 +14,14 @@ class InfluxDBLoggerRule(BaseRule.BaseRule):
         self.auto_logging_on = config(self.name, "auto_logging_on", 1)
 
     def setup(self):
+        ""
         self.logger.info("Running setup")
 
     def setup_auto_logging(self):
+        """
+        Autogenerate logging expressions and sources for every source that
+        is already created by other rules
+        """
 
         def expression_func(something, dblogger):
             if something.new or something.update:
@@ -50,6 +55,10 @@ class InfluxDBLoggerRule(BaseRule.BaseRule):
         self.update_statistics(self.name + ".auto_logging", 0, exp_count, source_count)
 
     def run(self):
+        """
+        Main loop. Will exit when receiving interrupt signal.
+        Calls :func:`setup_auto_logging` once at startup
+        """
         if self.auto_logging_on:
             self.logger.info("Setup autologging")
             self.setup_auto_logging()

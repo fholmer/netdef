@@ -66,3 +66,11 @@ INIRule
     :members:
     :undoc-members:
     :show-inheritance:
+
+InfluxDBLoggerRule
+------------------
+
+.. automodule:: netdef.Rules.InfluxDBLoggerRule
+    :members:
+    :undoc-members:
+    :show-inheritance:

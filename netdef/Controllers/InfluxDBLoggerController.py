@@ -16,6 +16,9 @@ class InfluxDBLoggerController(BaseController.BaseController):
     """
     .. danger:: Development Status :: 3 - Alpha
 
+    A logging controller. Its purpose is to store every
+    write event into influxdb.
+
     """
     def __init__(self, name, shared):
         super().__init__(name, shared)
@@ -52,6 +55,13 @@ class InfluxDBLoggerController(BaseController.BaseController):
             self.add_source(incoming.unpack_measurement(), incoming)
 
     def handle_write_source(self, incoming, value, source_time):
+        """
+        Write given value and timestamp into influxdb
+
+        :param InfluxDBLoggerSource incoming: source instance
+        :param value: frozen value if instance
+        :param datetime.datetime source_time: value timestamp
+        """
         if isinstance(incoming, InfluxDBLoggerSource):
             points = incoming.get_points(value, source_time, incoming.status_code)
         else:

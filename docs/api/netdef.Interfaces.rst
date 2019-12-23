@@ -59,3 +59,10 @@ ConcurrentWebRequestInterface
     :members:
     :undoc-members:
     :show-inheritance:
+
+InfluxDBLoggerInterface
+-----------------------
+
+.. automodule:: netdef.Interfaces.InfluxDBLoggerInterface
+    :members:
+    :show-inheritance:

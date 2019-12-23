@@ -76,6 +76,15 @@ HoldingRegisterSource
     :undoc-members:
     :show-inheritance:
 
+InfluxDBLoggerSource
+-----------------------
+
+.. automodule:: netdef.Sources.InfluxDBLoggerSource
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 IntegerSource
 -------------
 

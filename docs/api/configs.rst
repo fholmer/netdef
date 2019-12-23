@@ -76,6 +76,12 @@ ConcurrentWebRequestController
    :language: ini
    :caption: config/default.conf
 
+InfluxDBLoggerController
+++++++++++++++++++++++++
+.. literalinclude:: ../controller-configs/InfluxDBLogger.conf
+   :language: ini
+   :caption: config/default.conf
+
 
 Rule configs
 ------------
@@ -177,3 +183,10 @@ INIRule
 
     def expression(intdata, textdata):
         pass
+
+InfluxDBLoggerRule
+++++++++++++++++++
+
+.. literalinclude:: ../rule-configs/InfluxDBLogger.conf
+   :language: ini
+   :caption: config/default.conf

@@ -76,6 +76,19 @@ SystemMonitorController
     :undoc-members:
     :show-inheritance:
 
+
+-------
+Logging
+-------
+
+InfluxDBLoggerController
+------------------------
+
+.. automodule:: netdef.Controllers.InfluxDBLoggerController
+    :members:
+    :show-inheritance:
+
+
 --------------------
 Modbus communication
 --------------------
