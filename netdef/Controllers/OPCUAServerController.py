@@ -71,14 +71,67 @@ class OPCUAServerController(BaseController.BaseController):
     .. tip:: Development Status :: 5 - Production/Stable
 
     This Controller will start a freeopcua server instance and will
-    add a nodeid for all sources received in ADD_SOURCE messages.
+    add a nodeid for all sources received in `ADD_SOURCE` messages.
     
     When a client writes a new value this event will be forwarded to
-    the associated source and a RUN_EXPRESSION message will be sent.
+    the associated source and a `RUN_EXPRESSION` message will be sent.
 
-    When a WRITE_SOURCE message is received the value for the associated
+    When a `WRITE_SOURCE` message is received the value for the associated
     source will be updated in the server and all connected clients will
     receive a value update
+
+    Sequence diagram:
+
+    .. seqdiag::
+
+        seqdiag app{
+            activation = none;
+            default_note_color = LemonChiffon;
+            span_height = 12;
+            edge_length = 200;
+
+            Queue [color=LemonChiffon];
+            Controller [label=OPCUAServerController,color=LemonChiffon];
+            External [label=FreeOpcUA,color=LemonChiffon];
+
+            === Initialization ===
+            Queue -> Controller [label="APP_STATE, SETUP"]
+            === Setup ===
+            Queue -> Controller [label="ADD_SOURCE, source [n]"]
+            Queue -> Controller [label="APP_STATE, RUNNING"]
+            === Running ===
+            Controller -> External [label="subscribe nodeid [n]"]
+            === Begin loop ===
+            Controller <- External [
+                label="Value change, nodeid [n]",
+                leftnote="
+                    Update value of
+                    source [n]"
+            ]
+            Controller -> Queue [
+                label="RUN_EXPRESSION, source [n]",
+                note="
+                    Value change
+                    in source [n]"
+            ]
+            ... ...
+            Queue -> Controller [
+                label="
+                    WRITE_SOURCE,
+                    source [n], value, timestamp",
+                note="
+                    Update value of
+                    source [n]"
+            ]
+            Controller -> External [
+                label="update value, nodeid [n]",
+                note="
+                    Value change
+                    in nodeid [n]"
+            ]
+            === End Loop ===
+        }
+
     """
     def __init__(self, name, shared):
         super().__init__(name, shared)

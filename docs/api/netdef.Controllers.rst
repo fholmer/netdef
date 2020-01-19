@@ -39,9 +39,9 @@ BaseAsyncController
 .. rubric:: Built-in controller modules:
 
 
---------------------------------------
-Communication test by ICMP or TCP ping
---------------------------------------
+---------------------------
+Built-in controller modules
+---------------------------
 
 CommTestController
 ------------------
@@ -49,10 +49,6 @@ CommTestController
 .. automodule:: netdef.Controllers.CommTestController
     :members:
     :show-inheritance:
-
-------------
-Local events
-------------
 
 CrontabController
 -----------------
@@ -76,22 +72,12 @@ SystemMonitorController
     :undoc-members:
     :show-inheritance:
 
-
--------
-Logging
--------
-
 InfluxDBLoggerController
 ------------------------
 
 .. automodule:: netdef.Controllers.InfluxDBLoggerController
     :members:
     :show-inheritance:
-
-
---------------------
-Modbus communication
---------------------
 
 ModbusClientController
 ----------------------
@@ -109,10 +95,6 @@ ModbusServerController
     :undoc-members:
     :show-inheritance:
 
-------------------
-MQTT communication
-------------------
-
 MQTTDataAccessController
 ------------------------
 
@@ -120,10 +102,6 @@ MQTTDataAccessController
     :members:
     :undoc-members:
     :show-inheritance:
-
---------------------
-OPC UA communication
---------------------
 
 OPCUAClientController
 ---------------------
@@ -140,10 +118,6 @@ OPCUAServerController
     :members:
     :undoc-members:
     :show-inheritance:
-
---------------------------
-HTTP / HTTPS communication
---------------------------
 
 RESTJsonController
 ------------------

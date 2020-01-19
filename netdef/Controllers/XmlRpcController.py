@@ -14,6 +14,71 @@ class XmlRpcController(BaseController.BaseController):
     """
     .. tip:: Development Status :: 5 - Production/Stable
 
+    Sequence diagram:
+
+    .. seqdiag::
+
+        seqdiag app{
+            activation = none;
+            default_note_color = LemonChiffon;
+            span_height = 12;
+            edge_length = 200;
+
+            Queue [color=LemonChiffon];
+            Controller [label=XmlRpcController,color=LemonChiffon];
+            External [label=xmlrpc.client,color=LemonChiffon];
+
+            === Initialization ===
+            Queue -> Controller [label="APP_STATE, SETUP"]
+            === Setup ===
+            Queue -> Controller [label="ADD_PARSER, class [n]"]
+            Queue -> Controller [label="ADD_SOURCE, source [n]"]
+            Queue -> Controller [label="ADD_SOURCE, source [i]"]
+            Queue -> Controller [label="APP_STATE, RUNNING"]
+            === Running ===
+            === Begin polling loop ===
+            Controller -> External [
+                label="Rpc call, request [n]",
+                leftnote="For source [n]"
+            ]
+            Controller <- External [
+                label="Rpc call, response [n]",
+                leftnote="
+                    Update value of
+                    source [n]"
+            ]
+            Controller -> Controller [
+                label="parse subitems",
+                leftnote="
+                    Unpack subitems
+                    into source [i]"
+            ]
+            Controller -> Queue [
+                label="RUN_EXPRESSION, source [i]",
+                note="
+                    Value change
+                    in source [i]"
+            ]
+            Controller -> Queue [
+                label="RUN_EXPRESSION, source [n]",
+                note="
+                    Value change
+                    in source [n]"
+            ]
+            ... ...
+            Queue -> Controller [
+                label="
+                    WRITE_SOURCE,
+                    source [n], value, timestamp",
+                note="
+                    Update value of
+                    source [n]"
+            ]
+            Controller -> External [label="Rpc call, request [n]"]
+            Controller <- External [label="Rpc call, response [n]"]
+            === End Loop ===
+        }
+
     """
     def __init__(self, name, shared):
         super().__init__(name, shared)

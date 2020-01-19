@@ -90,4 +90,79 @@ The message flow will in most cases be as follows:
     * If the :term:`expression` generate a new data change then a
       ``WRITE_SOURCE`` message is sent back directly to :term:`controller`.
 
-.. image :: ../_static/uml/message_flow_with_external.png
+
+.. seqdiag::
+
+    seqdiag {
+        activation = none;
+        default_note_color = LemonChiffon;
+        span_height = 16;
+        edge_length = 140;
+        //default_fontsize = 16;
+
+        ThreadedEngine [color=LemonChiffon];
+        Rule [color=LemonChiffon];
+        Controller [color=LemonChiffon];
+        External [shape="flowchart.database"];
+
+        === Initialization ===
+        ThreadedEngine -> Controller [label="APP_STATE, AppStateType.SETUP"]
+        === Setup ===
+        ... Parsing config files ...
+        Rule -> Controller [label="ADD_PARSER,\nsource class"]
+        Rule -> Controller [label="ADD_SOURCE,\nsource 1"]
+        Rule -> Controller [label="ADD_SOURCE,\nsource 2"]
+        Rule -> Controller [label="ADD_SOURCE,\nsource [n]"]
+        ... Parsing finished ...
+        ThreadedEngine -> Controller [label="APP_STATE, AppStateType.RUNNING"]
+        === Running ===
+        Controller --> External [
+          label="
+            [optional]
+            Setup subscription
+            for source [n]"
+        ]
+        === Begin loop ===
+        Controller --> External [label="[optional] Polling"]
+        Controller <- External [
+          label="Data received",
+          leftnote="
+            Parses / Unpacks
+            external data format
+            and updates value of
+            source [n]"
+        ]
+        Controller -> Rule [
+          label="RUN_EXPRESSION,\nsource [n]",
+          note="
+            Value change
+            in source [n]"
+        ]
+        Rule -> ThreadedEngine [
+          label="RUN_EXPRESSION,\nexpression [n]",
+          note="
+            Looks up the expression
+            for given source and
+            passes it to ThreadedEngine",
+          leftnote="
+            ThreadedEngine
+            Executes expression [n]
+            in ThreadPoolExecutor"
+        ]
+        ... ...
+        ThreadedEngine -> Controller [
+          label="WRITE_SOURCE, source [n], value, timestamp",
+          note="
+            If expression
+            produces a
+            value change"
+        ]
+        Controller -> External [
+          label="Data sent",
+          leftnote="
+            Packs value into
+            external data
+            format"
+        ]
+        === End Loop ===
+    }

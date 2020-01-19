@@ -4,5 +4,9 @@ pytest
 pytest-asyncio
 Sphinx==1.*
 sphinx-rtd-theme
+sphinxcontrib-blockdiag==1.5.5
+sphinxcontrib-seqdiag==0.8.5
+sphinxcontrib-nwdiag==0.9.5
+sphinxcontrib-actdiag==0.8.5
 twine
 wheel

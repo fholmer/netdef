@@ -22,7 +22,7 @@ Features
 * Start a new netdef project with
   `cookiecutter <https://pypi.org/project/cookiecutter>`_ or
   `make-project <https://pypi.org/project/make>`_.
-  Templates available at https://bitbucket.org/fholmer/cookiecutter-netdef.
+  Templates available at https://gitlab.com/fholmer/cookiecutter-netdef.
 * Built-in Controllers:
 
   * OpcUa server / client (`freeopcua <https://pypi.org/project/opcua>`_)

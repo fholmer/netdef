@@ -46,8 +46,16 @@ autodoc_mock_imports = [
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.viewcode'
+    'sphinx.ext.viewcode',
+    'sphinxcontrib.blockdiag',
+    'sphinxcontrib.seqdiag'
+    #'sphinxcontrib.actdiag',
+    #'sphinxcontrib.nwdiag',
+    #'sphinxcontrib.rackdiag',
+    #'sphinxcontrib.packetdiag'
 ]
+
+seqdiag_html_image_format = "SVG"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

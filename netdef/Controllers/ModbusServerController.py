@@ -18,6 +18,57 @@ class ModbusServerController(BaseController.BaseController):
     """
     .. tip:: Development Status :: 5 - Production/Stable
 
+    Sequence diagram:
+
+    .. seqdiag::
+
+        seqdiag app{
+            activation = none;
+            default_note_color = LemonChiffon;
+            span_height = 12;
+            edge_length = 200;
+
+            Queue [color=LemonChiffon];
+            Controller [label=ModbusServerController,color=LemonChiffon];
+            External [label="Pymodbus datablock",color=LemonChiffon];
+
+            === Initialization ===
+            Queue -> Controller [label="APP_STATE, SETUP"]
+            === Setup ===
+            Queue -> Controller [label="ADD_SOURCE, source [n]"]
+            Queue -> Controller [label="APP_STATE, RUNNING"]
+            === Running ===
+            === Begin loop ===
+            Controller <- External [
+                label="Value change, register [n]",
+                leftnote="
+                    Update value of
+                    source [n]"
+            ]
+            Controller -> Queue [
+                label="RUN_EXPRESSION, source [n]",
+                note="
+                    Value change
+                    in source [n]"
+            ]
+            ... ...
+            Queue -> Controller [
+                label="
+                    WRITE_SOURCE,
+                    source [n], value, timestamp",
+                note="
+                    Update value of
+                    source [n]"
+            ]
+            Controller -> External [
+                label="update value, register [n]",
+                note="
+                    Value change
+                    in nodeid [n]"
+            ]
+            === End Loop ===
+        }
+
     """
     def __init__(self, name, shared):
         super().__init__(name, shared)
