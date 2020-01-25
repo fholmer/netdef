@@ -79,7 +79,8 @@ There is also a simple launcher script:
 
     $ python launchApp.py
 
-You don't have to activate the virtual environment to run your application. You can run it directly by using absolute paths:
+You don't have to activate the virtual environment to run your application.
+You can run it directly by using absolute paths:
 
 .. code-block:: console
 
@@ -114,6 +115,16 @@ Confirm that the application is working:
 
 Create a systemd service unit file:
 
+.. code-block:: console
+
+    $ sudo /opt/first_app/bin/First-App-Service -u $USER -i /opt/first_app
+
+Confirm that the unit-file looks correct:
+
+.. code-block:: console
+
+    $ cat /etc/systemd/system/first_app.service
+
 .. code-block:: ini
 
     [Unit]
@@ -134,6 +145,3 @@ Create a systemd service unit file:
     
     [Install]
     WantedBy=multi-user.target
-
-
-TODO

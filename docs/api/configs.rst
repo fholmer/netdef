@@ -21,6 +21,11 @@ ModbusServerController
    :language: ini
    :caption: config/default.conf
 
+.. code-block:: text
+   :caption: requirements.txt
+
+    pymodbus
+
 
 NewControllerTemplate
 +++++++++++++++++++++
@@ -35,12 +40,22 @@ SystemMonitorController
    :language: ini
    :caption: config/default.conf
 
+.. code-block:: text
+   :caption: requirements.txt
+
+    psutil
+
 
 ZmqDataAccessController
 +++++++++++++++++++++++
 .. literalinclude:: ../controller-configs/ZmqDataAccessController.conf
    :language: ini
    :caption: config/default.conf
+
+.. code-block:: text
+   :caption: requirements.txt
+
+    pyzmq
 
 
 CrontabController
@@ -49,12 +64,22 @@ CrontabController
    :language: ini
    :caption: config/default.conf
 
+.. code-block:: text
+   :caption: requirements.txt
+
+    crontab
+
 
 MQTTDataAccessController
 ++++++++++++++++++++++++
 .. literalinclude:: ../controller-configs/MQTTDataAccessController.conf
    :language: ini
    :caption: config/default.conf
+
+.. code-block:: text
+   :caption: requirements.txt
+
+    paho-mqtt
 
 
 OPCUAServerController
@@ -63,6 +88,11 @@ OPCUAServerController
    :language: ini
    :caption: config/default.conf
 
+.. code-block:: text
+   :caption: requirements.txt
+
+    freeopcua
+
 
 XmlRpcController
 ++++++++++++++++
@@ -70,17 +100,29 @@ XmlRpcController
    :language: ini
    :caption: config/default.conf
 
+
 ConcurrentWebRequestController
 ++++++++++++++++++++++++++++++
 .. literalinclude:: ../controller-configs/ConcurrentWebRequestController.conf
    :language: ini
    :caption: config/default.conf
 
+.. code-block:: text
+   :caption: requirements.txt
+
+    aiohttp
+
+
 InfluxDBLoggerController
 ++++++++++++++++++++++++
 .. literalinclude:: ../controller-configs/InfluxDBLogger.conf
    :language: ini
    :caption: config/default.conf
+
+.. code-block:: text
+   :caption: requirements.txt
+
+    influxdb
 
 
 Rule configs
@@ -154,6 +196,11 @@ YAMLRule
     def expression(intdata, textdata):
         pass
 
+.. code-block:: text
+   :caption: requirements.txt
+
+    PyYAML
+
 
 INIRule
 ++++++++
@@ -190,3 +237,8 @@ InfluxDBLoggerRule
 .. literalinclude:: ../rule-configs/InfluxDBLogger.conf
    :language: ini
    :caption: config/default.conf
+
+.. code-block:: text
+   :caption: requirements.txt
+
+    influxdb

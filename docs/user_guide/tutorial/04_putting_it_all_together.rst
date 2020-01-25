@@ -18,7 +18,7 @@ command. the command can be extracted from the sources key:
 ``first_app/Sources/SubprocessSource.py``:
 
 .. code-block:: python
-   :linenos:
+    :linenos:
 
     from netdef.Sources import BaseSource, Sources
     from netdef.Interfaces.DefaultInterface import DefaultInterface
@@ -41,7 +41,7 @@ The controller can retrieve the command to run by calling
 ``first_app/Controllers/SubprocessController.py``:
 
 .. code-block:: python
-   :lineno-start: 1
+    :lineno-start: 1
 
     import logging
     import datetime
@@ -59,7 +59,7 @@ return the result from stdout. In case of error the function return the error
 as text instead. Also, charset decoding errors is replaced with "?".
 
 .. code-block:: python
-   :lineno-start: 10
+    :lineno-start: 10
 
     def stdout_from_terminal(command_as_str, err_msg=None):
         command_args = shlex.split(command_as_str)
@@ -76,7 +76,7 @@ We create an option ``value_as_args`` to use the value from the source to be
 added as an argument to the command. the option is read from config file.
 
 .. code-block:: python
-   :lineno-start: 20
+    :lineno-start: 20
 
     @Controllers.register("SubprocessController")
     class SubprocessController(BaseController.BaseController):
@@ -92,7 +92,7 @@ and await events. In this example we only wait for WRITE_SOURCE messages.
 So we only have to iterate the message queue:
 
 .. code-block:: python
-   :lineno-start: 27
+    :lineno-start: 27
 
     def run(self):
         "Main loop. Will exit when receiving interrupt signal"
@@ -107,7 +107,7 @@ in our controller. We can use
 :attr:`netdef.Controllers.BaseController.BaseController.add_source`
 
 .. code-block:: python
-   :lineno-start: 33
+    :lineno-start: 33
 
     def handle_add_source(self, incoming):
         self.logger.debug("'Add source' event for %s", incoming.key)
@@ -124,7 +124,7 @@ To check if we know how to handle it we check if it is an instance of
 the source we created :class:`SubprocessSource`.
 
 .. code-block:: python
-   :lineno-start: 36
+    :lineno-start: 36
 
     def handle_write_source(self, incoming, value, source_time):
         self.logger.debug("'Write source' event to %s. value: %s at: %s", incoming.key, value, source_time)
@@ -147,7 +147,7 @@ Knowing this we can safely call :attr:`SubprocessSource.get_command_and_args`
 to get the command.
 
 .. code-block:: python
-   :lineno-start: 51
+    :lineno-start: 51
 
         if self.value_as_args:
             cmd_as_str = incoming.get_command_and_args(value)
@@ -164,7 +164,7 @@ At last we create and send a RUN_EXPRESSION message using
 and :attr:`netdef.Controllers.BaseController.BaseController.send_outgoing`
 
 .. code-block:: python
-   :lineno-start: 60
+    :lineno-start: 60
 
         if self.update_source_instance_value(incoming, new_val, stime, status_ok, cmp_oldew):
             self.send_outgoing(incoming)
@@ -175,7 +175,7 @@ The command list can be a simple text file:
 ``config/command_rule.txt``:
 
 .. code-block:: text
-   :lineno-start: 1
+    :lineno-start: 1
 
     echo hello
     ls -lah .
@@ -187,7 +187,7 @@ The expression is a python file. The rule expect to find a function called :func
 ``config/command_rule.py``:
 
 .. code-block:: python
-   :lineno-start: 1
+    :lineno-start: 1
 
     import logging
     logger = logging.getLogger(__name__ + ":expression")
@@ -216,7 +216,7 @@ Now we are ready to create the rule
 ``first_app/Rules/FirstAppRule.py``:
 
 .. code-block:: python
-   :lineno-start: 1
+    :lineno-start: 1
 
     import logging
     import pathlib
@@ -230,7 +230,7 @@ We will look for the config file and expression file relative to the project
 folder.
 
 .. code-block:: python
-   :lineno-start: 8
+    :lineno-start: 8
 
     @Rules.register("FirstAppRule")
     class FirstAppRule(BaseRule.BaseRule):
@@ -253,7 +253,7 @@ folder.
 TODO
 
 .. code-block:: python
-   :lineno-start: 25
+    :lineno-start: 25
 
         def setup(self):
             self.logger.info("Running setup")
@@ -280,7 +280,7 @@ TODO
 TODO
 
 .. code-block:: python
-   :lineno-start: 46
+    :lineno-start: 46
 
         def run(self):
             self.logger.info("Running")
@@ -291,7 +291,7 @@ TODO
 TODO
 
 .. code-block:: python
-   :lineno-start: 51
+    :lineno-start: 51
 
         def handle_run_expression(self, incoming):
             expressions = self.get_expressions(incoming)
@@ -305,7 +305,7 @@ TODO
 ``config/default.ini``
 
 .. code-block:: ini
-   :linenos:
+    :linenos:
 
     [rules]
     FirstAppRule = 1

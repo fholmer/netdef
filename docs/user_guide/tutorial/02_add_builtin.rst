@@ -28,6 +28,13 @@ We will have to merge the two configs into one and add them to ``config/default.
     [CrontabController]
     [OPCUAServerController]
 
+We also have to merge required packages into ``requirements.txt``:
+
+.. code-block:: text
+
+    crontab
+    freeopcua
+
 Next step is to start using the controllers and sources by setting up a Rule.
 
 
@@ -75,7 +82,10 @@ We now have to create the csv and py file:
             oua.set = "Hello, world {}".format(int(cron.value))
 
 
-Now you can try to launch the application::
+Now you can try to launch the application:
 
+.. code-block:: console
+
+    $ pip install -r requirements.txt
     $ python -m first_app -r .
 

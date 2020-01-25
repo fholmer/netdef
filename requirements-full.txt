@@ -6,6 +6,7 @@ Flask-Admin
 Flask-BasicAuth
 Flask-Login
 freeopcua
+influxdb
 Jinja2
 paho-mqtt
 psutil

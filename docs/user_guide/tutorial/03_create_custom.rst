@@ -12,7 +12,7 @@ Paste it into your application with a new name:
 
 ``first_app/Controllers/SubprocessController.py``:
 
-..  code-block:: python
+.. code-block:: python
     :linenos:
     :emphasize-lines: 7, 9, 10
 
@@ -72,7 +72,7 @@ Paste it into your application with a new name:
 
 ``first_app/Sources/SubprocessSource.py``:
 
-..  code-block:: python
+.. code-block:: python
     :linenos:
     :emphasize-lines: 4, 5
 
@@ -95,7 +95,7 @@ Change line 7 in your custom controller:
 
 ``first_app/Controllers/SubprocessController.py``:
 
-..  code-block:: python
+.. code-block:: python
     :linenos:
     :emphasize-lines: 7
 
@@ -161,7 +161,7 @@ Paste it into your application with a new name:
 
 ``first_app/Rules/FirstAppRule.py``:
 
-..  code-block:: python
+.. code-block:: python
     :linenos:
     :emphasize-lines: 9, 10
 
