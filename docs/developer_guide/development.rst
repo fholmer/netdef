@@ -3,6 +3,39 @@
 Build from source
 =================
 
+Python
+------
+
+Normally you don't have to compile python. On Windows you can download 
+pre-compiled binaries, and most linux distros have a pre-installed version
+of python.
+
+Compile python:
+
+.. code-block:: console
+
+    $ mkdir ~/Python-3.8/
+    $ cd ~/Python-3.8/
+    $ wget https://www.python.org/ftp/python/3.8.1/Python-3.8.1.tgz
+    $ tar zxvf Python-3.8.1.tgz
+    $ Python-3.8.1/configure
+    $ make
+    $ make install DESTDIR=.
+
+psutil
+------
+
+Normally you don't have to compile yourself. ``pip install`` should compile
+automatically. If automatic compilation fails you can try to specify
+include dirs and library dirs:
+
+.. code-block:: console
+
+    $ pip install --global-option=build_ext \
+      --global-option="-I~/Python-3.8/usr/local/include/python3.8" \
+      --global-option="-L~/Python-3.8/usr/local/lib" \
+      psutil
+
 Netdef package
 --------------
 

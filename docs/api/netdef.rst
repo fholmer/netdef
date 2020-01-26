@@ -43,3 +43,11 @@ netdef.utils
     :members:
     :undoc-members:
     :show-inheritance:
+
+netdef.testutils
+----------------
+
+.. automodule:: netdef.testutils
+    :members:
+    :undoc-members:
+    :show-inheritance:

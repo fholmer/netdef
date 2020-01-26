@@ -1,3 +1,11 @@
+1.0.6.dev1
+==========
+
+**Enhancements**
+
+- Added testutils.MockExpression to simplify testing of expressions
+- Added: InfluxDBLogger
+
 1.0.5
 =====
 
