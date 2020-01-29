@@ -22,7 +22,7 @@ Features
 * Start a new netdef project with
   `cookiecutter <https://pypi.org/project/cookiecutter>`_ or
   `make-project <https://pypi.org/project/make>`_.
-  Templates available at https://gitlab.com/fholmer/cookiecutter-netdef.
+  Templates available at https://gitlab.com/fholmer/netdef-project/
 * Built-in Controllers:
 
   * OpcUa server / client (`freeopcua <https://pypi.org/project/opcua>`_)
@@ -36,12 +36,13 @@ Features
   * MQTT client (using a simple messaging format called DataAccess)
     (`paho-mqtt <https://pypi.org/project/paho-mqtt>`_)
   * Simple RESTJson client
+  * Simple Influxdb logger (`influxdb <https://pypi.org/project/influxdb>`_)
 
 * Built-in Rules:
 
   * Generic CSV config parser
   * Generic INI config parser
-  * Generic Yaml config parser
+  * Generic Yaml config parser (`PyYAML <https://pypi.org/project/PyYAML>`_)
 
 * Built-in application engines:
 
@@ -65,8 +66,8 @@ First install make-project::
 
 Create your first application::
 
-    $ python3 -m make project gl:fholmer/cookiecutter-netdef/cookiecutter-minimal-app First-App
-
+    $ python3 -m make project gl:fholmer/netdef-project/minimal-app
+    
 Setup your application::
 
     $ cd your-application

@@ -21,7 +21,7 @@ Create your first application:
 
 .. code-block:: console
 
-    $ python3 -m make project gl:fholmer/cookiecutter-netdef/cookiecutter-minimal-app First-App
+    $ python3 -m make project gl:fholmer/netdef-project/minimal-app
 
 The rest of this documentation assumes that your application is called First-App
 
