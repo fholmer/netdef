@@ -49,7 +49,7 @@ class Files(MyBaseView, fileadmin.FileAdmin):
         return not path.endswith('.lock')
 
     def is_accessible(self):
-        return super().is_accessible() and self.has_role("admin")
+        return self.has_role("admin")
 
 
 class InstallationRepo(MyBaseView, fileadmin.FileAdmin):
@@ -61,4 +61,4 @@ class InstallationRepo(MyBaseView, fileadmin.FileAdmin):
     list_template = "admin/filelist.html"
 
     def is_accessible(self):
-        return super().is_accessible() and self.has_role("admin")
+        return self.has_role("admin")

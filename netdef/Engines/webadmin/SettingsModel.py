@@ -63,3 +63,7 @@ class SettingsModelView(MyBaseView, model.BaseModelView):
     @staticmethod
     def sampling(selection, offset=0, limit=None):
         return selection[offset:(limit + offset if limit is not None else None)]
+
+    def is_accessible(self):
+        return self.has_role("admin")
+        

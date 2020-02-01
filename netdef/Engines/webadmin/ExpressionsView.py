@@ -78,4 +78,4 @@ class ExpressionsModelView(MyBaseView, model.BaseModelView):
         return selection[offset:(limit + offset if limit is not None else None)]
 
     def is_accessible(self):
-        return super().is_accessible() and self.has_role("admin")
+        return self.has_role("admin")

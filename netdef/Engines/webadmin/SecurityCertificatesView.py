@@ -93,4 +93,4 @@ class SecurityCertificatesView(MyBaseView):
             form=form
         )
     def is_accessible(self):
-        return super().is_accessible() and self.has_role("admin")
+        return self.has_role("admin")

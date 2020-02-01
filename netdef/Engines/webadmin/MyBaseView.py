@@ -11,4 +11,4 @@ class MyBaseView(BaseView):
         return abort(403)
         
     def has_role(self, roles):
-        return flask_login.current_user.has_role(roles)
+        return flask_login.current_user.is_authenticated and flask_login.current_user.has_role(roles)

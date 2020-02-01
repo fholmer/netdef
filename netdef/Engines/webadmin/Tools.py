@@ -168,3 +168,7 @@ class Tools(MyBaseView):
                 stdout_from_terminal_as_generator(*auto_update_cmd)
             )
         )
+
+    def is_accessible(self):
+        return self.has_role("admin")
+        
