@@ -107,6 +107,7 @@ def init_app(app, webadmin_views, shared):
 
     admin_users = make_admin_users_dict(config, section)
 
+    config.set_hidden_value(section, "secret_key")
     secret_key = "\x94\x03\x9c\x15\x00\xbf\x8c\xdd\xfef\xf8D]\xcc\xbf\xd4\xb6\xf3\x9a\xfe\x80\xa2\x90n"
     secret_key = config(section, "secret_key", secret_key, add_if_not_exists=False)
 
@@ -156,21 +157,19 @@ def init_app(app, webadmin_views, shared):
 
 
 def make_admin_users_dict(config, section):
-
-    config.set_hidden_value(section, "user")
-    config.set_hidden_value(section, "password")
-    config.set_hidden_value(section, "password_hash")
-    config.set_hidden_value(section, "secret_key")
-
     # fetch legacy user/pass from konfig
-    admin_user = config(section, "user", "admin", add_if_not_exists=False)
-    admin_password = config(section, "password", "", add_if_not_exists=False)
-    admin_password_hash = config(section, "password_hash", "", add_if_not_exists=False)
+    admin_user = config.config(section, "user", "admin", add_if_not_exists=False)
+    admin_password = config.config(section, "password", "", add_if_not_exists=False)
+    admin_password_hash = config.config(section, "password_hash", "", add_if_not_exists=False)
 
     # new rolebased user/pass
     admin_users = {}
 
     if admin_user:
+        config.set_hidden_value(section, "user")
+        config.set_hidden_value(section, "password")
+        config.set_hidden_value(section, "password_hash")
+
         admin_users[admin_user] =  {
             "password": admin_password,
             "password_hash": admin_password_hash,
