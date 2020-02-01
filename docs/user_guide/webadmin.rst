@@ -21,9 +21,10 @@ Here is a basic example:
     [webadmin]
     host = 0.0.0.0
     port = 8000
-    user = admin
-    password = 
-    password_hash = pbkdf2:sha256:150000$$N2b3ky8d$$51fbf24e48d498bd5543d60a86bd94927fd4d6eb123bf2d81a7401666eeea5c0
+    users.admin.user = admin
+    users.admin.password = 
+    users.admin.password_hash = pbkdf2:sha256:150000$$N2b3ky8d$$51fbf24e48d498bd5543d60a86bd94927fd4d6eb123bf2d81a7401666eeea5c0
+    users.admin.roles = admin
     secret_key = 1b50383ec6945aff8993f018feb568fa
     on = 1
     home_on = 1

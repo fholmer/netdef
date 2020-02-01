@@ -80,3 +80,6 @@ class SourcesModelView(MyBaseView, model.BaseModelView):
             model.set_value_from_string(value, origin="webadmin")
             return True
         return False
+
+    def is_accessible(self):
+        return super().is_accessible() and self.has_role("admin")

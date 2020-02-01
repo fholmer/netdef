@@ -48,6 +48,10 @@ class Files(MyBaseView, fileadmin.FileAdmin):
         # brukes for å låse konfiger utenfor webadmin
         return not path.endswith('.lock')
 
+    def is_accessible(self):
+        return super().is_accessible() and self.has_role("admin")
+
+
 class InstallationRepo(MyBaseView, fileadmin.FileAdmin):
     allowed_extensions= ('zip', 'whl', 'gz')
     can_download = True
@@ -55,3 +59,6 @@ class InstallationRepo(MyBaseView, fileadmin.FileAdmin):
     
     # har overstyrt list_row_actions for å legge til en download-knapp.
     list_template = "admin/filelist.html"
+
+    def is_accessible(self):
+        return super().is_accessible() and self.has_role("admin")

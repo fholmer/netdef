@@ -74,7 +74,25 @@ class MyAdminIndexView(flask_admin.AdminIndexView):
         return redirect(url_for('.command_result_view'))
     
 class User(flask_login.UserMixin):
-    pass
+    def __init__(self, userid, roles):
+        self.id = userid
+        if isinstance(roles, set):
+            self.roles = roles
+        elif isinstance(roles, (list, tuple)):
+            self.roles = set(roles)
+        elif isinstance(roles, str):
+            self.roles = {roles}
+        else:
+            self.roles = set()
+
+    def has_role(self, roles):
+        if isinstance(roles, set):
+            return self.roles.issuperset(roles)
+        elif isinstance(roles, (list, tuple)):
+            return self.roles.issuperset(set(roles))
+        elif isinstance(roles, str):
+            return self.roles.issuperset({roles})
+        return False
 
 class LoginForm(form.Form):
     login = fields.StringField(validators=[validators.required()])
@@ -85,13 +103,13 @@ class LoginForm(form.Form):
         if user is None:
             raise validators.ValidationError('Invalid user')
         
-        if not utils.check_user_and_pass(current_app, self.password.data):
+        if not utils.check_user_and_pass(current_app, self.login.data, self.password.data):
             raise validators.ValidationError('Invalid password')
 
     def get_user(self):
-        admin_user = current_app.config["ADMIN_USER"]
-        if self.login.data == admin_user:
-            user = User()
-            user.id = self.login.data
+        admin_users = current_app.config["ADMIN_USERS"]
+        if self.login.data in admin_users.keys():
+            user_info = admin_users[self.login.data]
+            user = User(self.login.data, user_info["roles"])
             return user
         return None

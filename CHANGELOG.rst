@@ -3,8 +3,13 @@
 
 **Enhancements**
 
+- Webadmin: Added role based user table
 - Added testutils.MockExpression to simplify testing of expressions
 - Added: InfluxDBLogger
+
+**Incompatible API changes**
+
+- Webadmin: [webadmin]user/password keyword has changed.
 
 1.0.5
 =====

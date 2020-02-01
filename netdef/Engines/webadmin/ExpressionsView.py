@@ -76,3 +76,6 @@ class ExpressionsModelView(MyBaseView, model.BaseModelView):
     @staticmethod
     def sampling(selection, offset=0, limit=None):
         return selection[offset:(limit + offset if limit is not None else None)]
+
+    def is_accessible(self):
+        return super().is_accessible() and self.has_role("admin")

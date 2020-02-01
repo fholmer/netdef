@@ -1,6 +1,7 @@
 import configparser
 import functools
 import glob
+import flask_login
 from wtforms import Form, StringField, PasswordField, validators, SelectField, IntegerField
 from flask import current_app, request, flash
 from flask_admin import expose
@@ -63,7 +64,7 @@ class SecurityCertificatesForm(Form):
     @staticmethod
     def validate_current_password(form, field):
         validators.DataRequired()(form, field)
-        if not utils.check_user_and_pass(current_app, field.data):
+        if not utils.check_user_and_pass(current_app, flask_login.current_user.id, field.data):
             raise validators.ValidationError('Invalid password')
 
 class SecurityCertificatesView(MyBaseView):
@@ -91,3 +92,5 @@ class SecurityCertificatesView(MyBaseView):
             conf_ok=conf_ok,
             form=form
         )
+    def is_accessible(self):
+        return super().is_accessible() and self.has_role("admin")

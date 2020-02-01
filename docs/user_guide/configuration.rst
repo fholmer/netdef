@@ -334,21 +334,26 @@ Default configs
      - Webserver tcp port
      
    * - webadmin
-     - user
+     - users.admin.user
      - admin
      - Username
      
    * - webadmin
-     - password
+     - users.admin.password
      - 
      - Plain text password. If password_hash is set
        then this option is ignored.
      
    * - webadmin
-     - password_hash
+     - users.admin.password_hash
      - 
      - Password hash generated with
        ``python -m netdef -ga`` command
+
+   * - webadmin
+     - users.admin.roles
+     - admin
+     - name of user role.
      
    * - webadmin
      - secret_key

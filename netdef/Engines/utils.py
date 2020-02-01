@@ -10,9 +10,14 @@ def create_pass(password):
 def create_new_secret():
     return binascii.hexlify(os.urandom(16)).decode('ascii')
 
-def check_user_and_pass(app, password):
+def check_user_and_pass(app, user, password):
     # check if pwhash is used
-    admin_pw_hash = app.config["ADMIN_PASSWORD_HASH"]
+    admin_users = app.config["ADMIN_USERS"]
+    user_info = admin_users.get(user, None)
+    if not user_info:
+        return False
+
+    admin_pw_hash = user_info["password_hash"]
     admin_pw_hash = admin_pw_hash.replace("$$", "$")
 
     if admin_pw_hash:
@@ -20,7 +25,7 @@ def check_user_and_pass(app, password):
             return True
     else:
         # fallback til plaintext
-        admin_password = app.config["ADMIN_PASSWORD"]
+        admin_password = user_info["password"]
         if password == admin_password:
             return True
     return False

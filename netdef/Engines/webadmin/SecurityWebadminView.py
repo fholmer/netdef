@@ -31,7 +31,7 @@ webadmin_conf.add_section("webadmin")
 webadmin_conf.add_section("auto_update")
 
 default = {
-    "user": functools.partial(webadmin_conf.get, "webadmin", "user", fallback="admin"),
+    "user": functools.partial(webadmin_conf.get, "webadmin", "users.admin.user", fallback="admin"),
     "ssl_on": functools.partial(webadmin_conf.get, "webadmin", "ssl_on", fallback="0"),
     "ssl_certificate": functools.partial(webadmin_conf.get, "webadmin", "ssl_certificate", fallback=""),
     "ssl_certificate_key": functools.partial(webadmin_conf.get, "webadmin", "ssl_certificate_key", fallback=""),
@@ -47,7 +47,7 @@ class SecurityForm(Form):
     def validate_old_password(form, field):
         if form["password"].data:
             validators.DataRequired()(form, field)
-            if not check_user_and_pass(current_app, field.data):
+            if not check_user_and_pass(current_app, form["login"].data, field.data):
                 raise validators.ValidationError('Invalid password')
 
     password = PasswordField('New Password')
@@ -79,6 +79,11 @@ class SecurityWebadminView(MyBaseView):
         conf_ok = conf_file.startswith("config")
         webadmin_conf.read(conf_file, encoding=config.conf_encoding)
 
+        if webadmin_conf.get("webadmin", "users.admin.user", fallback="") == "":
+            #insert legacy user name into new if not exist
+            legacy_admin = webadmin_conf.get("webadmin", "user", fallback="")
+            webadmin_conf.set("webadmin", "users.admin.user", legacy_admin)
+
         form = SecurityForm(request.form)
 
         form.ssl_certificate.choices.clear()
@@ -102,11 +107,19 @@ class SecurityWebadminView(MyBaseView):
 
         if request.method == 'POST' and form.validate():
             if form.old_password.data:
-                if check_user_and_pass(current_app, form.old_password.data):
+                if check_user_and_pass(current_app, form.login.data, form.old_password.data):
                     password = create_pass(form.password.data)
-                    webadmin_conf.set("webadmin", "user", form.login.data)
-                    webadmin_conf.set("webadmin", "password", "")
-                    webadmin_conf.set("webadmin", "password_hash", password)
+                    webadmin_conf.set("webadmin", "users.admin.user", form.login.data)
+                    webadmin_conf.set("webadmin", "users.admin.password", "")
+                    webadmin_conf.set("webadmin", "users.admin.password_hash", password)
+                    webadmin_conf.set("webadmin", "users.admin.roles", "admin")
+
+                    if webadmin_conf.get("webadmin", "user", fallback=""):
+                        # remove legacy config
+                        webadmin_conf.remove_option("webadmin", "user")
+                        webadmin_conf.remove_option("webadmin", "password")
+                        webadmin_conf.remove_option("webadmin", "password_hash")
+
                     flash('Password has been changed.')
                 else:
                     flash('Current password is invalid.')
@@ -132,3 +145,5 @@ class SecurityWebadminView(MyBaseView):
             conf_ok=conf_ok,
             form=form
         )
+    def is_accessible(self):
+        return super().is_accessible() and self.has_role("admin")

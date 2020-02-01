@@ -105,6 +105,9 @@ class Tools(MyBaseView):
 
     @expose("/autoupgrade/")
     def autoupgrade(self):
+        if not self.has_role("admin"):
+            return self.inaccessible_callback("autoupgrade")
+
         shared = current_app.config['SHARED']
         manage_repo = current_app.config['MANAGE_REPO']
         config = shared.config.config

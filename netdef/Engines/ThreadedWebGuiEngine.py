@@ -33,7 +33,7 @@ class ThreadedWebGuiEngine(ThreadedEngine.ThreadedEngine):
 
     def block(self):
         "Run webserver and wait for KeyboardInterrupt"
-        # main-funksjonen avslutter når denne funksjonen returnerer
+
         log.info("run web interface")
         section = "webadmin"
 
@@ -51,7 +51,7 @@ class ThreadedWebGuiEngine(ThreadedEngine.ThreadedEngine):
             if ssl_certificate and ssl_certificate_key:
                 ssl_context = (ssl_certificate, ssl_certificate_key)
 
-        # her startes webserveren, denne blokkerer til ctrl-c mottas
+        # run webserver. blocks until ctrl-c is received
         try:
             run_simple(host, port, self.app, use_reloader=False, use_debugger=False, threaded=True, ssl_context=ssl_context)
         except KeyboardInterrupt:
@@ -100,26 +100,19 @@ class ThreadedWebGuiEngine(ThreadedEngine.ThreadedEngine):
 def init_app(app, webadmin_views, shared):
     """Configure flask. Setup flask_admin and flask_login
     """
-    config = shared.config.config
+    config = shared.config
     section = "webadmin"
-
-    shared.config.set_hidden_value(section, "user")
-    shared.config.set_hidden_value(section, "password")
-    shared.config.set_hidden_value(section, "password_hash")
-    shared.config.set_hidden_value(section, "secret_key")
 
     template_path = shared.config.config("install", "path", "") + "/Engines/templates"
 
-    # henter bruker/pass fra konfig
-    admin_user = config(section, "user", "admin", add_if_not_exists=False)
-    admin_password = config(section, "password", "", add_if_not_exists=False)
-    admin_password_hash = config(section, "password_hash", "", add_if_not_exists=False)
+    admin_users = make_admin_users_dict(config, section)
+
     secret_key = "\x94\x03\x9c\x15\x00\xbf\x8c\xdd\xfef\xf8D]\xcc\xbf\xd4\xb6\xf3\x9a\xfe\x80\xa2\x90n"
     secret_key = config(section, "secret_key", secret_key, add_if_not_exists=False)
 
-    # dersom vi har overstyrt denne modulen og det finnes en annen template-mappe
-    # så blir den fanget opp i variabelen template_path og lagt til i jinja sin
-    # søkefilsti
+    # if we have overridden this module and there is another template directory
+    # then it is captured in the template_path variable and added to its jinja
+    # search file path
     try:
         if not pathlib.Path(__file__).parent.joinpath("templates").samefile(template_path):
             template_search_path = app.jinja_loader.searchpath
@@ -127,11 +120,9 @@ def init_app(app, webadmin_views, shared):
     except FileNotFoundError:
         pass
 
-    # globale innstillinger og instanser legges til i app.config
-    # andre moduler kan hente disse med "import current_app"
-    app.config['ADMIN_USER'] = admin_user
-    app.config['ADMIN_PASSWORD'] = admin_password
-    app.config['ADMIN_PASSWORD_HASH'] = admin_password_hash
+    # global settings and instances are added to app.config
+    # other modules can retrieve these with "import current_app"
+    app.config['ADMIN_USERS'] = admin_users
     app.config['SECRET_KEY'] = secret_key
     app.config['SHARED'] = shared
     #app.config['RSTPAGES_SRC'] = pathlib.Path('docs').absolute()
@@ -141,10 +132,9 @@ def init_app(app, webadmin_views, shared):
 
     @login_manager.user_loader
     def user_loader(login):
-        if login not in (admin_user):
+        if login not in (admin_users.keys()):
             return
-        user = AdminIndex.User()
-        user.id = login
+        user = AdminIndex.User(login, admin_users[login]["roles"])
         return user
 
     @app.route('/')
@@ -163,3 +153,47 @@ def init_app(app, webadmin_views, shared):
         webadmin_views.setup(admin)
 
     return app
+
+
+def make_admin_users_dict(config, section):
+
+    config.set_hidden_value(section, "user")
+    config.set_hidden_value(section, "password")
+    config.set_hidden_value(section, "password_hash")
+    config.set_hidden_value(section, "secret_key")
+
+    # fetch legacy user/pass from konfig
+    admin_user = config(section, "user", "admin", add_if_not_exists=False)
+    admin_password = config(section, "password", "", add_if_not_exists=False)
+    admin_password_hash = config(section, "password_hash", "", add_if_not_exists=False)
+
+    # new rolebased user/pass
+    admin_users = {}
+
+    if admin_user:
+        admin_users[admin_user] =  {
+            "password": admin_password,
+            "password_hash": admin_password_hash,
+            "roles": {"admin"}
+        }
+    
+    prefixes = {}
+
+    for key, val in config.get_dict("webadmin").items():
+        if key.startswith("users.") and key.count(".") == 2:
+            prefix, attr = key.split(".")[1:3]
+            if attr in ("user", "password", "password_hash", "roles"):
+                if not prefix in prefixes:
+                    prefixes[prefix] = {
+                        "user":"", "password":"", "password_hash":"", "roles":set()
+                    }
+                if attr == "roles":
+                    prefixes[prefix][attr] = set(map(str.strip, val.split(",")))
+                else:
+                    config.set_hidden_value(section, key)
+                    prefixes[prefix][attr] = val
+
+    for user_info in prefixes.values():
+        admin_users[user_info["user"]] = user_info
+    
+    return admin_users
