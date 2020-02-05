@@ -121,6 +121,13 @@ class Argument():
         return self._update
 
     @property
+    def status_ok(self):
+        """
+        Returns True if value is StatusCode.GOOD or StatusCode.INITIAL
+        """
+        return self._instance.status_code in (StatusCode.INITIAL, StatusCode.GOOD)
+
+    @property
     def get(self):
         """
         Returns the value from source instance. NB! this is not a *frozen* copy

@@ -21,6 +21,8 @@ class ModbusClientController(BaseController.BaseController):
         self.logger.info("init")
 
         self.oldnew = self.shared.config.config(self.name, "oldnew_comparision", 1)
+        self.clear_writes_on_disconnect = self.shared.config.config(self.name, "clear_writes_on_disconnect", 1)
+        self.poll_interval = self.shared.config.config(self.name, "poll_interval", 0.5)
 
         host = self.shared.config.config(self.name, "host", '0.0.0.0')
         port = self.shared.config.config(self.name, "port", 5020)
@@ -31,6 +33,8 @@ class ModbusClientController(BaseController.BaseController):
         reconnect = False
         reconnect_timeout = 0
 
+        self.loop_until_app_state_running()
+
         while not self.has_interrupt():
             self.sleep(reconnect_timeout)
             reconnect_timeout = self.shared.config.config(self.name, "reconnect_timeout", 20)
@@ -39,40 +43,36 @@ class ModbusClientController(BaseController.BaseController):
                 if reconnect:
                     self.safe_disconnect()
 
-                self.client.connect()
+                    if self.clear_writes_on_disconnect:
+                        self.clear_incoming()
 
                 reconnect = True
                 self.logger.info("Running")
 
                 while not self.has_interrupt():
-                    self.loop_incoming() # dispatch handle_* functions
+                    self.loop_incoming(until_empty=False, until_timeout=self.poll_interval) # dispatch handle_* functions
                     self.loop_outgoing() # dispatch poll_* functions funksjonene
 
             except (ConnectionRefusedError, ConnectionError, ConnectionException) as error:
                 self.logger.debug("Exception: %s", error)
                 self.logger.error("Connection error. Reconnect in %s sec.", reconnect_timeout)
+                self.safe_disconnect()
+
+                for item in self.get_sources().values():
+                    if self.update_source_instance_status(item, status_ok=False, oldnew_check=self.oldnew):
+                        self.send_outgoing(item)
 
         self.safe_disconnect()
         self.logger.info("Stopped")
 
     def safe_disconnect(self):
-
-        for item in self.get_sources().values():
-            item.status_code = StatusCode.NONE
-
         try:
             self.client.close()
         except Exception as error:
             self.logger.warning("Cannot disconnect client: %s", error)
 
-    def handle_readall(self, incoming):
-        raise NotImplementedError
-
     def handle_add_source(self, incoming):
         self.add_source(incoming.key, incoming)
-
-    def handle_read_source(self, incoming):
-        raise NotImplementedError
 
     def handle_write_source(self, incoming, value, source_time):
         if hasattr(incoming, "unpack_unit_and_address"):
@@ -90,7 +90,7 @@ class ModbusClientController(BaseController.BaseController):
                         slave_unit, register, value
                         )
 
-            except Exception as write_error:
+            except ModbusIOException as write_error:
                 self.logger.exception(write_error)
                 self.logger.error(
                     "Write error on modbus unit:%s register:%s value:%s time:%s",

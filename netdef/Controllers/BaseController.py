@@ -141,6 +141,26 @@ class BaseController():
         """
         raise NotImplementedError
 
+
+    def clear_incoming(self, until_empty=True, until_messagetype=None):
+        """
+        Delete queue items
+        """
+        while not self.has_interrupt():
+            try:
+                messagetype, incoming = self.incoming.get(block=False)
+                self.logger.debug("Discarding message of type %s", messagetype)
+                self.incoming.task_done()
+                if until_messagetype and until_messagetype == messagetype:
+                    self._statistics_update_last_minute(0)
+                    return
+            except queue.Empty:
+                if until_empty:
+                    self._statistics_update_last_minute(0)
+                    return
+                else:
+                    self.sleep(self.queue_timeout)
+
     def fetch_one_incoming(self):
         """
         Returns one message from the queue.
@@ -158,14 +178,20 @@ class BaseController():
             self._statistics_update_last_minute(0)
             return None, None
 
-    def loop_incoming(self):
+    def loop_until_app_state_running(self):
+        self.loop_incoming(until_empty=False, until_app_state=self.appstatetypes.RUNNING)
+
+    def loop_incoming(self, until_empty=True, until_timeout=0.0, until_messagetype=None, until_app_state=None):
         """
         Get every message from the queue and dispatch the associated handler function
         """
-        try:
-            while not self.has_interrupt():
+        loop_timeout = time.time() + until_timeout
+        while not self.has_interrupt():
+            if until_timeout > 0.0:
+                if loop_timeout < time.time():
+                    return
+            try:
                 messagetype, incoming = self.incoming.get(block=True, timeout=self.queue_timeout)
-
                 self._statistics_update_last_minute(1)
 
                 if messagetype == self.messagetypes.READ_ALL:
@@ -182,12 +208,19 @@ class BaseController():
                     self.handle_tick(incoming)
                 elif messagetype == self.messagetypes.APP_STATE:
                     self.handle_app_state(incoming)
+                    if until_app_state and incoming == until_app_state:
+                        self.incoming.task_done()
+                        return
                 else:
                     raise NotImplementedError
                 self.incoming.task_done()
+                if until_messagetype and until_messagetype == messagetype:
+                    return
 
-        except queue.Empty:
-            self._statistics_update_last_minute(0)
+            except queue.Empty:
+                self._statistics_update_last_minute(0)
+                if until_empty:
+                    return
 
     def handle_tick(self, incoming):
         """
@@ -253,6 +286,15 @@ class BaseController():
     def statistics_update(self):
         self._statistics_update_last_minute(0)
 
+    @classmethod
+    def update_source_instance_status(cls, source_instance, status_ok, oldnew_check):
+        """ Updates state on given source_instance
+            Returns True if source_instance have triggered a value change
+        """
+        value = source_instance.get
+        stime = source_instance.source_time
+        return cls.update_source_instance_value(source_instance, value, stime, status_ok, oldnew_check)
+
     @staticmethod
     def update_source_instance_value(source_instance, value, stime, status_ok, oldnew_check):
         """ Updates value, timestamp and state on given source_instance
@@ -273,7 +315,6 @@ class BaseController():
             else:
                 source_instance.status_code = StatusCode.GOOD
 
-            # event til uttrykk sendes bare på gode verdier.
             return True
 
         else:
@@ -285,4 +326,4 @@ class BaseController():
             if prev_st != StatusCode.NONE:
                 source_instance.status_code = StatusCode.INVALID
         
-            return False
+            return True
