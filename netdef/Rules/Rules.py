@@ -5,14 +5,16 @@ from collections import OrderedDict
 
 RULESDICT = OrderedDict()
 
+
 def register(name):
     def classdecorator(name, cls):
         RULESDICT[name] = cls
         return cls
+
     return functools.partial(classdecorator, name)
 
 
-class Rules():
+class Rules:
     def __init__(self, shared=None):
         self.classes = RULESDICT
         self.instances = OrderedDict()
@@ -30,7 +32,7 @@ class Rules():
 
         if isinstance(base_packages, str):
             base_packages = [base_packages]
-        
+
         added = []
 
         activate_rules = self.shared.config.get_dict("rules")
@@ -39,14 +41,16 @@ class Rules():
             for name, activate in activate_rules.items():
                 if int(activate) and not name in added:
                     try:
-                        importlib.import_module("{}.Rules.{}".format(base_package, name))
+                        importlib.import_module(
+                            "{}.Rules.{}".format(base_package, name)
+                        )
                         added.append(name)
                     except ImportError as e:
                         if isinstance(e.name, str):
                             if not e.name.startswith(base_package + ".Rules"):
-                                raise(e)
+                                raise (e)
                         else:
-                            raise(e)
+                            raise (e)
 
         for name, activate in activate_rules.items():
             if int(activate) and not name in added:

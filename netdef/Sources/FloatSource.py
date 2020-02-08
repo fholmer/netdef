@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 
 log.debug("Loading module")
 
+
 @Sources.register("FloatSource")
 class FloatSource(BaseSource.BaseSource):
     def __init__(self, *args, **kwargs):

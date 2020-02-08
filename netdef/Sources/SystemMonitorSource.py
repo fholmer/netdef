@@ -3,6 +3,7 @@ from netdef.Sources import BaseSource, Sources
 
 bytes2human = UnitOfValueInterface.bytes2human
 
+
 @Sources.register("SystemMonitorSource")
 class SystemMonitorSource(BaseSource.BaseSource):
     def __init__(self, *args, **kwargs):
@@ -21,11 +22,13 @@ class SystemMonitorSource(BaseSource.BaseSource):
         ""
         return str(self.value)
 
+
 @Sources.register("SystemMonitorByteSource")
 class SystemMonitorByteSource(SystemMonitorSource):
     @staticmethod
     def get_interface():
         return UnitOfValueInterface.ByteUnitInterface
+
 
 @Sources.register("SystemMonitorPercentSource")
 class SystemMonitorPercentSource(SystemMonitorSource):

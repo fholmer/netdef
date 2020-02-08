@@ -1,7 +1,7 @@
 from . import SharedConfig, SharedExpressions, SharedQueues, SharedSources
 
 
-class Shared():
+class Shared:
     """
     Shared memory for the application.
     This is the class of the *shared* instance that is passed to all
@@ -14,9 +14,14 @@ class Shared():
     :param str default_config_string: initial config text for :class:`netdef.Shared.SharedConfig.Config`
     
     """
+
     def __init__(self, identifier, install_path, proj_path, default_config_string):
-        self.config = SharedConfig.Config(identifier, install_path, proj_path, default_config_string)
-        self.queues = SharedQueues.SharedQueues(self.config.config("queues", "maxsize", 0))
+        self.config = SharedConfig.Config(
+            identifier, install_path, proj_path, default_config_string
+        )
+        self.queues = SharedQueues.SharedQueues(
+            self.config.config("queues", "maxsize", 0)
+        )
         self.sources = SharedSources.SharedSources()
         self.expressions = SharedExpressions.SharedExpressions()
         self.restart_on_exit = False

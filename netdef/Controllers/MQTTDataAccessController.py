@@ -16,6 +16,7 @@ class MQTTDataAccessController(BaseController.BaseController):
     .. danger:: Development Status :: 3 - Alpha
 
     """
+
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.logger = logging.getLogger(self.name)
@@ -28,7 +29,9 @@ class MQTTDataAccessController(BaseController.BaseController):
         self.port = config(self.name, "port", 1883)
         self.keepalive = config(self.name, "keepalive", 60)
 
-        self.subscribe_list = config(self.name, "subscribe_topics", "{}_subscribe_topics".format(self.name))
+        self.subscribe_list = config(
+            self.name, "subscribe_topics", "{}_subscribe_topics".format(self.name)
+        )
 
         self.subscribe_topics = [
             topic for topic in self.shared.config.get_dict(self.subscribe_list).values()
@@ -44,12 +47,12 @@ class MQTTDataAccessController(BaseController.BaseController):
 
     def get_key(self, topic):
         if topic.find(self.topic_prefix) == 0:
-            return topic[len(self.topic_prefix):]
+            return topic[len(self.topic_prefix) :]
         return topic
-    
+
     def mqtt_connect(self):
         self.client.connect(self.host, self.port, self.keepalive)
-    
+
     def mqtt_safe_disconnect(self):
         self.client.disconnect()
 
@@ -58,7 +61,7 @@ class MQTTDataAccessController(BaseController.BaseController):
         for topic in self.subscribe_topics:
             client.subscribe(self.get_topic(topic))
             self.logger.info("subscribe to %s", self.get_topic(topic))
-    
+
     def on_disconnect(self, client, userdata, rc):
         self.logger.debug("Disconnected with result code %s", rc)
 
@@ -73,7 +76,7 @@ class MQTTDataAccessController(BaseController.BaseController):
                 assert item_key == key
                 if self.update_source_instance_value(item, value, stime, True, False):
                     self.send_outgoing(item)
-    
+
     def loop_mqtt(self):
         rc = self.client.loop(timeout=1.0)
         # if rc != mqtt.MQTT_ERR_SUCCESS:
@@ -88,7 +91,9 @@ class MQTTDataAccessController(BaseController.BaseController):
 
         while not self.has_interrupt():
             self.sleep(reconnect_timeout)
-            reconnect_timeout = self.shared.config.config(self.name, "reconnect_timeout", 20)
+            reconnect_timeout = self.shared.config.config(
+                self.name, "reconnect_timeout", 20
+            )
             try:
                 if can_reconnect:
                     self.mqtt_safe_disconnect()
@@ -97,12 +102,14 @@ class MQTTDataAccessController(BaseController.BaseController):
                 can_reconnect = True
 
                 while not self.has_interrupt():
-                    self.loop_incoming() # dispatch handle_* functions
+                    self.loop_incoming()  # dispatch handle_* functions
                     self.loop_mqtt()
 
             except OSError as error:
                 self.logger.debug("Exception: %s", error)
-                self.logger.error("Connection error. Reconnect in %s sec.", reconnect_timeout)
+                self.logger.error(
+                    "Connection error. Reconnect in %s sec.", reconnect_timeout
+                )
                 self.statistics_update()
 
         self.logger.info("Stopped")
@@ -115,7 +122,12 @@ class MQTTDataAccessController(BaseController.BaseController):
         self.add_source(incoming.key, incoming)
 
     def handle_write_source(self, incoming, value, source_time):
-        self.logger.debug("'Write source' event to %s. value: %s at: %s", incoming.key, value, source_time)
+        self.logger.debug(
+            "'Write source' event to %s. value: %s at: %s",
+            incoming.key,
+            value,
+            source_time,
+        )
         data = incoming.pack_value(value, source_time)
         topic, payload = incoming.make_message(incoming.key, data)
         self.publish_data_item(topic, payload)

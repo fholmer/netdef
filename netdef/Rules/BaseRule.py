@@ -30,20 +30,21 @@ from .utils import get_module_from_string
 # then you can use "source.get_reference ()".
 
 
-class BaseRule():
+class BaseRule:
     """
     Abstract class for rules.
 
     :param str name: Name to be used in logfiles
     :param netdef.Shared.Shared shared: a reference to the shared object
     """
+
     def __init__(self, name, shared):
         self.name = name
         self.shared = shared
         self.init_queue()
         self.add_interrupt(None)
         self.logger = logging.getLogger("BaseRule")
-        
+
         self.stats_unique_sources = 0
         self.stats_unique_expressions = 0
 
@@ -100,7 +101,6 @@ class BaseRule():
         """
         raise NotImplementedError
 
-
     def run(self):
         """
         Override this function in rule. Example:
@@ -117,7 +117,7 @@ class BaseRule():
 
         """
         raise NotImplementedError
-        
+
     def handle_run_expression(self, incoming):
         raise NotImplementedError
 
@@ -136,9 +136,7 @@ class BaseRule():
 
         source_class = self.shared.sources.classes.get_item(source_name)
         self.shared.queues.send_message_to_controller(
-            self.shared.queues.MessageType.ADD_PARSER,
-            controller_name,
-            source_class
+            self.shared.queues.MessageType.ADD_PARSER, controller_name, source_class
         )
 
     def add_instance_to_controller(self, item_instance):
@@ -153,7 +151,7 @@ class BaseRule():
             self.shared.queues.send_message_to_controller(
                 self.shared.queues.MessageType.ADD_SOURCE,
                 item_instance.controller,
-                item_instance
+                item_instance,
             )
 
         except Exception as eee:
@@ -166,12 +164,11 @@ class BaseRule():
         :param list expressions: list of expressions
 
         """
-        self.shared.queues.run_expressions_in_engine(
-            item_instance,
-            expressions
-        )
+        self.shared.queues.run_expressions_in_engine(item_instance, expressions)
 
-    def convert_to_instance(self, item_name, source_name, controller_name, rule_name, defaultvalue):
+    def convert_to_instance(
+        self, item_name, source_name, controller_name, rule_name, defaultvalue
+    ):
         """
         Uses the source name to find the actual source class.
         Make a instance off the given source class, returns the instance
@@ -193,8 +190,8 @@ class BaseRule():
             controller=controller_name,
             source=source_name,
             key=item_name,
-            value=defaultvalue
-            )
+            value=defaultvalue,
+        )
         return item_instance
 
     def get_expressions(self, instance):
@@ -227,7 +224,6 @@ class BaseRule():
         if rule in self.shared.queues.available_rules:
             return rule
         raise ValueError("Rule missing for key: {}".format(key))
-
 
     def source_and_controller_from_key(self, key, controller=None):
         """
@@ -284,8 +280,12 @@ class BaseRule():
         self.add_class_to_controller(source_name, controller_name)
 
     @staticmethod
-    def get_module_from_string(mod_str, package=None, abs_root=None, location_name=None, mod_name=None):
-        return get_module_from_string(mod_str, package, abs_root, location_name, mod_name)
+    def get_module_from_string(
+        mod_str, package=None, abs_root=None, location_name=None, mod_name=None
+    ):
+        return get_module_from_string(
+            mod_str, package, abs_root, location_name, mod_name
+        )
 
     def add_new_expression(self, expr_info):
         """
@@ -301,22 +301,27 @@ class BaseRule():
 
         source_count = 0
         expr = expr_info.module
-       
+
         for sourceinfo in expr_info.arguments:
             if not isinstance(sourceinfo, SourceInfo):
                 raise TypeError("Expected SourceInfo, got %s" % type(sourceinfo))
 
             source_name, controller_name = self.source_and_controller_from_key(
-                sourceinfo.typename, sourceinfo.controller)
-            
+                sourceinfo.typename, sourceinfo.controller
+            )
+
             rule_name = self.rule_name_from_key(sourceinfo.typename, self.name)
             defaultvalue = sourceinfo.defaultvalue
 
-            arg = self.convert_to_instance(sourceinfo.key, source_name, controller_name, rule_name, defaultvalue)
+            arg = self.convert_to_instance(
+                sourceinfo.key, source_name, controller_name, rule_name, defaultvalue
+            )
             # 1.
             already_present = self.has_existing_instance(arg)
             if already_present:
-                arg = self.get_existing_instance(arg) # replace arg with existing instance
+                arg = self.get_existing_instance(
+                    arg
+                )  # replace arg with existing instance
 
             self.maintain_searches(arg, expr)
             # 2.
@@ -358,10 +363,14 @@ class BaseRule():
         than one source instance for each value...
         """
 
-        return self.shared.sources.instances.has_item_ref(source_instance.get_reference())
-        
+        return self.shared.sources.instances.has_item_ref(
+            source_instance.get_reference()
+        )
+
     def get_existing_instance(self, source_instance):
-        return self.shared.sources.instances.get_item_by_ref(source_instance.get_reference())
+        return self.shared.sources.instances.get_item_by_ref(
+            source_instance.get_reference()
+        )
 
     def setup_ticks(self):
         self.ticks = [Tick(c) for c in self.shared.queues.available_controllers]
@@ -369,9 +378,7 @@ class BaseRule():
     def send_ticks(self):
         for tick in self.ticks:
             self.shared.queues.send_message_to_controller(
-                self.shared.queues.MessageType.TICK,
-                tick.controller,
-                tick
+                self.shared.queues.MessageType.TICK, tick.controller, tick
             )
 
     def get_ticks(self):
@@ -380,8 +387,9 @@ class BaseRule():
     def process_ticks(self):
         if Statistics.on:
             for tick in self.get_ticks():
-                Statistics.set("{}.ticks.timediff".format(tick.controller), tick.timediff())
-
+                Statistics.set(
+                    "{}.ticks.timediff".format(tick.controller), tick.timediff()
+                )
 
     def setup_done(self):
         "Update useful statistics"
@@ -395,12 +403,13 @@ class BaseRule():
             self.logger.info("expression references: %d", self.stats_unique_expressions)
 
 
-class SourceInfo():
+class SourceInfo:
     """ This is a data class that *describes* a source. The rule
         shall create a source instance based on this *description*
     """
 
     __slots__ = ["typename", "key", "controller", "defaultvalue"]
+
     def __init__(self, typename, key, controller=None, defaultvalue=None):
         self.key = key
         self.defaultvalue = defaultvalue
@@ -419,12 +428,14 @@ class SourceInfo():
         else:
             raise TypeError("controller: wrong datatype")
 
-class ExpressionInfo():
+
+class ExpressionInfo:
     """ This is a data class that *describes* an expression. The rule
         shall create an expression  based on this *description*
     """
 
     __slots__ = ["module", "func", "arguments", "setup"]
+
     def __init__(self, module, arguments, func="expression", setup="setup"):
 
         if not isinstance(func, str):

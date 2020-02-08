@@ -6,10 +6,11 @@ def test_interface_NoUnitInterface():
     assert empty.value == 0.0
 
     none = UnitOfValueInterface.NoUnitInterface(None)
-    assert none.value == None #  ...
+    assert none.value == None  #  ...
 
     one = UnitOfValueInterface.NoUnitInterface(1.0)
     assert one.value == 1.0
+
 
 def test_interface_ByteUnitInterface():
     empty = UnitOfValueInterface.ByteUnitInterface(0)
@@ -23,6 +24,7 @@ def test_interface_ByteUnitInterface():
     big = UnitOfValueInterface.ByteUnitInterface(65432)
     assert big.value == 65432
     assert big.get_value_and_unit() == "63.9K"
+
 
 def test_interface_PercentUnitInterface():
     empty = UnitOfValueInterface.PercentUnitInterface(0.0)

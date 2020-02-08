@@ -11,7 +11,7 @@ def test_basic_class():
     assert src.get_reference() == "C:None S:None K:None"
     assert src.value_as_string == "None"
 
-    #interface for controllers
+    # interface for controllers
     assert src.pack_subitems("Something") is None
     assert src.can_unpack_subitems("") == False
     assert list(src.unpack_subitems("")) == [None]
@@ -26,6 +26,7 @@ def test_basic_class():
     assert src.get is None
     assert src.set is None
 
+
 def test_source_initial_value():
     "test source initial value"
 
@@ -37,6 +38,7 @@ def test_source_initial_value():
     assert src.copy_get_value() is None
     assert src.get is None
     assert src.set is None
+
 
 def test_source_get_value():
     "test source get value"
@@ -51,6 +53,7 @@ def test_source_get_value():
     assert src.get is 111
     assert src.set is None
 
+
 def test_source_set_value():
     "test source set value"
 
@@ -63,6 +66,7 @@ def test_source_set_value():
     assert src.copy_get_value() is None
     assert src.get is None
     assert src.set is 222
+
 
 def test_source_copy_value():
     "test source copy value"
@@ -83,44 +87,46 @@ def test_source_copy_value():
     assert src.copy_value() == set_val
     assert src.copy_get_value() == get_val
 
+
 def test_source_reference():
     S = BaseSource.BaseSource
     # identical sources is not implemented overriding __hash__
     # we use .get_reference instead.
 
     # get_reference have to detect "identical" sources.
-    src1 = S(key="key1",value="val1",controller="c1",source="s1",rule="r1")
-    src2 = S(key="key1",value="val1",controller="c1",source="s1",rule="r1")
+    src1 = S(key="key1", value="val1", controller="c1", source="s1", rule="r1")
+    src2 = S(key="key1", value="val1", controller="c1", source="s1", rule="r1")
     assert src1.get_reference() == src2.get_reference()
     assert src1 is not src2
 
     # different rule still makes the same source
-    src1 = S(key="key1",value="val1",controller="c1",source="s1",rule="r1")
-    src2 = S(key="key1",value="val1",controller="c1",source="s1",rule="r2")
+    src1 = S(key="key1", value="val1", controller="c1", source="s1", rule="r1")
+    src2 = S(key="key1", value="val1", controller="c1", source="s1", rule="r2")
     assert src1.get_reference() == src2.get_reference()
     assert src1 is not src2
 
     # different value still makes the same source
-    src1 = S(key="key1",value="val1",controller="c1",source="s1",rule="r1")
-    src2 = S(key="key1",value="val2",controller="c1",source="s1",rule="r1")
+    src1 = S(key="key1", value="val1", controller="c1", source="s1", rule="r1")
+    src2 = S(key="key1", value="val2", controller="c1", source="s1", rule="r1")
     assert src1.get_reference() == src2.get_reference()
     assert src1 is not src2
 
     # key, controller or source makes .get_reference unique
-    src1 = S(key="key1",value="val1",controller="c1",source="s1",rule="r1")
-    src2 = S(key="key2",value="val1",controller="c1",source="s1",rule="r1")
+    src1 = S(key="key1", value="val1", controller="c1", source="s1", rule="r1")
+    src2 = S(key="key2", value="val1", controller="c1", source="s1", rule="r1")
     assert src1.get_reference() != src2.get_reference()
     assert src1 is not src2
 
-    src1 = S(key="key1",value="val1",controller="c1",source="s1",rule="r1")
-    src2 = S(key="key1",value="val1",controller="c2",source="s1",rule="r1")
+    src1 = S(key="key1", value="val1", controller="c1", source="s1", rule="r1")
+    src2 = S(key="key1", value="val1", controller="c2", source="s1", rule="r1")
     assert src1.get_reference() != src2.get_reference()
     assert src1 is not src2
 
-    src1 = S(key="key1",value="val1",controller="c1",source="s1",rule="r1")
-    src2 = S(key="key1",value="val1",controller="c1",source="s2",rule="r1")
+    src1 = S(key="key1", value="val1", controller="c1", source="s1", rule="r1")
+    src2 = S(key="key1", value="val1", controller="c1", source="s2", rule="r1")
     assert src1.get_reference() != src2.get_reference()
     assert src1 is not src2
+
 
 def test_source_set_callback():
     src = BaseSource.BaseSource()

@@ -9,8 +9,10 @@ import werkzeug.security
 def create_pass(password):
     return werkzeug.security.generate_password_hash(password).replace("$", "$$")
 
+
 def create_new_secret():
-    return binascii.hexlify(os.urandom(16)).decode('ascii')
+    return binascii.hexlify(os.urandom(16)).decode("ascii")
+
 
 def check_user_and_pass(app, user, password):
     # check if pwhash is used
@@ -32,11 +34,13 @@ def check_user_and_pass(app, user, password):
             return True
     return False
 
+
 # default cert filenames:
 default_pem_file = os.path.join("ssl", "certs", "certificate.pem")
 default_key_file = os.path.join("ssl", "private", "certificate.pem.key")
 default_der_file = os.path.join("ssl", "certs", "certificate.der")
 default_derkey_file = os.path.join("ssl", "private", "certificate.der.key")
+
 
 def can_generate_certs():
     if shutil.which("openssl") is None:
@@ -45,18 +49,36 @@ def can_generate_certs():
         return True
 
 
-def generate_overwrite_certificates(pem_file, key_file, der_file, derkey_file, common_name, days=3650):
+def generate_overwrite_certificates(
+    pem_file, key_file, der_file, derkey_file, common_name, days=3650
+):
     cmd_req_pem = [
-        "openssl", "req", "-x509", "-sha256", "-newkey", "rsa:2048", "-keyout",
-        key_file, "-out", pem_file, "-days", str(days), "-nodes"
-        ]
+        "openssl",
+        "req",
+        "-x509",
+        "-sha256",
+        "-newkey",
+        "rsa:2048",
+        "-keyout",
+        key_file,
+        "-out",
+        pem_file,
+        "-days",
+        str(days),
+        "-nodes",
+    ]
 
-    cmd_der = [
-        "openssl", "x509", "-outform", "der", "-in", pem_file, "-out", der_file
-        ]
+    cmd_der = ["openssl", "x509", "-outform", "der", "-in", pem_file, "-out", der_file]
     cmd_der_key = [
-        "openssl", "rsa", "-outform", "der", "-in", key_file, "-out", derkey_file
-        ]
+        "openssl",
+        "rsa",
+        "-outform",
+        "der",
+        "-in",
+        key_file,
+        "-out",
+        derkey_file,
+    ]
 
     os.makedirs(os.path.join("ssl", "certs"), exist_ok=True)
     os.makedirs(os.path.join("ssl", "private"), exist_ok=True)

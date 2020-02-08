@@ -19,6 +19,7 @@ def test_integer_interface_values():
     assert one.bits(0, 1) == [1, 0]
     assert one.bit(0) == True
 
+
 def test_integer_interface_setbit():
     empty = IntegerInterface(0)
     empty.setbit(0)
@@ -33,6 +34,7 @@ def test_integer_interface_setbit():
 
     tree.setbit(1, False)
     assert tree.value == 0
+
 
 def test_integer_interface_setbits():
     empty = IntegerInterface(0)
@@ -63,6 +65,7 @@ def test_integer_interface_clearbit():
 
     seven.clearbit(1)
     assert seven.value == 0
+
 
 def test_integer_interface_clearbit():
     seven = IntegerInterface(7)

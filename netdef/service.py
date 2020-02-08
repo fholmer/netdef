@@ -1,7 +1,7 @@
 import os
 import shutil
 
-__all__ = ['get_service', 'run_service']
+__all__ = ["get_service", "run_service"]
 
 service_type = "none"
 if os.name == "posix":
@@ -10,11 +10,12 @@ if os.name == "posix":
 elif os.name == "nt":
     service_type = "windows"
 
-if service_type =="systemd":
+if service_type == "systemd":
     from netdef.systemd_service import get_service, run_service
 elif service_type == "windows":
     from netdef.windows_service import get_service, run_service
 else:
+
     def get_service(*args, **kwargs):
         """
         .. note::

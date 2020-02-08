@@ -10,6 +10,7 @@ from . import BaseController, Controllers
 log = logging.getLogger(__name__)
 log.debug("Loading module")
 
+
 @Controllers.register("ModbusClientController")
 class ModbusClientController(BaseController.BaseController):
     """
@@ -95,16 +96,19 @@ class ModbusClientController(BaseController.BaseController):
 
 
     """
+
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.logger = logging.getLogger(name)
         self.logger.info("init")
 
         self.oldnew = self.shared.config.config(self.name, "oldnew_comparision", 1)
-        self.clear_writes_on_disconnect = self.shared.config.config(self.name, "clear_writes_on_disconnect", 1)
+        self.clear_writes_on_disconnect = self.shared.config.config(
+            self.name, "clear_writes_on_disconnect", 1
+        )
         self.poll_interval = self.shared.config.config(self.name, "poll_interval", 0.5)
 
-        host = self.shared.config.config(self.name, "host", '127.0.0.1')
+        host = self.shared.config.config(self.name, "host", "127.0.0.1")
         port = self.shared.config.config(self.name, "port", 5020)
         self.client = ModbusClient(host, port=port)
 
@@ -117,7 +121,9 @@ class ModbusClientController(BaseController.BaseController):
 
         while not self.has_interrupt():
             self.sleep(reconnect_timeout)
-            reconnect_timeout = self.shared.config.config(self.name, "reconnect_timeout", 20)
+            reconnect_timeout = self.shared.config.config(
+                self.name, "reconnect_timeout", 20
+            )
 
             try:
                 if reconnect:
@@ -130,16 +136,26 @@ class ModbusClientController(BaseController.BaseController):
                 self.logger.info("Running")
 
                 while not self.has_interrupt():
-                    self.loop_incoming(until_empty=False, until_timeout=self.poll_interval) # dispatch handle_* functions
-                    self.loop_outgoing() # dispatch poll_* functions funksjonene
+                    self.loop_incoming(
+                        until_empty=False, until_timeout=self.poll_interval
+                    )  # dispatch handle_* functions
+                    self.loop_outgoing()  # dispatch poll_* functions funksjonene
 
-            except (ConnectionRefusedError, ConnectionError, ConnectionException) as error:
+            except (
+                ConnectionRefusedError,
+                ConnectionError,
+                ConnectionException,
+            ) as error:
                 self.logger.debug("Exception: %s", error)
-                self.logger.error("Connection error. Reconnect in %s sec.", reconnect_timeout)
+                self.logger.error(
+                    "Connection error. Reconnect in %s sec.", reconnect_timeout
+                )
                 self.safe_disconnect()
 
                 for item in self.get_sources().values():
-                    if self.update_source_instance_status(item, status_ok=False, oldnew_check=self.oldnew):
+                    if self.update_source_instance_status(
+                        item, status_ok=False, oldnew_check=self.oldnew
+                    ):
                         self.send_outgoing(item)
 
         self.safe_disconnect()
@@ -174,7 +190,9 @@ class ModbusClientController(BaseController.BaseController):
             slave_unit, register = incoming.unpack_unit_and_address()
 
             try:
-                write_result = self.client.write_register(register, value, unit=slave_unit)
+                write_result = self.client.write_register(
+                    register, value, unit=slave_unit
+                )
                 if isinstance(write_result, ModbusIOException):
                     raise ModbusIOException
 
@@ -182,15 +200,20 @@ class ModbusClientController(BaseController.BaseController):
                 if not status_ok:
                     self.logger.error(
                         "Write error on modbus unit:%s register:%s value:%s",
-                        slave_unit, register, value
-                        )
+                        slave_unit,
+                        register,
+                        value,
+                    )
 
             except ModbusIOException as write_error:
                 self.logger.exception(write_error)
                 self.logger.error(
                     "Write error on modbus unit:%s register:%s value:%s time:%s",
-                    slave_unit, register, value, source_time
-                    )
+                    slave_unit,
+                    register,
+                    value,
+                    source_time,
+                )
 
     def poll_outgoing_item(self, item):
         """
@@ -201,13 +224,17 @@ class ModbusClientController(BaseController.BaseController):
         if hasattr(item, "unpack_unit_and_address"):
             slave_unit, register = item.unpack_unit_and_address()
             try:
-                read_result = self.client.read_holding_registers(register, 1, unit=slave_unit)
+                read_result = self.client.read_holding_registers(
+                    register, 1, unit=slave_unit
+                )
                 if isinstance(read_result, ModbusIOException):
                     raise ModbusIOException
                 status_ok = read_result.function_code < 0x80
                 value = read_result.registers[0]
                 stime = datetime.datetime.utcnow()
-                if self.update_source_instance_value(item, value, stime, status_ok, self.oldnew):
+                if self.update_source_instance_value(
+                    item, value, stime, status_ok, self.oldnew
+                ):
                     self.send_outgoing(item)
             except ModbusIOException as error:
                 self.logger.exception(error)

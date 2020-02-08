@@ -7,6 +7,7 @@ from netdef.Shared.SharedConfig import Config
 
 PROJ = os.path.dirname(__file__)
 
+
 def test_config_basic():
 
     # file not found
@@ -19,41 +20,63 @@ def test_config_basic():
 
     # version is missing
     with pytest.raises(ValueError):
-        conf = Config("test", "..", PROJ, """
+        conf = Config(
+            "test",
+            "..",
+            PROJ,
+            """
         [general]
         identifier = test
-        """)
+        """,
+        )
 
-    conf = Config("test", "..", PROJ, """
+    conf = Config(
+        "test",
+        "..",
+        PROJ,
+        """
     [general]
     identifier = test
     version = 1
-    """)
+    """,
+    )
 
     assert conf.IDENTIFIER == "test"
-    
+
     assert conf.config("install", "path") == ".."
     assert conf("install", "path") == ".."
 
     assert conf.config("proj", "path") == PROJ
     assert conf("proj", "path") == PROJ
 
+
 def test_config_paths():
-    conf = Config("test", "", PROJ, """
+    conf = Config(
+        "test",
+        "",
+        PROJ,
+        """
     [general]
     identifier = test
     version = 1
-    """)
+    """,
+    )
 
     assert conf("install", "path") == os.path.dirname(SharedConfig.__file__)
     assert conf("proj", "path") == PROJ
 
+
 def test_config_config():
-    conf = Config("test", "..", PROJ, """
+    conf = Config(
+        "test",
+        "..",
+        PROJ,
+        """
     [general]
     identifier = test
     version = 1
-    """)
+    """,
+    )
 
     assert conf.config("new_section", "new_key", "no value") == "no value"
 
@@ -72,12 +95,18 @@ def test_config_config():
         ("proj", "path", PROJ),
     ]
 
+
 def test_config_config_typecast():
-    conf = Config("test", "..", PROJ, """
+    conf = Config(
+        "test",
+        "..",
+        PROJ,
+        """
     [general]
     identifier = test
     version = 1
-    """)
+    """,
+    )
 
     assert conf("general", "version", 0) == 1
     assert conf("general", "version", 0.0) == 1.0
@@ -85,14 +114,20 @@ def test_config_config_typecast():
     assert conf("general", "version", "") == "1"
     assert conf("general", "version", None) == "1"
     assert conf("general", "version", []) == ["1"]
-    assert conf("general", "version", ()) == ("1", )
+    assert conf("general", "version", ()) == ("1",)
+
 
 def test_config_config_internal_cache():
-    conf = Config("test", "..", PROJ, """
+    conf = Config(
+        "test",
+        "..",
+        PROJ,
+        """
     [general]
     identifier = test
     version = 1
-    """)
+    """,
+    )
 
     # no cache
     assert conf.config("section1", "key1", "first", False) == "first"

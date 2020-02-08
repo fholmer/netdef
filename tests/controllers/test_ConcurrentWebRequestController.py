@@ -11,14 +11,21 @@ from netdef.Sources import ConcurrentWebRequestSource
 NAME = "ConcurrentWebRequestController"
 CTRL = ConcurrentWebRequestController.ConcurrentWebRequestController
 
+
 class SRC(ConcurrentWebRequestSource.ConcurrentWebRequestSource):
     def testing_echo_request(self):
-        html_response = (yield ConcurrentWebRequestSource.Request("GET", self.build_url("/")))
+        html_response = (
+            yield ConcurrentWebRequestSource.Request("GET", self.build_url("/"))
+        )
         yield ConcurrentWebRequestSource.Result(html_response)
+
 
 def get_event_loop(self):
     return asyncio.get_event_loop()
+
+
 CTRL.get_event_loop = get_event_loop
+
 
 def test_init_task_limit():
     shared = Mock()
@@ -29,6 +36,7 @@ def test_init_task_limit():
     shared.config.config.assert_any_call(NAME, "max_iterations", 100)
     shared.config.config.assert_any_call(NAME, "max_concurrent_tasks", 1000)
 
+
 @pytest.mark.asyncio
 async def test_get_client_session():
     shared = Mock()
@@ -37,9 +45,10 @@ async def test_get_client_session():
     src = SRC("")
     ctl_session = ctl.get_client_session(src)
     src_session = src.get_client_session()
-    
+
     assert ctl_session is src_session
     assert isinstance(ctl_session, aiohttp.ClientSession)
+
 
 @pytest.mark.asyncio
 async def test_proccess_web_request_item():
@@ -51,8 +60,10 @@ async def test_proccess_web_request_item():
     async def res():
         async def text():
             return "html-data-1"
+
         async def rel():
             return None
+
         resp = Mock()
         resp.text.return_value = text()
         resp.release.return_value = rel()
@@ -115,6 +126,7 @@ def test_next_interval_time_10():
     for _ in range(5):
         now += 10.0
         assert ni.next(now) == (0.0, 10)
+
 
 def test_next_interval_time_5():
     NI = ConcurrentWebRequestController.NextInterval

@@ -1,4 +1,3 @@
-
 import pathlib
 
 from flask_admin.contrib import fileadmin
@@ -11,7 +10,7 @@ from .MyBaseView import MyBaseView
 @Views.register("Files")
 def setup(admin):
     section = "webadmin"
-    config = admin.app.config['SHARED'].config.config
+    config = admin.app.config["SHARED"].config.config
     webadmin_config_on = config(section, "config_on", 1)
     webadmin_installationrepo_on = config(section, "installationrepo_on", 1)
     auto_update_on = config("auto_update", "on", 0)
@@ -21,25 +20,43 @@ def setup(admin):
     upload_folder = str(pathlib.Path("./config").absolute())
 
     if webadmin_config_on:
-        admin.add_view(Files(upload_folder, name='Config Files'))
+        admin.add_view(Files(upload_folder, name="Config Files"))
 
     # upgraderepo legges ikke til i hovedmenyen. den skal åpnes fra egen plassering
     repo_exists = repo_folder and pathlib.Path(repo_folder).is_dir()
-    if webadmin_installationrepo_on and webadmin_tools_on and auto_update_on and repo_exists:
+    if (
+        webadmin_installationrepo_on
+        and webadmin_tools_on
+        and auto_update_on
+        and repo_exists
+    ):
         repo_view = InstallationRepo(repo_folder, name="Installation Repo")
         admin.app.register_blueprint(repo_view.create_blueprint(admin))
-        admin.app.config['MANAGE_REPO'] = 1
+        admin.app.config["MANAGE_REPO"] = 1
     else:
-        admin.app.config['MANAGE_REPO'] = 0
+        admin.app.config["MANAGE_REPO"] = 0
+
 
 class Files(MyBaseView, fileadmin.FileAdmin):
-    allowed_extensions= ('txt', 'conf', 'csv', 'der', 'pam', 'key', 'zip', '7z', 'py', 'ini', 'yaml')
-    editable_extensions=('txt', 'conf', 'csv', 'py', 'ini', 'yaml')
+    allowed_extensions = (
+        "txt",
+        "conf",
+        "csv",
+        "der",
+        "pam",
+        "key",
+        "zip",
+        "7z",
+        "py",
+        "ini",
+        "yaml",
+    )
+    editable_extensions = ("txt", "conf", "csv", "py", "ini", "yaml")
     can_download = True
 
     # har overstyrt list_row_actions for å legge til en download-knapp.
     list_template = "admin/filelist.html"
-    edit_template = 'admin/fileedit.html'
+    edit_template = "admin/fileedit.html"
 
     def get_edit_form(self):
         ef = super().get_edit_form()
@@ -49,17 +66,19 @@ class Files(MyBaseView, fileadmin.FileAdmin):
     def is_accessible_path(self, path):
         # skjuler alle filer som slutter med .lock
         # brukes for å låse konfiger utenfor webadmin
-        return not path.endswith('.lock')
+        return not path.endswith(".lock")
 
     def is_accessible(self):
         return self.has_role("admin")
 
 
 class InstallationRepo(MyBaseView, fileadmin.FileAdmin):
-    allowed_extensions= ('zip', 'whl', 'gz')
+    allowed_extensions = ("zip", "whl", "gz")
     can_download = True
-    can_rename = False # man kan laste opp et ugyldig format og rename til gyldig format
-    
+    can_rename = (
+        False
+    )  # man kan laste opp et ugyldig format og rename til gyldig format
+
     # har overstyrt list_row_actions for å legge til en download-knapp.
     list_template = "admin/filelist.html"
 

@@ -10,12 +10,14 @@ ExpressionInfo = BaseRule.ExpressionInfo
 
 NAME = "YAMLRule"
 
+
 @Rules.register(NAME)
 class YAMLRule(BaseRule.BaseRule):
     """
     .. danger:: Development Status :: 3 - Alpha
     
     """
+
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.logger = logging.getLogger(name)
@@ -39,7 +41,7 @@ class YAMLRule(BaseRule.BaseRule):
 
         # parse yaml
         abs_yamlfile = str(pathlib.Path(abs_root).joinpath(rel_yamlfile))
-        encoding = None # TODO: parse from config
+        encoding = None  # TODO: parse from config
 
         with open(abs_yamlfile, encoding=encoding) as yamlfile:
 
@@ -51,7 +53,9 @@ class YAMLRule(BaseRule.BaseRule):
             for _parser in yaml_object.get("parsers", []):
                 _source = _parser["source"]
                 _controller = _parser["controller"] if "controller" in _parser else None
-                source_name, controller_name = self.source_and_controller_from_key(_source, _controller)
+                source_name, controller_name = self.source_and_controller_from_key(
+                    _source, _controller
+                )
                 self.add_new_parser(source_name, controller_name)
 
             for _expression in yaml_object.get("expressions", []):
@@ -64,18 +68,26 @@ class YAMLRule(BaseRule.BaseRule):
                     _kwargs["setup"] = _expression["setup"]
 
                 expression_count += 1
-                source_info_list = [SourceInfo(arg["source"], arg["key"]) for arg in _args]
-                expression_module = self.get_module_from_string(_module, __package__, abs_root, self.name, name)
-                expr_info = ExpressionInfo(expression_module, source_info_list, **_kwargs)
+                source_info_list = [
+                    SourceInfo(arg["source"], arg["key"]) for arg in _args
+                ]
+                expression_module = self.get_module_from_string(
+                    _module, __package__, abs_root, self.name, name
+                )
+                expr_info = ExpressionInfo(
+                    expression_module, source_info_list, **_kwargs
+                )
                 source_count += self.add_new_expression(expr_info)
-            
-            self.update_statistics(self.name + "." + name, 0, expression_count, source_count)
+
+            self.update_statistics(
+                self.name + "." + name, 0, expression_count, source_count
+            )
 
     def run(self):
         "Main loop. Will exit when receiving interrupt signal"
         self.logger.info("Running")
         while not self.has_interrupt():
-            self.loop_incoming() # dispatch handle_* functions
+            self.loop_incoming()  # dispatch handle_* functions
         self.logger.info("Stopped")
 
     def handle_run_expression(self, incoming):

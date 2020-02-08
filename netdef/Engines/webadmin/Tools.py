@@ -14,6 +14,7 @@ from .MyBaseView import MyBaseView
 APP_STARTUP = datetime.datetime.utcnow()
 SYS_STARTUP = datetime.datetime.utcfromtimestamp(psutil.boot_time())
 
+
 def stdout_from_terminal(*command, err_msg=None):
     try:
         res = subprocess.run(command, stdout=subprocess.PIPE).stdout
@@ -24,13 +25,14 @@ def stdout_from_terminal(*command, err_msg=None):
         else:
             return str(error)
 
+
 def stdout_from_terminal_as_generator(*command, err_msg=None, pre="", post=""):
     try:
         yield "<pre>"
         process = subprocess.Popen(command, stdout=subprocess.PIPE)
         if pre:
             yield pre
-        for line in iter(process.stdout.readline, b''):
+        for line in iter(process.stdout.readline, b""):
             yield str(line, errors="replace")
         if post:
             yield post
@@ -41,16 +43,17 @@ def stdout_from_terminal_as_generator(*command, err_msg=None, pre="", post=""):
         else:
             yield str(error)
 
+
 def get_update_cmd(
-            executable,
-            no_index,
-            pre,
-            force_reinstall,
-            find_links,
-            trusted_host,
-            minimal_timeout,
-            package
-        ):
+    executable,
+    no_index,
+    pre,
+    force_reinstall,
+    find_links,
+    trusted_host,
+    minimal_timeout,
+    package,
+):
     args = [executable, "-m", "pip", "install", "--upgrade", "-f"]
     args.append(str(pathlib.Path("./installation_repo").absolute()))
 
@@ -76,17 +79,17 @@ def get_update_cmd(
 @Views.register("Tools")
 def setup(admin, view=None):
     section = "webadmin"
-    config = admin.app.config['SHARED'].config.config
+    config = admin.app.config["SHARED"].config.config
     webadmin_tools_on = config(section, "tools_on", 1)
 
     admin.app.config["tools_panels"] = {
         "tools_on": webadmin_tools_on,
-        "security_panel_on": 0
+        "security_panel_on": 0,
     }
 
     if webadmin_tools_on:
         if not view:
-            view = Tools(name='Tools', endpoint='tools')
+            view = Tools(name="Tools", endpoint="tools")
         admin.add_view(view)
 
 
@@ -98,11 +101,11 @@ class Tools(MyBaseView):
         sys_diff = now - SYS_STARTUP
 
         return self.render(
-            'tools.html',
+            "tools.html",
             app_uptime=str(app_diff),
             sys_uptime=str(sys_diff),
             sys_version=str(platform.version()),
-            tools_panels=current_app.config['tools_panels']
+            tools_panels=current_app.config["tools_panels"],
         )
 
     @expose("/autoupgrade/")
@@ -110,31 +113,36 @@ class Tools(MyBaseView):
         if not self.has_role("admin"):
             return self.inaccessible_callback("autoupgrade")
 
-        shared = current_app.config['SHARED']
-        manage_repo = current_app.config['MANAGE_REPO']
+        shared = current_app.config["SHARED"]
+        manage_repo = current_app.config["MANAGE_REPO"]
         config = shared.config.config
         self.auto_update_on = config("auto_update", "on", 0)
         default_package_name = config("general", "identifier", "")
         self.auto_update_args = (
-                config("auto_update", "no_index", 1),
-                config("auto_update", "pre_release", 0),
-                config("auto_update", "force_reinstall", 0),
-                config("auto_update", "find_links", ""),
-                config("auto_update", "trusted_host", ""),
-                config("auto_update", "minimal_timeout", 0),
-                config("auto_update", "package", default_package_name)
+            config("auto_update", "no_index", 1),
+            config("auto_update", "pre_release", 0),
+            config("auto_update", "force_reinstall", 0),
+            config("auto_update", "find_links", ""),
+            config("auto_update", "trusted_host", ""),
+            config("auto_update", "minimal_timeout", 0),
+            config("auto_update", "package", default_package_name),
         )
         auto_update_args_names = (
-            "no_index", "pre_release", "force_reinstall", "find_links",
-            "trusted_host", "minimal_timeout", "package"
+            "no_index",
+            "pre_release",
+            "force_reinstall",
+            "find_links",
+            "trusted_host",
+            "minimal_timeout",
+            "package",
         )
         return self.render(
-            'autoupgrade.html',
+            "autoupgrade.html",
             auto_update_on=self.auto_update_on,
             manage_repo=manage_repo,
-            update_args=zip(auto_update_args_names, self.auto_update_args)
+            update_args=zip(auto_update_args_names, self.auto_update_args),
         )
-    
+
     @expose("/echo/")
     def echo(self):
         return stdout_from_terminal("echo", "test æøå €éê")
@@ -154,21 +162,16 @@ class Tools(MyBaseView):
 
     @expose("/autoupgrade/upgrade/")
     def autoupgrade_upgrade(self):
-        shared = current_app.config['SHARED']
+        shared = current_app.config["SHARED"]
         config = shared.config.config
 
         if not self.auto_update_on:
             return "ERROR: Update aborted. Update disabled i config"
 
-        auto_update_cmd = get_update_cmd(
-                sys.executable,
-                *self.auto_update_args
-            )
+        auto_update_cmd = get_update_cmd(sys.executable, *self.auto_update_args)
 
         return Response(
-            stream_with_context(
-                stdout_from_terminal_as_generator(*auto_update_cmd)
-            )
+            stream_with_context(stdout_from_terminal_as_generator(*auto_update_cmd))
         )
 
     def is_accessible(self):

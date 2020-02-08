@@ -1,3 +1,3 @@
-__all__ = ('DataDefinition', 'DataMessage')
+__all__ = ("DataDefinition", "DataMessage")
 
 from .datamessage import DataDefinition, DataMessage

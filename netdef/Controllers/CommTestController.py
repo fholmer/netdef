@@ -41,6 +41,7 @@ class CommTestController(BaseAsyncController.BaseAsyncController):
             disable = 0
 
     """
+
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.logger.info("init")
@@ -58,10 +59,11 @@ class CommTestController(BaseAsyncController.BaseAsyncController):
         # ping: async ping
         # tcpip: async tcpip socket connect
         self.test_type = config(self.name, "test_type", "tcpip")
-       
-        # denne låsen skal begrense antall åpne forbindelser
-        self.access_socket = asyncio.Semaphore(self.max_concurrent_sockets, loop=self.loop)
 
+        # denne låsen skal begrense antall åpne forbindelser
+        self.access_socket = asyncio.Semaphore(
+            self.max_concurrent_sockets, loop=self.loop
+        )
 
     async def loop_outgoing_until_interrupt(self):
         """
@@ -77,10 +79,11 @@ class CommTestController(BaseAsyncController.BaseAsyncController):
             tasks = tuple((self.commtest_tcp_connect(item) for item in sources))
             await asyncio.gather(*tasks, loop=self.loop)
             try:
-                await asyncio.wait_for(self.interrupt_loop.wait(), self.interval, loop=self.loop)
+                await asyncio.wait_for(
+                    self.interrupt_loop.wait(), self.interval, loop=self.loop
+                )
             except asyncio.TimeoutError:
-                pass 
-
+                pass
 
     def run(self):
         """
@@ -102,11 +105,9 @@ class CommTestController(BaseAsyncController.BaseAsyncController):
             self.loop.run_until_complete(self.loop_outgoing_until_interrupt())
             self.logger.info("Stopped")
 
-
     def handle_add_source(self, incoming):
         self.logger.debug("'Add source' event for %s", incoming.key)
         self.add_source(incoming.key, incoming)
-
 
     async def commtest_tcp_connect(self, item):
         if hasattr(item, "unpack_host_and_port"):
@@ -128,7 +129,9 @@ class CommTestController(BaseAsyncController.BaseAsyncController):
 
             # test tcp port
             else:
-                available = await ping.tcp_port_test_async(host, port, self.timeout, loop=self.loop)
+                available = await ping.tcp_port_test_async(
+                    host, port, self.timeout, loop=self.loop
+                )
                 delay = round(time.time() - time_begin, 3)
 
             self.access_socket.release()
@@ -138,5 +141,7 @@ class CommTestController(BaseAsyncController.BaseAsyncController):
             status_ok = True
             cmp_oldnew = False
 
-        if self.update_source_instance_value(item, new_val, stime, status_ok, cmp_oldnew):
+        if self.update_source_instance_value(
+            item, new_val, stime, status_ok, cmp_oldnew
+        ):
             self.send_outgoing(item)

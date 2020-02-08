@@ -10,16 +10,13 @@ from .MyBaseView import MyBaseView
 @Views.register("ExpressionsView")
 def setup(admin):
     section = "webadmin"
-    config = admin.app.config['SHARED'].config.config
+    config = admin.app.config["SHARED"].config.config
     webadmin_settings_on = config(section, "expressions_on", 1)
     if webadmin_settings_on:
-        admin.add_view(
-            ExpressionsModelView(
-                ExpressionsModel,
-                name='Expressions'))
+        admin.add_view(ExpressionsModelView(ExpressionsModel, name="Expressions"))
 
 
-class ExpressionsModel():
+class ExpressionsModel:
     def __init__(self, expression):
         self._expression = expression
 
@@ -33,7 +30,9 @@ class ExpressionsModel():
 
     @property
     def function_arguments(self):
-        return ", ".join("{}({})".format(arg.source, arg.key) for arg in self._expression.args)
+        return ", ".join(
+            "{}({})".format(arg.source, arg.key) for arg in self._expression.args
+        )
 
 
 class ExpressionsModelForm(form.Form):
@@ -41,24 +40,31 @@ class ExpressionsModelForm(form.Form):
     function_name = fields.StringField("function_name")
     function_arguments = fields.StringField("function_arguments")
 
+
 class ExpressionsModelView(MyBaseView, model.BaseModelView):
     can_create = False
     can_edit = False
     can_delete = False
-    column_list = ('module_filename', 'function_name', 'function_arguments')
+    column_list = ("module_filename", "function_name", "function_arguments")
     column_sortable_list = ()
-    column_searchable_list = ('module_filename', 'function_name', 'function_arguments')
+    column_searchable_list = ("module_filename", "function_name", "function_arguments")
     form = ExpressionsModelForm
 
     def get_list(self, page, sort_field, sort_desc, search, filters, page_size=None):
-        shared = current_app.config['SHARED']
+        shared = current_app.config["SHARED"]
 
         if search:
             search = search.lower()
-            expressions = (self.model(item) for item in shared.expressions.instances.items if str(item).lower().find(search) >= 0)
+            expressions = (
+                self.model(item)
+                for item in shared.expressions.instances.items
+                if str(item).lower().find(search) >= 0
+            )
             expressions = list(expressions)
         else:
-            expressions = list(self.model(item) for item in shared.expressions.instances.items)
+            expressions = list(
+                self.model(item) for item in shared.expressions.instances.items
+            )
 
         total = len(expressions)
 
@@ -73,11 +79,11 @@ class ExpressionsModelView(MyBaseView, model.BaseModelView):
         return True
 
     def get_pk_value(self, model_):
-        return 'key'
-        
+        return "key"
+
     @staticmethod
     def sampling(selection, offset=0, limit=None):
-        return selection[offset:(limit + offset if limit is not None else None)]
+        return selection[offset : (limit + offset if limit is not None else None)]
 
     def is_accessible(self):
         return self.has_role("admin")

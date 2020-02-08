@@ -4,6 +4,7 @@ from enum import Enum
 
 # mesage types
 
+
 class MessageType(Enum):
     READ_ALL = 1  # not implemented yet
     "**warning:** Not implemented yet"
@@ -32,17 +33,20 @@ class MessageType(Enum):
     APP_STATE = 9
     "Inform the controller of application state"
 
+
 class AppStateType(Enum):
     SETUP = 1
     RUNNING = 2
 
-class SharedQueues():
+
+class SharedQueues:
     """
     Message queues for all controllers, rules and the engine
     """
+
     MessageType = MessageType
     AppStateType = AppStateType
-    
+
     def __init__(self, maxsize=0):
         self.maxsize = maxsize
         self.logger = logging.getLogger(__name__)
@@ -98,13 +102,15 @@ class SharedQueues():
         :param message_object: usually a source instance. can also be a tuple.
         """
         try:
-            self.messages_to_controller[controllername].put_nowait((messagetype, message_object))
+            self.messages_to_controller[controllername].put_nowait(
+                (messagetype, message_object)
+            )
         except KeyError:
             self.logger.error(
                 "Cannot send message %s. %s not enabled.",
                 message_object,
-                controllername
-                )
+                controllername,
+            )
 
     def send_message_to_rule(self, messagetype, rule_name, message_object):
         """
@@ -138,8 +144,7 @@ class SharedQueues():
 
         """
         self.send_message_to_engine(
-            MessageType.RUN_EXPRESSION,
-            (source_instance, expressions)
+            MessageType.RUN_EXPRESSION, (source_instance, expressions)
         )
 
     def write_value_to_controller(self, source_instance, value, source_time):
@@ -160,7 +165,7 @@ class SharedQueues():
             self.logger.error(
                 "Cannot send message %s. Queue %s is full.",
                 source_instance,
-                controllername
+                controllername,
             )
 
     def send_setup_state_to_controller(self, controllername):

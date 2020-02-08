@@ -11,7 +11,7 @@ class XmlRpcMethodCallSource(BaseSource.BaseSource):
     def make_rpc_request(self, value):
         method, *arguments = value
         return method, arguments
-    
+
     def parse_rpc_response(self, value):
         return value
 

@@ -6,7 +6,7 @@ from ..Shared.Internal import Statistics
 from ..Sources.BaseSource import StatusCode
 
 
-class BaseController():
+class BaseController:
     """
     Abstract class for controllers.
 
@@ -14,6 +14,7 @@ class BaseController():
     :param shared: a reference to the shared object
 
     """
+
     def __init__(self, name, shared):
         self.name = name
         self.shared = shared
@@ -40,12 +41,16 @@ class BaseController():
 
             counters = self._statistics_counters
             if not counters["last_minute_time"] == ((time.time() // 60) * 60):
-                Statistics.set(self.name + ".incoming.last_minute.count", counters["last_minute"])
+                Statistics.set(
+                    self.name + ".incoming.last_minute.count", counters["last_minute"]
+                )
                 Statistics.set(
                     self.name + ".incoming.last_minute.time",
-                    time.strftime("%y.%m.%d %H:%M", time.localtime(counters["last_minute_time"]))
+                    time.strftime(
+                        "%y.%m.%d %H:%M", time.localtime(counters["last_minute_time"])
+                    ),
                 )
-                counters["last_minute_time"] = ((time.time() // 60) * 60)
+                counters["last_minute_time"] = (time.time() // 60) * 60
                 counters["last_minute"] = 1 if increment else 0
             elif increment:
                 counters["last_minute"] += 1
@@ -68,7 +73,7 @@ class BaseController():
     def has_interrupt(self):
         "Returns True if the interrupt signal is received"
         return self._interrupt.is_set()
-    
+
     def sleep(self, seconds):
         """"
         Sleep by waiting for the interrupt.
@@ -101,7 +106,7 @@ class BaseController():
         """
         Return True if source name is found
         """
-        return (name in self._sources)
+        return name in self._sources
 
     def add_source(self, name, init_value):
         """
@@ -125,7 +130,7 @@ class BaseController():
     def get_parsers(self):
         "Return parser storage"
         return self._parsers
-    
+
     def add_parser(self, parser):
         "Add parser if not already exists"
         if not parser in self._parsers:
@@ -148,7 +153,6 @@ class BaseController():
 
         """
         raise NotImplementedError
-
 
     def clear_incoming(self, until_empty=True, until_messagetype=None):
         """
@@ -204,7 +208,9 @@ class BaseController():
         """
         try:
             if not self.has_interrupt():
-                messagetype, incoming = self.incoming.get(block=True, timeout=self.queue_timeout)
+                messagetype, incoming = self.incoming.get(
+                    block=True, timeout=self.queue_timeout
+                )
                 self._statistics_update_last_minute(1)
                 return messagetype, incoming
 
@@ -232,9 +238,17 @@ class BaseController():
                     except ConnectionError:
                         self.handle_conn_error()
         """
-        self.loop_incoming(until_empty=False, until_app_state=self.appstatetypes.RUNNING)
+        self.loop_incoming(
+            until_empty=False, until_app_state=self.appstatetypes.RUNNING
+        )
 
-    def loop_incoming(self, until_empty=True, until_timeout=0.0, until_messagetype=None, until_app_state=None):
+    def loop_incoming(
+        self,
+        until_empty=True,
+        until_timeout=0.0,
+        until_messagetype=None,
+        until_app_state=None,
+    ):
         """
         Get every message from the queue and dispatch the associated handler function.
 
@@ -249,7 +263,9 @@ class BaseController():
                 if loop_timeout < time.time():
                     return
             try:
-                messagetype, incoming = self.incoming.get(block=True, timeout=self.queue_timeout)
+                messagetype, incoming = self.incoming.get(
+                    block=True, timeout=self.queue_timeout
+                )
                 self._statistics_update_last_minute(1)
 
                 if messagetype == self.messagetypes.READ_ALL:
@@ -336,9 +352,7 @@ class BaseController():
     def send_outgoing(self, outgoing):
         "Send RUN_EXPRESSION message on valuechange"
         self.shared.queues.send_message_to_rule(
-            self.shared.queues.MessageType.RUN_EXPRESSION,
-            outgoing.rule,
-            outgoing
+            self.shared.queues.MessageType.RUN_EXPRESSION, outgoing.rule, outgoing
         )
 
     def statistics_update(self):
@@ -351,10 +365,14 @@ class BaseController():
         """
         value = source_instance.get
         stime = source_instance.source_time
-        return cls.update_source_instance_value(source_instance, value, stime, status_ok, oldnew_check)
+        return cls.update_source_instance_value(
+            source_instance, value, stime, status_ok, oldnew_check
+        )
 
     @staticmethod
-    def update_source_instance_value(source_instance, value, stime, status_ok, oldnew_check):
+    def update_source_instance_value(
+        source_instance, value, stime, status_ok, oldnew_check
+    ):
         """ Updates value, timestamp and state on given source_instance
             Returns True if source_instance have triggered a value change
         """
@@ -364,7 +382,10 @@ class BaseController():
 
         if status_ok:
             if oldnew_check:
-                if prev_val == value and prev_st in (StatusCode.GOOD, StatusCode.INITIAL):
+                if prev_val == value and prev_st in (
+                    StatusCode.GOOD,
+                    StatusCode.INITIAL,
+                ):
                     return False
             source_instance.get = value
             source_instance.source_time = stime
@@ -383,5 +404,5 @@ class BaseController():
             source_instance.source_time = stime
             if prev_st != StatusCode.NONE:
                 source_instance.status_code = StatusCode.INVALID
-        
+
             return True

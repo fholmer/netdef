@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 
 log.debug("Loading module")
 
+
 @Sources.register("CrontabSource")
 class CrontabSource(BaseSource.BaseSource):
     def __init__(self, *args, **kwargs):

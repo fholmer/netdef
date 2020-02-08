@@ -1,5 +1,4 @@
-from netdef.Interfaces.InfluxDBLoggerInterface import (InfluxDBLoggerInterface,
-                                                       Value)
+from netdef.Interfaces.InfluxDBLoggerInterface import InfluxDBLoggerInterface, Value
 from netdef.Sources import BaseSource, Sources
 
 
@@ -8,10 +7,11 @@ class InfluxDBLoggerSource(BaseSource.BaseSource):
     """
     A dataholder class to be used with :class:`InfluxDBLoggerController`
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.interface = InfluxDBLoggerInterface
-    
+
     def unpack_measurement(self):
         """
         Returns self.key. Override to change measurement name.
@@ -32,20 +32,19 @@ class InfluxDBLoggerSource(BaseSource.BaseSource):
 
         :returns: a list of dicts
         """
-        points = [{
-            "measurement": measurement,
-            "time": source_time,
-            "tags": {
-                "key": interface.key,
-                "rule": interface.rule,
-                "source": interface.source,
-                "controller": interface.controller
-            },
-            "fields": {
-                "value": value,
-                "status_code": str(status_code)
+        points = [
+            {
+                "measurement": measurement,
+                "time": source_time,
+                "tags": {
+                    "key": interface.key,
+                    "rule": interface.rule,
+                    "source": interface.source,
+                    "controller": interface.controller,
+                },
+                "fields": {"value": value, "status_code": str(status_code)},
             }
-        }]
+        ]
         return points
 
     def get_points(self, data, source_time, status_code):
@@ -60,6 +59,8 @@ class InfluxDBLoggerSource(BaseSource.BaseSource):
         """
 
         if isinstance(data, Value):
-            return self.make_points(data, self.key, data.value, data.source_time, data.status_code)
+            return self.make_points(
+                data, self.key, data.value, data.source_time, data.status_code
+            )
         else:
             return self.make_points(self, self.key, data, source_time, status_code)

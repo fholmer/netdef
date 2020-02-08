@@ -5,6 +5,7 @@ from logging.handlers import RotatingFileHandler
 
 from .Engines.BaseEngine import BaseEngine
 from .Shared.Shared import Shared
+
 # for assertion:
 from .Shared.SharedConfig import Config
 
@@ -39,7 +40,7 @@ def setup_logging(config):
     
     """
     assert isinstance(config, Config)
-    
+
     logglevel = logging.INFO
     loggformat = logging.BASIC_FORMAT
     loggdatefmt = "%Y-%m-%d %H:%M:%S"
@@ -56,15 +57,21 @@ def setup_logging(config):
         if to_console:
             handlers.append(logging.StreamHandler())
         if to_file:
-            handlers.append(RotatingFileHandler(loggfile, maxBytes=10485760, backupCount=10))
+            handlers.append(
+                RotatingFileHandler(loggfile, maxBytes=10485760, backupCount=10)
+            )
     else:
         handlers = None
 
-    logging.basicConfig(handlers=handlers, level=logglevel, format=loggformat, datefmt=loggdatefmt)
+    logging.basicConfig(
+        handlers=handlers, level=logglevel, format=loggformat, datefmt=loggdatefmt
+    )
 
     if config:
+
         def exception_logger(exc_type, exc_value, exc_traceback):
             logging.error("exception", exc_info=(exc_type, exc_value, exc_traceback))
+
         sys.excepthook = exception_logger
 
         for package_name, level in config.get_dict("logginglevels").items():
@@ -91,15 +98,15 @@ def handle_restart(shared, engine):
 
     """
 
-    assert(isinstance(shared, Shared))
-    assert(isinstance(engine, BaseEngine))
+    assert isinstance(shared, Shared)
+    assert isinstance(engine, BaseEngine)
     # dersom restart-knappen i webadmin er benyttet:
     if shared.restart_on_exit:
-        engine.wait() # venter på at alle trådene er stoppet
+        engine.wait()  # venter på at alle trådene er stoppet
 
-        if sys.argv[0].endswith('__main__.py'):
+        if sys.argv[0].endswith("__main__.py"):
             # support restart when "python -m APP"
-            args = [sys.executable, '-m', __package__] + sys.argv[1:]
+            args = [sys.executable, "-m", __package__] + sys.argv[1:]
         else:
             # support entry_points from setup.py
             args = sys.argv

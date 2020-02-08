@@ -5,6 +5,7 @@ from collections import OrderedDict
 
 VIEWDICT = OrderedDict()
 
+
 def register(name):
     """
     A decorator to register webadmin views. Example::
@@ -18,20 +19,24 @@ def register(name):
             admin.add_view(view)
             ...
     """
+
     def classdecorator(name, cls):
         VIEWDICT[name] = cls
         return cls
+
     return functools.partial(classdecorator, name)
 
-class Views():
+
+class Views:
     """
     A collection of all loaded webadmin views
     """
+
     def __init__(self, shared=None):
         self.items = VIEWDICT
         self.add_shared_object(shared)
         self.logging = logging.getLogger(__name__)
-        
+
     def add_shared_object(self, shared):
         self.shared = shared
 
@@ -39,10 +44,10 @@ class Views():
 
         if isinstance(base_packages, str):
             base_packages = [base_packages]
-        
+
         added = []
 
-        #insert default webadmin views into configfile
+        # insert default webadmin views into configfile
         activate_views = OrderedDict()
         activate_views["Home"] = 1
         activate_views["FileModel"] = 1
@@ -59,15 +64,19 @@ class Views():
             for base_package in base_packages:
                 if int(activate) and not name in added:
                     try:
-                        importlib.import_module("{}.Engines.webadmin.{}".format(base_package, name))
+                        importlib.import_module(
+                            "{}.Engines.webadmin.{}".format(base_package, name)
+                        )
                         added.append(name)
                     except ImportError as err:
                         if isinstance(err.name, str):
-                            if not err.name.startswith("{}.Engines.webadmin".format(base_package)):
+                            if not err.name.startswith(
+                                "{}.Engines.webadmin".format(base_package)
+                            ):
                                 if not err.name == "{}.Engines".format(base_package):
-                                    raise(err)
+                                    raise (err)
                         else:
-                            raise(err)
+                            raise (err)
 
         for name, activate in activate_views.items():
             if int(activate) and not name in added:

@@ -15,8 +15,10 @@ from netdef.Sources.BaseSource import StatusCode
 
 # from netdef.Shared.Internal import Statistics
 
+
 class CustomInternalSession(InternalSession):
     "This custom InternalSession will block anonymous access"
+
     def activate_session(self, params):
         id_token = params.UserIdentityToken
         if isinstance(id_token, ua.AnonymousIdentityToken):
@@ -33,38 +35,61 @@ class CustomServer(Server):
             if not (self.certificate and self.private_key):
                 return
 
-            if ua.SecurityPolicyType.Basic128Rsa15_SignAndEncrypt in self._security_policy:
-                self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
-                                    ua.MessageSecurityMode.SignAndEncrypt)
-                self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
-                                                               ua.MessageSecurityMode.SignAndEncrypt,
-                                                               self.certificate,
-                                                               self.private_key)
-                                     )
+            if (
+                ua.SecurityPolicyType.Basic128Rsa15_SignAndEncrypt
+                in self._security_policy
+            ):
+                self._set_endpoints(
+                    security_policies.SecurityPolicyBasic128Rsa15,
+                    ua.MessageSecurityMode.SignAndEncrypt,
+                )
+                self._policies.append(
+                    ua.SecurityPolicyFactory(
+                        security_policies.SecurityPolicyBasic128Rsa15,
+                        ua.MessageSecurityMode.SignAndEncrypt,
+                        self.certificate,
+                        self.private_key,
+                    )
+                )
             if ua.SecurityPolicyType.Basic128Rsa15_Sign in self._security_policy:
-                self._set_endpoints(security_policies.SecurityPolicyBasic128Rsa15,
-                                    ua.MessageSecurityMode.Sign)
-                self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic128Rsa15,
-                                                               ua.MessageSecurityMode.Sign,
-                                                               self.certificate,
-                                                               self.private_key)
-                                     )
+                self._set_endpoints(
+                    security_policies.SecurityPolicyBasic128Rsa15,
+                    ua.MessageSecurityMode.Sign,
+                )
+                self._policies.append(
+                    ua.SecurityPolicyFactory(
+                        security_policies.SecurityPolicyBasic128Rsa15,
+                        ua.MessageSecurityMode.Sign,
+                        self.certificate,
+                        self.private_key,
+                    )
+                )
             if ua.SecurityPolicyType.Basic256_SignAndEncrypt in self._security_policy:
-                self._set_endpoints(security_policies.SecurityPolicyBasic256,
-                                    ua.MessageSecurityMode.SignAndEncrypt)
-                self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
-                                                               ua.MessageSecurityMode.SignAndEncrypt,
-                                                               self.certificate,
-                                                               self.private_key)
-                                     )
+                self._set_endpoints(
+                    security_policies.SecurityPolicyBasic256,
+                    ua.MessageSecurityMode.SignAndEncrypt,
+                )
+                self._policies.append(
+                    ua.SecurityPolicyFactory(
+                        security_policies.SecurityPolicyBasic256,
+                        ua.MessageSecurityMode.SignAndEncrypt,
+                        self.certificate,
+                        self.private_key,
+                    )
+                )
             if ua.SecurityPolicyType.Basic256_Sign in self._security_policy:
-                self._set_endpoints(security_policies.SecurityPolicyBasic256,
-                                    ua.MessageSecurityMode.Sign)
-                self._policies.append(ua.SecurityPolicyFactory(security_policies.SecurityPolicyBasic256,
-                                                               ua.MessageSecurityMode.Sign,
-                                                               self.certificate,
-                                                               self.private_key)
-                                     )
+                self._set_endpoints(
+                    security_policies.SecurityPolicyBasic256,
+                    ua.MessageSecurityMode.Sign,
+                )
+                self._policies.append(
+                    ua.SecurityPolicyFactory(
+                        security_policies.SecurityPolicyBasic256,
+                        ua.MessageSecurityMode.Sign,
+                        self.certificate,
+                        self.private_key,
+                    )
+                )
 
 
 @Controllers.register("OPCUAServerController")
@@ -135,6 +160,7 @@ class OPCUAServerController(BaseController.BaseController):
         }
 
     """
+
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.logger = logging.getLogger(self.name)
@@ -196,7 +222,9 @@ class OPCUAServerController(BaseController.BaseController):
         if anonymous_on:
             server = CustomServer()
         else:
-            server = CustomServer(iserver=InternalServer(session_cls=CustomInternalSession))
+            server = CustomServer(
+                iserver=InternalServer(session_cls=CustomInternalSession)
+            )
             server.iserver._parent = server
 
         server.set_application_uri(uri)
@@ -213,7 +241,7 @@ class OPCUAServerController(BaseController.BaseController):
 
         if security_policy:
             server.set_security_policy(security_policy)
-        
+
         def custom_user_manager(isession, userName, password):
             if userName != admin_username:
                 return False
@@ -246,13 +274,16 @@ class OPCUAServerController(BaseController.BaseController):
         else:
             self.initial_status_code = ua.StatusCodes.BadWaitingForInitialData
 
-
     def run(self):
         "Main loop. Will exit when receiving interrupt signal"
         self.logger.info("Running")
         self.server.start()
-        self.server.subscribe_server_callback(CallbackType.ItemSubscriptionCreated, self.create_monitored_items)
-        self.server.subscribe_server_callback(CallbackType.ItemSubscriptionModified, self.modify_monitored_items)
+        self.server.subscribe_server_callback(
+            CallbackType.ItemSubscriptionCreated, self.create_monitored_items
+        )
+        self.server.subscribe_server_callback(
+            CallbackType.ItemSubscriptionModified, self.modify_monitored_items
+        )
 
         subhandler = SubHandler(self)
         self.subscription = self.server.create_subscription(100, subhandler)
@@ -260,7 +291,7 @@ class OPCUAServerController(BaseController.BaseController):
         # prev = time.time()
 
         while not self.has_interrupt():
-            self.loop_incoming() # dispatch handle_* functions
+            self.loop_incoming()  # dispatch handle_* functions
             # if time.time() > prev:
             #     prev = time.time() + 60
 
@@ -275,12 +306,10 @@ class OPCUAServerController(BaseController.BaseController):
         self.server.stop()
         self.logger.info("Stopped")
 
-
     def get_default_value(self, incoming):
         "Returns the default value of the source value"
         defaultvalue = incoming.interface(incoming.value).value
         return defaultvalue
-
 
     def handle_add_source(self, incoming):
         "Add a source to the server"
@@ -300,20 +329,31 @@ class OPCUAServerController(BaseController.BaseController):
         if self.subscription:
             self.subscription.subscribe_data_change(varnode)
 
-
     def handle_write_source(self, incoming, value, source_time):
         "Receive a value change from an expression and update the server"
-        self.logger.debug("'Write source' event to %s. value: %s at %s", incoming.key, value, source_time)
+        self.logger.debug(
+            "'Write source' event to %s. value: %s at %s",
+            incoming.key,
+            value,
+            source_time,
+        )
         nodeid = self.get_nodeid(incoming)
         incoming, varnode = self.get_source(nodeid)
         varianttype = self.get_varianttype(incoming)
 
         # Check if datatype is compatible with varianttype
         if isinstance(varianttype, ua.VariantType):
-            if (varianttype == ua.VariantType.String) and (isinstance(value, str) or value is None):
-                pass # string can be None or str
+            if (varianttype == ua.VariantType.String) and (
+                isinstance(value, str) or value is None
+            ):
+                pass  # string can be None or str
             elif not isinstance(value, type(ua.get_default_value(varianttype))):
-                self.logger.error("%s: Value %s is not compatible with datatype %r", nodeid, incoming.value_as_string, varianttype)
+                self.logger.error(
+                    "%s: Value %s is not compatible with datatype %r",
+                    nodeid,
+                    incoming.value_as_string,
+                    varianttype,
+                )
                 varianttype = None
 
         varnode.set_value(value, varianttype)
@@ -324,7 +364,6 @@ class OPCUAServerController(BaseController.BaseController):
             parent = self.root
         return parent.add_folder(self.ns, foldername)
 
-
     def add_variablenode(self, parent, ref, val, varianttype):
         "Create and add a variable in server and return the variable node"
         self.logger.debug("ADDING %s AS %s" % (ref, varianttype))
@@ -333,27 +372,21 @@ class OPCUAServerController(BaseController.BaseController):
 
         nodeid = ua.NodeId.from_string(ref)
 
-        datavalue = self.create_datavalue(
-            val,
-            varianttype,
-            self.initial_status_code
-        )
+        datavalue = self.create_datavalue(val, varianttype, self.initial_status_code)
         var_node = parent.add_variable(
             nodeid=ref,
             bname="%d:%s" % (nodeid.NamespaceIndex, nodeid.Identifier),
             val=val,
-            varianttype=varianttype
+            varianttype=varianttype,
         )
         var_node.set_data_value(datavalue)
         return var_node
-
 
     def create_datavalue(self, val, datatype, statuscode):
         "Create a value for the server that keep the correct datatype"
         variant = ua.Variant(value=val, varianttype=datatype)
         status = ua.StatusCode(statuscode)
         return ua.DataValue(variant=variant, status=status)
-
 
     def get_varianttype(self, incoming):
         "Returns the varianttype from the source"
@@ -362,14 +395,12 @@ class OPCUAServerController(BaseController.BaseController):
         else:
             return None
 
-
     def get_nodeid(self, incoming):
         "Returns the nodeid from the source"
         if hasattr(incoming, "get_nodeid"):
             return getattr(incoming, "get_nodeid")()
         else:
             return incoming.key
-    
 
     def is_writable(self, incoming):
         "Returns True if source is writable for the opcua client"
@@ -377,7 +408,6 @@ class OPCUAServerController(BaseController.BaseController):
             return True if getattr(incoming, "is_writable")() else False
         else:
             return True
-
 
     def send_datachange(self, nodeid, value, stime, status_ok, ua_status_code):
         "Triggers a RUN_EXPRESSION message for given source"
@@ -389,28 +419,29 @@ class OPCUAServerController(BaseController.BaseController):
                         # we are actually good
                         status_ok = True
 
-            if self.update_source_instance_value(item, value, stime, status_ok, self.oldnew):
+            if self.update_source_instance_value(
+                item, value, stime, status_ok, self.oldnew
+            ):
                 self.send_outgoing(item)
 
-
     def modify_monitored_items(self, event, dispatcher):
-        self.logger.info('modify_monitored_items')
-
+        self.logger.info("modify_monitored_items")
 
     def create_monitored_items(self, event, dispatcher):
         "write a warning to logfile if the client add a nodeid that does not exists"
         for idx in range(len(event.response_params)):
             if not event.response_params[idx].StatusCode.is_good():
                 nodeId = event.request_params.ItemsToCreate[idx].ItemToMonitor.NodeId
-                #print (idx, nodeId.NamespaceIndex, nodeId.Identifier, nodeId.NamespaceUri, nodeId.NodeIdType)
+                # print (idx, nodeId.NamespaceIndex, nodeId.Identifier, nodeId.NamespaceUri, nodeId.NodeIdType)
                 ident = nodeId.to_string()
                 self.logger.warning("create_monitored_items: missing %s", ident)
 
 
-class SubHandler():
+class SubHandler:
     """
     The subscription handler for the server. Will send value changes i server to the controller.
     """
+
     def __init__(self, controller):
         self.controller = controller
         self.logger = self.controller.logger
@@ -425,9 +456,17 @@ class SubHandler():
             item.ServerTimestamp = item.SourceTimestamp
         source_time = item.SourceTimestamp
         source_status_ok = item.StatusCode.value == 0
-        self.logger.debug("nodeid:%s, value:%s, time:%s, ok:%s, uacode:%s", nodeid, source_value, source_time, source_status_ok, item.StatusCode.value)
-        self.controller.send_datachange(nodeid, source_value, source_time, source_status_ok, item.StatusCode.value)
-
+        self.logger.debug(
+            "nodeid:%s, value:%s, time:%s, ok:%s, uacode:%s",
+            nodeid,
+            source_value,
+            source_time,
+            source_status_ok,
+            item.StatusCode.value,
+        )
+        self.controller.send_datachange(
+            nodeid, source_value, source_time, source_status_ok, item.StatusCode.value
+        )
 
     def event_notification(self, event):
         self.logger.info("Python: New event %s", event)

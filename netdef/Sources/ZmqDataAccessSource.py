@@ -7,6 +7,7 @@ log = logging.getLogger(__name__)
 
 log.debug("Loading module")
 
+
 @Sources.register("ZmqDataAccessSource")
 class ZmqDataAccessSource(BaseSource.BaseSource):
     def __init__(self, *args, **kwargs):
@@ -14,7 +15,7 @@ class ZmqDataAccessSource(BaseSource.BaseSource):
         log.debug("init %s", self.key)
 
         self.interface = DefaultInterface
-    
+
     def unpack_address(self):
         return self.key
 

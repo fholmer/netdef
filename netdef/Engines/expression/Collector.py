@@ -11,14 +11,21 @@ class Mode(Enum):
     FIRST_WITH_EVENT = 4
     LAST_WITH_EVENT = 5
 
-class Collector():
+
+class Collector:
     def __init__(self, fn, wait, mode):
         self.mode = mode
         self.fn = fn
         self.wait = wait
         self.buffer = queue.Queue()
         self.lock = Lock()
-        if not self.mode in (Mode.FIRST, Mode.LAST, Mode.LIST_ALL,Mode.FIRST_WITH_EVENT, Mode.LAST_WITH_EVENT):
+        if not self.mode in (
+            Mode.FIRST,
+            Mode.LAST,
+            Mode.LIST_ALL,
+            Mode.FIRST_WITH_EVENT,
+            Mode.LAST_WITH_EVENT,
+        ):
             raise NotImplementedError
 
     def __call__(self, *args):
@@ -57,7 +64,9 @@ def collect(wait, mode):
             pass
 
     """
+
     def fn(func):
         _fn = Collector(func, wait, mode)
         return _fn
+
     return fn

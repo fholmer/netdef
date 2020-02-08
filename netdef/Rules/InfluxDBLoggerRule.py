@@ -11,7 +11,7 @@ class InfluxDBLoggerRule(BaseRule.BaseRule):
         super().__init__(name, shared)
         self.logger = logging.getLogger(name)
         self.logger.info("init")
-        
+
         config = self.shared.config.config
         self.auto_logging_on = config(self.name, "auto_logging_on", 1)
 
@@ -34,7 +34,7 @@ class InfluxDBLoggerRule(BaseRule.BaseRule):
                     something.instance.controller,
                     something.value,
                     something.instance.source_time,
-                    something.instance.status_code
+                    something.instance.status_code,
                 )
                 dblogger.set = _val
 
@@ -49,8 +49,10 @@ class InfluxDBLoggerRule(BaseRule.BaseRule):
                     BaseRule.Expression(expression_func, pathlib.Path(__file__).name),
                     [
                         BaseRule.SourceInfo(item.source, item.key, item.controller),
-                        BaseRule.SourceInfo("InfluxDBLoggerSource", item.key, "InfluxDBLoggerController")
-                    ]
+                        BaseRule.SourceInfo(
+                            "InfluxDBLoggerSource", item.key, "InfluxDBLoggerController"
+                        ),
+                    ],
                 )
             )
             exp_count += 1
@@ -67,11 +69,13 @@ class InfluxDBLoggerRule(BaseRule.BaseRule):
 
         self.logger.info("Running")
         while not self.has_interrupt():
-            self.loop_incoming() #  dispatch handle_* functions
+            self.loop_incoming()  #  dispatch handle_* functions
         self.logger.info("Stopped")
 
     def handle_run_expression(self, incoming):
         expressions = self.get_expressions(incoming)
-        self.logger.debug("Received %s. Found expressions %s",incoming.key, len(expressions))
+        self.logger.debug(
+            "Received %s. Found expressions %s", incoming.key, len(expressions)
+        )
         if expressions:
             self.send_expressions_to_engine(incoming, expressions)

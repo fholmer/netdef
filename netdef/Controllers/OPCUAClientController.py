@@ -10,12 +10,14 @@ from . import BaseController, Controllers
 log = logging.getLogger(__name__)
 log.debug("Loading module")
 
+
 @Controllers.register("OPCUAClientController")
 class OPCUAClientController(BaseController.BaseController):
     """
     .. caution:: Development Status :: 4 - Beta
 
     """
+
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.logger = logging.getLogger(name)
@@ -39,28 +41,42 @@ class OPCUAClientController(BaseController.BaseController):
         application_uri = self.config("application_uri", "urn:freeopcua:client")
         product_uri = self.config("product_uri", "urn:freeopcua.github.io:client")
 
-        secure_channel_timeout = self.config("secure_channel_timeout", 3600000)  # 1 hour
+        secure_channel_timeout = self.config(
+            "secure_channel_timeout", 3600000
+        )  # 1 hour
         session_timeout = self.config("session_timeout", 3600000)  # 1 hour
 
-        self.security_string = "" # format: Policy,Mode,certificate,private_key
+        self.security_string = ""  # format: Policy,Mode,certificate,private_key
 
         if self.config("basic128rsa15_sign_on", 0):
-            self.security_string = "Basic128Rsa15,Sign,{},{}".format(certificate, private_key)
+            self.security_string = "Basic128Rsa15,Sign,{},{}".format(
+                certificate, private_key
+            )
 
         elif self.config("basic128rsa15_signandencrypt_on", 0):
-            self.security_string = "Basic128Rsa15,SignAndEncrypt,{},{}".format(certificate, private_key)
+            self.security_string = "Basic128Rsa15,SignAndEncrypt,{},{}".format(
+                certificate, private_key
+            )
 
         elif self.config("basic256_sign_on", 0):
-            self.security_string = "Basic256,Sign,{},{}".format(certificate, private_key)
+            self.security_string = "Basic256,Sign,{},{}".format(
+                certificate, private_key
+            )
 
         elif self.config("basic256_signandencrypt_on", 0):
-            self.security_string = "Basic256,SignAndEncrypt,{},{}".format(certificate, private_key)
+            self.security_string = "Basic256,SignAndEncrypt,{},{}".format(
+                certificate, private_key
+            )
 
         elif self.config("basic256sha256_sign_on", 0):
-            self.security_string = "Basic256Sha256,Sign,{},{}".format(certificate, private_key)
+            self.security_string = "Basic256Sha256,Sign,{},{}".format(
+                certificate, private_key
+            )
 
         elif self.config("basic256sha256_signandencrypt_on", 0):
-            self.security_string = "Basic256Sha256,SignAndEncrypt,{},{}".format(certificate, private_key)
+            self.security_string = "Basic256Sha256,SignAndEncrypt,{},{}".format(
+                certificate, private_key
+            )
 
         elif self.config("nosecurity_on", 1):
             self.security_string = ""
@@ -74,7 +90,6 @@ class OPCUAClientController(BaseController.BaseController):
 
         self.client.secure_channel_timeout = secure_channel_timeout
         self.client.session_timeout = session_timeout
-
 
         if username:
             self.client.set_user(username)
@@ -103,23 +118,25 @@ class OPCUAClientController(BaseController.BaseController):
 
         while not self.has_interrupt():
 
-            if self.disable:  # to disable: empty queue by calling self.fetch_one_incoming
+            if (
+                self.disable
+            ):  # to disable: empty queue by calling self.fetch_one_incoming
                 self.fetch_one_incoming()
                 continue
-            
+
             self.sleep(reconnect_timeout)
             reconnect_timeout = self.config("reconnect_timeout", 20)
 
             try:
                 if reconnect:
                     self.safe_disconnect()
-                    #TODO: sette alle verdier til StatusCode.NONE
+                    # TODO: sette alle verdier til StatusCode.NONE
 
                 if self.security_string:
                     self.client.set_security_string(self.security_string)
 
                 self.client.connect()
-                
+
                 intervall = self.config("subscription_interval", 100)
                 handler = SubHandler(self)
                 self.subscription = self.client.create_subscription(intervall, handler)
@@ -135,7 +152,7 @@ class OPCUAClientController(BaseController.BaseController):
                 last_keepalive = time.time()
                 self.logger.info("Running")
                 while not self.has_interrupt():
-                    self.loop_incoming() # dispatch handle_* functions
+                    self.loop_incoming()  # dispatch handle_* functions
 
                     if time.time() > (last_keepalive + keepalive_timeout):
                         # self.logger.debug("Sending keepalive")
@@ -144,15 +161,23 @@ class OPCUAClientController(BaseController.BaseController):
 
             except (ConnectionRefusedError, ConnectionError) as error:
                 self.logger.debug(error, exc_info=True)
-                self.logger.error("Connection error. Reconnect in %s sec.", reconnect_timeout)
+                self.logger.error(
+                    "Connection error. Reconnect in %s sec.", reconnect_timeout
+                )
 
             except (concurrent.futures.TimeoutError, OSError) as error:
                 self.logger.debug(error, exc_info=True)
-                self.logger.error("Timeout error. Reconnect in %s sec.", reconnect_timeout)
-            
+                self.logger.error(
+                    "Timeout error. Reconnect in %s sec.", reconnect_timeout
+                )
+
             except opcua.ua.uaerrors.UaStatusCodeError as error:
                 self.logger.debug(error, exc_info=True)
-                self.logger.error("UaStatusCodeError: %s. Reconnect in %s sec.", error, reconnect_timeout)
+                self.logger.error(
+                    "UaStatusCodeError: %s. Reconnect in %s sec.",
+                    error,
+                    reconnect_timeout,
+                )
 
         self.safe_disconnect()
         self.logger.info("Stopped")
@@ -182,14 +207,14 @@ class OPCUAClientController(BaseController.BaseController):
             self.logger.error("%s: %s", incoming.key, error)
         except opcua.ua.uaerrors.UaStringParsingError as error:
             self.logger.exception(error)
-        #TODO: kanske lagre nodeid-instansene?
+        # TODO: kanske lagre nodeid-instansene?
 
     def handle_write_source(self, incoming, value, source_time):
         if self.has_source(incoming.key):
             node_instance = self.client.get_node(incoming.key)
-            #print(id(node_instance), source_time)
-            #TODO: kanske gjøre internt oppslag på nodeid-instansene, i stedet for å hente ny hver gang?
-            #TODO: hente datatype med v.get_data_type_as_variant_type()
+            # print(id(node_instance), source_time)
+            # TODO: kanske gjøre internt oppslag på nodeid-instansene, i stedet for å hente ny hver gang?
+            # TODO: hente datatype med v.get_data_type_as_variant_type()
             node_instance.set_value(value)
         else:
             self.logger.error("Write error. Source %s not found", incoming.key)
@@ -201,13 +226,17 @@ class OPCUAClientController(BaseController.BaseController):
     def send_datachange(self, nodeid, value, stime, status_ok):
         if self.has_source(nodeid):
             item = self.get_source(nodeid)
-            if self.update_source_instance_value(item, value, stime, status_ok, self.oldnew):
+            if self.update_source_instance_value(
+                item, value, stime, status_ok, self.oldnew
+            ):
                 self.send_outgoing(item)
+
 
 class SubHandler(object):
     """
     Client to subscription. It will receive events from server
     """
+
     def __init__(self, parent):
         self.parent = parent
 
@@ -217,7 +246,7 @@ class SubHandler(object):
         source_value = item.Value.Value
         source_time = item.SourceTimestamp
         source_status_ok = item.StatusCode.value == 0
-        #self.logger.debug("nodeid:%s, value:%s, time:%s, ok:%s", )
+        # self.logger.debug("nodeid:%s, value:%s, time:%s, ok:%s", )
         self.parent.send_datachange(nodeid, source_value, source_time, source_status_ok)
 
     def event_notification(self, event):

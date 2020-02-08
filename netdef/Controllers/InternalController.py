@@ -13,21 +13,26 @@ class InternalController(BaseController.BaseController):
     .. tip:: Development Status :: 5 - Production/Stable
 
     """
+
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.logger = logging.getLogger(self.name)
         self.logger.info("init")
         self.send_events = self.shared.config.config(self.name, "send_events", 0)
-        self.send_init_event = self.shared.config.config(self.name, "send_init_event", 0)
-        self.persistent_value = self.shared.config.config(self.name, "persistent_value", 0)
+        self.send_init_event = self.shared.config.config(
+            self.name, "send_init_event", 0
+        )
+        self.persistent_value = self.shared.config.config(
+            self.name, "persistent_value", 0
+        )
 
     def run(self):
         "Main loop. Will exit when receiving interrupt signal"
         self.logger.info("Running")
         while not self.has_interrupt():
-            self.loop_incoming() # dispatch handle_* functions
-            self.loop_outgoing() # dispatch poll_* functions
-        
+            self.loop_incoming()  # dispatch handle_* functions
+            self.loop_outgoing()  # dispatch poll_* functions
+
         if self.persistent_value:
             self.logger.info("Write cache to disk ...")
             self.store_to_disk()
@@ -54,12 +59,14 @@ class InternalController(BaseController.BaseController):
 
         init_value = {}
         if self.persistent_value:
-            cache = os.path.join("db", "internal",  self.get_cache_filename(incoming.key))
+            cache = os.path.join(
+                "db", "internal", self.get_cache_filename(incoming.key)
+            )
             if os.path.isfile(cache) and incoming.can_unpack_value(""):
                 with open(cache, "rb") as f:
                     data = f.read()
                     init_value = incoming.unpack_value(data)
-        
+
         if not self.send_events:
             incoming.status_code = StatusCode.INITIAL
             incoming.get = init_value
@@ -70,11 +77,10 @@ class InternalController(BaseController.BaseController):
             incoming.source_time = datetime.datetime.utcnow()
             self.send_outgoing(incoming)
 
-
     def handle_write_source(self, incoming, value, source_time):
         # vi gjør ikke så mye annet enn å tidsstemple nye verdier
         # og sette statuskoden
-        
+
         incoming.get = value
         incoming.source_time = source_time
 

@@ -5,13 +5,16 @@ from collections import OrderedDict
 
 SOURCEDICT = OrderedDict()
 
+
 def register(name):
     def classdecorator(name, cls):
         SOURCEDICT[name] = cls
         return cls
+
     return functools.partial(classdecorator, name)
 
-class Sources():
+
+class Sources:
     def __init__(self, shared=None):
         self.items = SOURCEDICT
         self.add_shared_object(shared)
@@ -28,7 +31,7 @@ class Sources():
 
         if isinstance(base_packages, str):
             base_packages = [base_packages]
-        
+
         activate_sources = self.shared.config.get_dict("sources")
         added = []
 
@@ -36,14 +39,16 @@ class Sources():
             for name, activate in activate_sources.items():
                 if int(activate) and not name in added:
                     try:
-                        importlib.import_module("{}.Sources.{}".format(base_package, name))
+                        importlib.import_module(
+                            "{}.Sources.{}".format(base_package, name)
+                        )
                         added.append(name)
                     except ImportError as e:
                         if isinstance(e.name, str):
                             if not e.name.startswith(base_package + ".Sources"):
-                                raise(e)
+                                raise (e)
                         else:
-                            raise(e)
+                            raise (e)
 
         for name, activate in activate_sources.items():
             if int(activate) and not name in added:
@@ -54,4 +59,6 @@ class Sources():
             if origin in self.items:
                 self.items[name] = self.items[origin]
             else:
-                self.logging.error("%s not found for alias %s in configfile", origin, name)
+                self.logging.error(
+                    "%s not found for alias %s in configfile", origin, name
+                )

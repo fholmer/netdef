@@ -11,6 +11,7 @@ from . import BaseEngine
 log = logging.getLogger("ThreadedEngine")
 log.info("Enter ThreadedEngine")
 
+
 class ThreadedEngine(BaseEngine.BaseEngine):
     def __init__(self, shared):
         super().__init__(shared)
@@ -24,7 +25,7 @@ class ThreadedEngine(BaseEngine.BaseEngine):
         self._controllers.init()
         self._rules.init()
         self._sources.init()
-    
+
     def load(self, base_package):
         pass
 
@@ -43,11 +44,12 @@ class ThreadedEngine(BaseEngine.BaseEngine):
             self._rule_pool[name] = thr
 
         log.info("Start expression executor")
-        self._expression_executor = ExpressionExecutor("ExpressionExecutor", self.shared)
+        self._expression_executor = ExpressionExecutor(
+            "ExpressionExecutor", self.shared
+        )
         self._expression_executor.add_interrupt(self._interrupt)
         self._expression_executor_thread = Thread(
-            target=self._expression_executor.run,
-            name="ExpressionExecutor"
+            target=self._expression_executor.run, name="ExpressionExecutor"
         )
         self._expression_executor_thread.start()
 
@@ -71,13 +73,14 @@ class ThreadedEngine(BaseEngine.BaseEngine):
     def stop(self):
         log.info("Send terminate interrupt")
         self._interrupt.set()
-    
+
     def wait(self):
         ct = threading.current_thread()
         for thread in threading.enumerate():
             if not thread is ct:
                 if not thread.daemon:
                     thread.join()
+
 
 class ExpressionExecutor(BaseEngine.BaseExpressionExecutor):
     def __init__(self, *args, **kwargs):
@@ -95,7 +98,7 @@ class ExpressionExecutor(BaseEngine.BaseExpressionExecutor):
     def run(self):
         log.info("Running")
         while not self.has_interrupt():
-            self.loop_incoming() # dispatch handle_* functions
+            self.loop_incoming()  # dispatch handle_* functions
             self.loop_futures()
         self.thread_pool.shutdown(wait=True)
         log.info("Stopped")
@@ -104,14 +107,20 @@ class ExpressionExecutor(BaseEngine.BaseExpressionExecutor):
         for expression in expressions:
             args = expression.get_args(source_item)
             kwargs = expression.get_kwargs()
-            #debuggingtriks: expression.execute(args, kwargs)
+            # debuggingtriks: expression.execute(args, kwargs)
             self.future_pool.append(
-                (self.thread_pool.submit(expression.execute, args, kwargs), expression.filename)
+                (
+                    self.thread_pool.submit(expression.execute, args, kwargs),
+                    expression.filename,
+                )
             )
+
     def loop_futures(self):
-        #while not self.has_interrupt():
+        # while not self.has_interrupt():
         if Statistics.on:
-            Statistics.set(self.name + ".threadpool.workers.count", len(self.future_pool))
+            Statistics.set(
+                self.name + ".threadpool.workers.count", len(self.future_pool)
+            )
 
         for future, filename in self.future_pool:
             if future.done():

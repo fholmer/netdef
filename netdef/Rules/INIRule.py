@@ -13,6 +13,7 @@ compile_arguments = re.compile(r"(?P<source>\w+)\((?P<key>([^()])*)\)")
 
 NAME = "INIRule"
 
+
 @Rules.register(NAME)
 class INIRule(BaseRule.BaseRule):
     """
@@ -42,7 +43,7 @@ class INIRule(BaseRule.BaseRule):
 
         # parse ini
         abs_inifile = str(pathlib.Path(abs_root).joinpath(rel_inifile))
-        encoding = None # TODO: parse from config
+        encoding = None  # TODO: parse from config
 
         ini_object = configparser.ConfigParser()
         ini_object.read(abs_inifile)
@@ -63,7 +64,9 @@ class INIRule(BaseRule.BaseRule):
                 parsers.append(match.group("source"))
 
             for _source in parsers:
-                source_name, controller_name = self.source_and_controller_from_key(_source)
+                source_name, controller_name = self.source_and_controller_from_key(
+                    _source
+                )
                 self.add_new_parser(source_name, controller_name)
 
             _module = ini_object.get(section, "module", fallback=None)
@@ -75,7 +78,7 @@ class INIRule(BaseRule.BaseRule):
 
             _expression = ini_object.get(section, "expression", fallback=None)
             if _expression:
-                    _kwargs["func"] = _expression
+                _kwargs["func"] = _expression
 
             _setup = ini_object.get(section, "setup", fallback=None)
             if _setup:
@@ -92,17 +95,23 @@ class INIRule(BaseRule.BaseRule):
                             SourceInfo(match.group("source"), match.group("key"))
                         )
                     expression_count += 1
-                    expression_module = self.get_module_from_string(_module, __package__, abs_root, self.name, name)
-                    expr_info = ExpressionInfo(expression_module, source_info_list, **_kwargs)
+                    expression_module = self.get_module_from_string(
+                        _module, __package__, abs_root, self.name, name
+                    )
+                    expr_info = ExpressionInfo(
+                        expression_module, source_info_list, **_kwargs
+                    )
                     source_count += self.add_new_expression(expr_info)
-        
-        self.update_statistics(self.name + "." + name, 0, expression_count, source_count)
+
+        self.update_statistics(
+            self.name + "." + name, 0, expression_count, source_count
+        )
 
     def run(self):
         "Main loop. Will exit when receiving interrupt signal"
         self.logger.info("Running")
         while not self.has_interrupt():
-            self.loop_incoming() # dispatch handle_* functions
+            self.loop_incoming()  # dispatch handle_* functions
         self.logger.info("Stopped")
 
     def handle_run_expression(self, incoming):

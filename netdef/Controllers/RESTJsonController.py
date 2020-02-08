@@ -10,11 +10,12 @@ import urllib.request
 from netdef.Controllers import BaseController, Controllers
 from netdef.Sources.BaseSource import StatusCode
 
-#import base64
+# import base64
 
 
 log = logging.getLogger(__name__)
 log.debug("Loading module")
+
 
 @Controllers.register("RESTJsonController")
 class RESTJsonController(BaseController.BaseController):
@@ -22,6 +23,7 @@ class RESTJsonController(BaseController.BaseController):
     .. tip:: Development Status :: 5 - Production/Stable
 
     """
+
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.logger = logging.getLogger(name)
@@ -33,16 +35,18 @@ class RESTJsonController(BaseController.BaseController):
         self.poll_interval = self.shared.config.config(self.name, "poll_interval", 1.0)
         self.connect_url = self.shared.config.config(self.name, "connect_url", "")
         self.retry = self.shared.config.config(self.name, "retry", 3)
-        self.reconnect_timeout = self.shared.config.config(self.name, "reconnect_timeout", 20)
+        self.reconnect_timeout = self.shared.config.config(
+            self.name, "reconnect_timeout", 20
+        )
         self.urlerrors = 0
         self.urlopen = urllib.request.urlopen
-        #self.auth_header = None
+        # self.auth_header = None
 
         self.disable = self.shared.config.config(self.name, "disable", 0)
 
         authorization = self.shared.config.config(self.name, "authorization", "")
 
-        if authorization == 'basic':
+        if authorization == "basic":
             username = self.shared.config.config(self.name, "username", "")
             password = self.shared.config.config(self.name, "password", "")
 
@@ -51,11 +55,12 @@ class RESTJsonController(BaseController.BaseController):
                 realm=None,
                 uri=[self.poll_url, self.connect_url, self.post_url],
                 user=username,
-                passwd=password)
+                passwd=password,
+            )
             self.urlopen = urllib.request.build_opener(auth_handler).open
-            #credentials = ('%s:%s' % (username, password))
-            #encoded_credentials = base64.b64encode(credentials.encode('ascii'))
-            #self.auth_header = ('Authorization', 'Basic %s' % encoded_credentials.decode("ascii"))
+            # credentials = ('%s:%s' % (username, password))
+            # encoded_credentials = base64.b64encode(credentials.encode('ascii'))
+            # self.auth_header = ('Authorization', 'Basic %s' % encoded_credentials.decode("ascii"))
 
     def run(self):
         "Main loop. Will exit when receiving interrupt signal"
@@ -63,11 +68,13 @@ class RESTJsonController(BaseController.BaseController):
         self.connect()
         while not self.has_interrupt():
 
-            if self.disable:  # to disable: empty queue by calling self.fetch_one_incoming
+            if (
+                self.disable
+            ):  # to disable: empty queue by calling self.fetch_one_incoming
                 self.fetch_one_incoming()
             else:
-                self.loop_incoming() # dispatch handle_* functions
-                self.loop_outgoing() # dispatch poll_* functions
+                self.loop_incoming()  # dispatch handle_* functions
+                self.loop_outgoing()  # dispatch poll_* functions
             time.sleep(0.1)
         self.logger.info("Stopped")
 
@@ -91,7 +98,7 @@ class RESTJsonController(BaseController.BaseController):
 
     def connect(self):
         data = self._connect()
-        #TODO: behandle motatt data med StatusCode.INITIAL
+        # TODO: behandle motatt data med StatusCode.INITIAL
 
     def loop_outgoing(self):
         time.sleep(self.poll_interval)
@@ -106,7 +113,7 @@ class RESTJsonController(BaseController.BaseController):
             self.parse_item(data)
 
     def parse_item(self, item):
-        #self.logger.debug(item)
+        # self.logger.debug(item)
         for parser in self.get_parsers():
             if parser.can_unpack_value(item):
                 key, source_time, value = parser.unpack_value(item)
@@ -126,36 +133,32 @@ class RESTJsonController(BaseController.BaseController):
         self.urlerrors += 1
         if self.urlerrors >= self.retry:
             self.urlerrors = 0
-            self.logger.error("Timeout error. Reconnect in %s sec.", self.reconnect_timeout)
+            self.logger.error(
+                "Timeout error. Reconnect in %s sec.", self.reconnect_timeout
+            )
             time.sleep(self.reconnect_timeout)
 
     def _write(self, dict_data):
-        #data = urllib.parse.urlencode(dict_data)
+        # data = urllib.parse.urlencode(dict_data)
         data = json.dumps(dict_data)
-        data = data.encode('ascii')
-        headers = {'Content-Type': 'application/json'}
+        data = data.encode("ascii")
+        headers = {"Content-Type": "application/json"}
         url = self.post_url
         request = urllib.request.Request(url, data=data, headers=headers)
         try:
             with self.urlopen(request) as f:
-                self.logger.debug(f.read().decode('utf-8'))
-        except (
-                http.client.RemoteDisconnected,
-                urllib.error.URLError
-                ) as rem_err:
+                self.logger.debug(f.read().decode("utf-8"))
+        except (http.client.RemoteDisconnected, urllib.error.URLError) as rem_err:
             self.logger.error("%s", rem_err)
 
     def _read(self, key):
         data = None
         try:
             with self.urlopen(self.get_url.format(key)) as f:
-                data = f.read().decode('utf-8')
+                data = f.read().decode("utf-8")
                 data = json.loads(data)
 
-        except (
-                http.client.RemoteDisconnected,
-                urllib.error.URLError
-                ) as rem_err:
+        except (http.client.RemoteDisconnected, urllib.error.URLError) as rem_err:
             self.logger.error("%s: %s", key, rem_err)
             self.urlerrorhandling()
         finally:
@@ -165,12 +168,9 @@ class RESTJsonController(BaseController.BaseController):
         data = None
         try:
             with self.urlopen(self.poll_url) as f:
-                data = f.read().decode('utf-8')
+                data = f.read().decode("utf-8")
                 data = json.loads(data)
-        except (
-                http.client.RemoteDisconnected,
-                urllib.error.URLError
-                ) as rem_err:
+        except (http.client.RemoteDisconnected, urllib.error.URLError) as rem_err:
             self.logger.error("%s", rem_err)
             self.urlerrorhandling()
         finally:
@@ -180,12 +180,9 @@ class RESTJsonController(BaseController.BaseController):
         data = None
         try:
             with self.urlopen(self.connect_url) as f:
-                data = f.read().decode('utf-8')
+                data = f.read().decode("utf-8")
                 data = json.loads(data)
-        except (
-                http.client.RemoteDisconnected,
-                urllib.error.URLError
-                ) as rem_err:
+        except (http.client.RemoteDisconnected, urllib.error.URLError) as rem_err:
             self.logger.error("%s", rem_err)
             self.urlerrorhandling()
         finally:

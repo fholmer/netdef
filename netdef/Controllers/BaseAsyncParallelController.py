@@ -4,12 +4,13 @@ from . import BaseAsyncController, Controllers
 
 # this controller is in development, do not use it yet.
 
-#@Controllers.register("BaseAsyncParallelController")
+# @Controllers.register("BaseAsyncParallelController")
 class BaseAsyncParallelController(BaseAsyncController.BaseAsyncController):
     """
     .. danger:: Development Status :: 3 - Alpha
 
     """
+
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.logger.info("init")
@@ -17,7 +18,9 @@ class BaseAsyncParallelController(BaseAsyncController.BaseAsyncController):
 
     def init_task_limit(self):
         # denne låsen skal begrense antall samtidige oppgaver
-        self.max_parallel_tasks = self.shared.config.config(self.name, "max_parallel_tasks", 1000)
+        self.max_parallel_tasks = self.shared.config.config(
+            self.name, "max_parallel_tasks", 1000
+        )
         self.access_task = asyncio.Semaphore(self.max_parallel_tasks, loop=self.loop)
 
     async def loop_outgoing_until_interrupt(self):
@@ -42,11 +45,11 @@ class BaseAsyncParallelController(BaseAsyncController.BaseAsyncController):
                     pass 
 
         """
-        #eksempel på loop som utfører corutine i parallell
+        # eksempel på loop som utfører corutine i parallell
         raise NotImplementedError
 
     def run(self):
-        'Main sync loop'
+        "Main sync loop"
         self.logger.info("Running")
         # kjører polling av self.incoming synkront i egen tråd
         self.loop.run_in_executor(None, self.loop_incoming_until_interrupt)

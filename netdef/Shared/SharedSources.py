@@ -1,4 +1,4 @@
-class SourceClasses():
+class SourceClasses:
     def __init__(self):
         self.init_items({})
 
@@ -12,7 +12,7 @@ class SourceClasses():
         return self.items[name]
 
 
-class SourceInstances():
+class SourceInstances:
     def __init__(self):
         self.items = []
         self.items_by_reference = {}
@@ -20,7 +20,7 @@ class SourceInstances():
     def add_item(self, item):
         if item.get_reference() in self.items_by_reference:
             raise ValueError("Duplicate item: {}".format(item))
-        self.items_by_reference[item.get_reference()]=  item
+        self.items_by_reference[item.get_reference()] = item
         self.items.append(item)
 
     def get_item_by_ref(self, ref):
@@ -30,7 +30,7 @@ class SourceInstances():
         return ref in self.items_by_reference
 
 
-class SharedSources():
+class SharedSources:
     """
     :attr:`classes` contain a dict (:attr:`classes.items`) with uninitiated
     sources classes. (key is name from config, value is class)
@@ -39,5 +39,6 @@ class SharedSources():
     :attr:`instances` contains a list of all sources (:attr:`instances.items`)
     instances created by the rules.
     """
+
     classes = SourceClasses()
     instances = SourceInstances()

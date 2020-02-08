@@ -4,6 +4,7 @@ import socket
 import xmlrpc.client
 
 from ..Sources.BaseSource import StatusCode
+
 # import my supported sources
 from ..Sources.XmlRpcMethodCallSource import XmlRpcMethodCallSource
 from . import BaseController, Controllers
@@ -80,6 +81,7 @@ class XmlRpcController(BaseController.BaseController):
         }
 
     """
+
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.logger = logging.getLogger(self.name)
@@ -102,10 +104,10 @@ class XmlRpcController(BaseController.BaseController):
             if self.disable:  # disble: tøm køen og loop
                 self.fetch_one_incoming()
                 continue
-            self.loop_incoming() # dispatch handle_* functions
+            self.loop_incoming()  # dispatch handle_* functions
             self.sleep(self.poll_interval)
             if not self.has_interrupt():
-                self.loop_outgoing() # dispatch poll_* functions
+                self.loop_outgoing()  # dispatch poll_* functions
         self.logger.info("Stopped")
 
     def handle_readall(self, incoming):
@@ -136,7 +138,9 @@ class XmlRpcController(BaseController.BaseController):
                 else:
                     incoming.status_code = StatusCode.GOOD
             else:
-                self.logger.error("'Write source' class %s not supported", type(incoming))
+                self.logger.error(
+                    "'Write source' class %s not supported", type(incoming)
+                )
 
     def poll_outgoing_item(self, item):
         if self.endpoint:
@@ -172,7 +176,7 @@ class XmlRpcController(BaseController.BaseController):
             if parser.can_unpack_value(item):
                 key, source_time, value = parser.unpack_value(item)
                 self.send_datachange(key, source_time, value)
-    
+
     def send_datachange(self, key, source_time, value):
         if self.has_source(key):
             if not source_time:

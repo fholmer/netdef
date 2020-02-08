@@ -9,6 +9,7 @@ log = logging.getLogger(__name__)
 
 log.debug("Loading module")
 
+
 @Sources.register("MQTTDataAccessSource")
 class MQTTDataAccessSource(BaseSource.BaseSource):
     def __init__(self, *args, **kwargs):
@@ -16,7 +17,7 @@ class MQTTDataAccessSource(BaseSource.BaseSource):
         log.debug("init %s", self.key)
 
         self.interface = DefaultInterface
-    
+
     @staticmethod
     def make_message(topic, payload):
         payload = json.dumps(payload)
@@ -31,11 +32,7 @@ class MQTTDataAccessSource(BaseSource.BaseSource):
 
     def pack_value(self, value, stime):
         "pack the value and stime into a mqtt payload"
-        payload = {
-                "value":value,
-                "source_time":stime.timestamp(),
-                "key":self.key
-        }
+        payload = {"value": value, "source_time": stime.timestamp(), "key": self.key}
         return payload
 
     @staticmethod

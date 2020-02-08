@@ -11,14 +11,15 @@ import win32serviceutil
 
 freeze_support()
 
+
 class GenericApplicationService(win32serviceutil.ServiceFramework):
     application = None
-    
+
     def __init__(self, args):
         super().__init__(args)
         self.running = False
         self.process = None
-        
+
     def SvcStop(self):
         self.running = False
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
@@ -33,8 +34,7 @@ class GenericApplicationService(win32serviceutil.ServiceFramework):
                 win32console.AttachConsole(self.process.pid)
 
             win32console.GenerateConsoleCtrlEvent(
-                win32console.CTRL_C_EVENT,
-                self.process.pid
+                win32console.CTRL_C_EVENT, self.process.pid
             )
 
             if not pid in pids:
@@ -44,12 +44,14 @@ class GenericApplicationService(win32serviceutil.ServiceFramework):
 
     def SvcDoRun(self):
         self.running = True
-        #self.application()
-        servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,
-                              servicemanager.PYS_SERVICE_STARTED,
-                              (self._svc_name_, ''))
+        # self.application()
+        servicemanager.LogMsg(
+            servicemanager.EVENTLOG_INFORMATION_TYPE,
+            servicemanager.PYS_SERVICE_STARTED,
+            (self._svc_name_, ""),
+        )
         while self.running:
-            #if self.process:
+            # if self.process:
             #    logger.info("Restarting")
             self.process = Process(target=self.application)
             self.process.start()
@@ -58,9 +60,12 @@ class GenericApplicationService(win32serviceutil.ServiceFramework):
             except KeyboardInterrupt:
                 pass
 
-        servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,
-                              servicemanager.PYS_SERVICE_STOPPED,
-                              (self._svc_name_, ''))
+        servicemanager.LogMsg(
+            servicemanager.EVENTLOG_INFORMATION_TYPE,
+            servicemanager.PYS_SERVICE_STOPPED,
+            (self._svc_name_, ""),
+        )
+
 
 def get_service(svc_name, exe_name, app_callback, template_callback=None):
     """
@@ -92,7 +97,7 @@ def get_service(svc_name, exe_name, app_callback, template_callback=None):
     """
 
     if not pathlib.Path(exe_name).suffix:
-        exe_name = str(pathlib.Path(exe_name).with_suffix('.exe'))
+        exe_name = str(pathlib.Path(exe_name).with_suffix(".exe"))
 
     class ApplicationService(GenericApplicationService):
         _svc_name_ = svc_name
@@ -100,7 +105,9 @@ def get_service(svc_name, exe_name, app_callback, template_callback=None):
         _exe_name_ = exe_name
         _exe_args_ = ""
         application = staticmethod(app_callback)
+
     return ApplicationService
+
 
 def run_service(app_service_class):
     """
@@ -126,7 +133,7 @@ def run_service(app_service_class):
         application_service = get_service("First-App", "First-App-Service", run_app, get_template_config)
         run_service(application_service)
     """
-    
+
     if "-r" in sys.argv:
         proj_path = pathlib.Path(sys.argv[-1]).expanduser().absolute()
         os.chdir(str(proj_path))

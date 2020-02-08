@@ -1,7 +1,7 @@
 from ...Sources.BaseSource import StatusCode
 
 
-class Expression():
+class Expression:
     """
     A class containing a reference to the expression-function and references
     to the source-instances that will become arguments to the expression
@@ -11,6 +11,7 @@ class Expression():
     :param str filename: Filename of the module where the function is found
 
     """
+
     def __init__(self, expression, filename):
         self.expression = expression
         self.filename = filename
@@ -21,7 +22,9 @@ class Expression():
 
     def __str__(self):
         args = ",".join(str(arg) for arg in self.args)
-        return "F:{} E:{} A:{} K:{} R:{}".format(self.filename, self.expression, args, self.kwargs, self.result)
+        return "F:{} E:{} A:{} K:{} R:{}".format(
+            self.filename, self.expression, args, self.kwargs, self.result
+        )
 
     def add_arg(self, arg):
         "arg: this should be a source instance"
@@ -50,7 +53,7 @@ class Expression():
             return self.result
         else:
             return None
-    
+
     def disable(self):
         """
         If there is problems with the expression it can
@@ -58,7 +61,8 @@ class Expression():
         """
         self._enabled = False
 
-class Argument():
+
+class Argument:
     """
     A wrapper for source instances.
 
@@ -82,12 +86,13 @@ class Argument():
         # instigator er True hvis verdien er grunnen til at uttrykket blir kjørt
         if instigator:
             self._new = self._instance.status_code == StatusCode.INITIAL
-            self._update = not (self._new or self._instance.status_code == StatusCode.NONE)
+            self._update = not (
+                self._new or self._instance.status_code == StatusCode.NONE
+            )
         else:
             self._new = False
             self._update = False
 
-    
     def create_interface(self, value=None):
         """
         Wrap given value into the source interface.

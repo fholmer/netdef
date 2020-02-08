@@ -4,34 +4,36 @@ from netdef.Controllers import SystemMonitorController
 
 
 def test_get_clean_mount_point_name():
-    assert "no change" == \
-        SystemMonitorController.get_clean_mount_point_name("no change")
+    assert "no change" == SystemMonitorController.get_clean_mount_point_name(
+        "no change"
+    )
 
-    assert "root.forward.slash.test" == \
-        SystemMonitorController.get_clean_mount_point_name(
-            "/forward/slash/test/"
-        )
+    assert (
+        "root.forward.slash.test"
+        == SystemMonitorController.get_clean_mount_point_name("/forward/slash/test/")
+    )
 
-    assert "C" == \
-        SystemMonitorController.get_clean_mount_point_name(
-            "C:\\"
-        )
+    assert "C" == SystemMonitorController.get_clean_mount_point_name("C:\\")
+
 
 NAME = "SystemMonitorController"
 CTRL = SystemMonitorController.SystemMonitorController
+
+
 def test_init_():
     shared = Mock()
     conf = {
-        "oldnew_comparision":0,
-        "memory_poll_interval":601,
-        "cpu_poll_interval":11,
-        "general_poll_interval":12,
-        "disk_monitor_on":1,
-        "disk_poll_interval":61,
+        "oldnew_comparision": 0,
+        "memory_poll_interval": 601,
+        "cpu_poll_interval": 11,
+        "general_poll_interval": 12,
+        "disk_monitor_on": 1,
+        "disk_poll_interval": 61,
     }
-    def get_conf(a,b,c):
+
+    def get_conf(a, b, c):
         return conf[b]
-        
+
     shared.config.config = get_conf
 
     ctl = CTRL(NAME, shared)

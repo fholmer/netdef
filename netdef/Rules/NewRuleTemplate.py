@@ -7,13 +7,14 @@ from netdef.Rules.utils import import_file
 SourceInfo = BaseRule.SourceInfo
 ExpressionInfo = BaseRule.ExpressionInfo
 
+
 @Rules.register("NewTemplateRule")
 class NewTemplateRule(BaseRule.BaseRule):
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.logger = logging.getLogger(name)
         self.logger.info("init")
-        
+
         config = self.shared.config.config
         self.proj_path = pathlib.Path(config("proj", "path", ".")).absolute()
 
@@ -28,12 +29,12 @@ class NewTemplateRule(BaseRule.BaseRule):
             if int(active):
                 self.setup_sub_rule(name)
         self.logger.info("Done parsing")
-    
+
     def setup_sub_rule(self, name):
         raise NotImplementedError
 
     def setup_example(self):
-        #example_expression_module = self.import_py_file("config/example_expression.py")
+        # example_expression_module = self.import_py_file("config/example_expression.py")
 
         # config/example_expresion.py:
         # def expression(internal):
@@ -45,9 +46,7 @@ class NewTemplateRule(BaseRule.BaseRule):
         source_count = self.add_new_expression(
             ExpressionInfo(
                 example_expression_module,
-                [
-                    SourceInfo("InternalSource", "intern_test_1")
-                ]
+                [SourceInfo("InternalSource", "intern_test_1")],
             )
         )
         self.update_statistics(self.name + ".example", 0, 1, source_count)
@@ -60,11 +59,13 @@ class NewTemplateRule(BaseRule.BaseRule):
     def run(self):
         self.logger.info("Running")
         while not self.has_interrupt():
-            self.loop_incoming() #  dispatch handle_* functions
+            self.loop_incoming()  #  dispatch handle_* functions
         self.logger.info("Stopped")
 
     def handle_run_expression(self, incoming):
         expressions = self.get_expressions(incoming)
-        self.logger.debug("Received %s. Found expressions %s",incoming.key, len(expressions))
+        self.logger.debug(
+            "Received %s. Found expressions %s", incoming.key, len(expressions)
+        )
         if expressions:
             self.send_expressions_to_engine(incoming, expressions)

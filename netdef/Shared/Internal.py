@@ -2,7 +2,7 @@
 from collections import OrderedDict
 
 
-class Statistics():
+class Statistics:
     """
     A singleton class to store statistics as key-value pair.
     Can be turned off for performance or security.
@@ -21,14 +21,18 @@ class Statistics():
 
 
     """
+
     on = True
     statistics = OrderedDict()
+
     @staticmethod
     def set(key, value):
         Statistics.statistics[key] = value
+
     @staticmethod
     def get(key):
         return Statistics.statistics[key]
+
     @staticmethod
     def get_dict():
         return Statistics.statistics

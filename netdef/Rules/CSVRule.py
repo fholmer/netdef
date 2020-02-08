@@ -12,12 +12,14 @@ NAME = "CSVRule"
 
 log.debug("Loading module")
 
+
 @Rules.register(NAME)
 class CSVRule(BaseRule.BaseRule):
     """
     .. tip:: Development Status :: 5 - Production/Stable
 
     """
+
     def __init__(self, name, shared):
         super().__init__(name, shared)
         log.info("init")
@@ -44,7 +46,9 @@ class CSVRule(BaseRule.BaseRule):
         log.info(rel_pyfile)
         log.info(rel_csvfile)
 
-        expression_module = self.get_module_from_string(rel_pyfile, __package__, abs_root, self.name, name)
+        expression_module = self.get_module_from_string(
+            rel_pyfile, __package__, abs_root, self.name, name
+        )
 
         abs_csvfile = str(pathlib.Path(abs_root).joinpath(rel_csvfile))
 
@@ -66,29 +70,35 @@ class CSVRule(BaseRule.BaseRule):
             expression_count = 0
             source_count = 0
             for header in headers:
-                source_name, controller_name = self.source_and_controller_from_key(header)
+                source_name, controller_name = self.source_and_controller_from_key(
+                    header
+                )
                 self.add_new_parser(source_name, controller_name)
 
             for row in reader:
                 expression_count += 1
-                source_info_list = [SourceInfo(header, column) for header, column in zip(headers, row)]
+                source_info_list = [
+                    SourceInfo(header, column) for header, column in zip(headers, row)
+                ]
 
                 expr_info = ExpressionInfo(expression_module, source_info_list)
                 source_count += self.add_new_expression(expr_info)
-            
-            self.update_statistics(self.name + "." + name, 0, expression_count, source_count)
+
+            self.update_statistics(
+                self.name + "." + name, 0, expression_count, source_count
+            )
 
     def run(self):
         "Main loop. Will exit when receiving interrupt signal"
         log.info("Running")
         while not self.has_interrupt():
-            self.loop_incoming() # dispatch handle_* functions
+            self.loop_incoming()  # dispatch handle_* functions
         log.info("Stopped")
 
     def handle_run_expression(self, incoming):
         expressions = self.get_expressions(incoming)
-        #log.debug("Received %s. Found expressions %s",incoming.key, len(expressions))
+        # log.debug("Received %s. Found expressions %s",incoming.key, len(expressions))
         if expressions:
             self.send_expressions_to_engine(incoming, expressions)
-        #for expression in expressions:
+        # for expression in expressions:
         #    expression.execute()

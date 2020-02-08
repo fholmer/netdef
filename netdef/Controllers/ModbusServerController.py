@@ -2,8 +2,11 @@ import datetime
 import logging
 import time
 
-from pymodbus.datastore import (ModbusSequentialDataBlock, ModbusServerContext,
-                                ModbusSlaveContext)
+from pymodbus.datastore import (
+    ModbusSequentialDataBlock,
+    ModbusServerContext,
+    ModbusSlaveContext,
+)
 from pymodbus.device import ModbusDeviceIdentification
 from pymodbus.server.sync import ModbusSocketFramer, ModbusTcpServer
 
@@ -70,6 +73,7 @@ class ModbusServerController(BaseController.BaseController):
         }
 
     """
+
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.logger = logging.getLogger(name)
@@ -83,19 +87,21 @@ class ModbusServerController(BaseController.BaseController):
         self.context = self.get_modbus_server_context()
 
         framer = self.get_framer()
-        
-        self.readfunction = 0x03 # read holding registers
+
+        self.readfunction = 0x03  # read holding registers
         self.writefunction = 0x10
 
         identity = ModbusDeviceIdentification()
-        identity.VendorName = config(self.name, 'VendorName', 'Pymodbus')
-        identity.ProductCode = config(self.name, 'ProductCode', 'PM')
-        identity.VendorUrl = config(self.name, 'VendorUrl', 'http://github.com/bashwork/pymodbus/')
-        identity.ProductName = config(self.name, 'ProductName', 'Pymodbus Server')
-        identity.ModelName = config(self.name, 'ModelName', 'Pymodbus Server')
-        identity.MajorMinorRevision = config(self.name, 'MajorMinorRevision', '1.0')
+        identity.VendorName = config(self.name, "VendorName", "Pymodbus")
+        identity.ProductCode = config(self.name, "ProductCode", "PM")
+        identity.VendorUrl = config(
+            self.name, "VendorUrl", "http://github.com/bashwork/pymodbus/"
+        )
+        identity.ProductName = config(self.name, "ProductName", "Pymodbus Server")
+        identity.ModelName = config(self.name, "ModelName", "Pymodbus Server")
+        identity.MajorMinorRevision = config(self.name, "MajorMinorRevision", "1.0")
 
-        host = config(self.name, "host", '0.0.0.0')
+        host = config(self.name, "host", "0.0.0.0")
         port = config(self.name, "port", 5020)
 
         # når vi starter modbus sin serve_forever så blokkeres denne tråden
@@ -111,13 +117,16 @@ class ModbusServerController(BaseController.BaseController):
             if i > 0:
                 time.sleep(10)
             try:
-                return MyController(context, framer, identity, (host, port), controller=self)
+                return MyController(
+                    context, framer, identity, (host, port), controller=self
+                )
                 break
             except OSError as error:
                 self.logger.error("%s. Retry in 10 sec.", repr(error))
         else:
-            return MyController(context, framer, identity, (host, port), controller=self)
-
+            return MyController(
+                context, framer, identity, (host, port), controller=self
+            )
 
     def get_modbus_server_context(self):
         """
@@ -129,7 +138,7 @@ class ModbusServerController(BaseController.BaseController):
         config = self.shared.config.config
         device_dict = {}
         conf_device_list = config(self.name, "devicelist", self.name + "_devices")
-        #self.shared.config.add_section(conf_device_list)
+        # self.shared.config.add_section(conf_device_list)
         devices = self.shared.config.get_dict(conf_device_list)
         for deviceconfig, deviceenabled in devices.items():
             if int(deviceenabled):
@@ -138,32 +147,33 @@ class ModbusServerController(BaseController.BaseController):
                 # 'hr' - Holding Register initializer
                 # 'ir' - Input Registers iniatializer
 
-                device_id = config(deviceconfig, 'device_id', 0)
-                device_name = config(deviceconfig, 'device_name', "").strip("\"'")
-                di_start = config(deviceconfig, 'di_start', 0)
-                di_length = config(deviceconfig, 'di_length', 100)
-                di_init_value = config(deviceconfig, 'di_init_value', 0)
+                device_id = config(deviceconfig, "device_id", 0)
+                device_name = config(deviceconfig, "device_name", "").strip("\"'")
+                di_start = config(deviceconfig, "di_start", 0)
+                di_length = config(deviceconfig, "di_length", 100)
+                di_init_value = config(deviceconfig, "di_init_value", 0)
 
-                co_start = config(deviceconfig, 'co_start', 0)
-                co_length = config(deviceconfig, 'co_length', 100)
-                co_init_value = config(deviceconfig, 'co_init_value', 0)
+                co_start = config(deviceconfig, "co_start", 0)
+                co_length = config(deviceconfig, "co_length", 100)
+                co_init_value = config(deviceconfig, "co_init_value", 0)
 
-                hr_start = config(deviceconfig, 'hr_start', 0)
-                hr_length = config(deviceconfig, 'hr_length', 100)
-                hr_init_value = config(deviceconfig, 'hr_init_value', 0)
+                hr_start = config(deviceconfig, "hr_start", 0)
+                hr_length = config(deviceconfig, "hr_length", 100)
+                hr_init_value = config(deviceconfig, "hr_init_value", 0)
 
-                ir_start = config(deviceconfig, 'ir_start', 0)
-                ir_length = config(deviceconfig, 'ir_length', 100)
-                ir_init_value = config(deviceconfig, 'ir_init_value', 0)
+                ir_start = config(deviceconfig, "ir_start", 0)
+                ir_length = config(deviceconfig, "ir_length", 100)
+                ir_init_value = config(deviceconfig, "ir_init_value", 0)
 
                 store = MyContext(
-                    di=ModbusSequentialDataBlock(di_start, [di_init_value]*di_length),
-                    co=ModbusSequentialDataBlock(co_start, [co_init_value]*co_length),
-                    hr=ModbusSequentialDataBlock(hr_start, [hr_init_value]*hr_length),
-                    ir=ModbusSequentialDataBlock(ir_start, [ir_init_value]*ir_length),
+                    di=ModbusSequentialDataBlock(di_start, [di_init_value] * di_length),
+                    co=ModbusSequentialDataBlock(co_start, [co_init_value] * co_length),
+                    hr=ModbusSequentialDataBlock(hr_start, [hr_init_value] * hr_length),
+                    ir=ModbusSequentialDataBlock(ir_start, [ir_init_value] * ir_length),
                     controller=self,
                     device_id=device_id,
-                    device_name=device_name)
+                    device_name=device_name,
+                )
 
                 device_dict[device_id] = store
 
@@ -194,7 +204,12 @@ class ModbusServerController(BaseController.BaseController):
         if isinstance(incoming, HoldingRegisterSource):
             unit, address = incoming.unpack_unit_and_address()
             self.context[unit].setValues(self.writefunction, address, [value], True)
-        self.logger.debug("'Write source' event to %s. value: %s at %s", incoming.key, value, source_time)
+        self.logger.debug(
+            "'Write source' event to %s. value: %s at %s",
+            incoming.key,
+            value,
+            source_time,
+        )
 
     def handle_datachange(self, unit, address, value, is_internal):
         name = HoldingRegisterSource.pack_unit_and_address(unit, address)
@@ -203,11 +218,14 @@ class ModbusServerController(BaseController.BaseController):
             item = self.get_source(name)
             stime = datetime.datetime.utcnow()
             status_ok = True
-            if self.update_source_instance_value(item, value, stime, status_ok, self.oldnew):
+            if self.update_source_instance_value(
+                item, value, stime, status_ok, self.oldnew
+            ):
                 if is_internal and self.send_events_internal:
                     self.send_outgoing(item)
                 elif not is_internal and self.send_events_external:
                     self.send_outgoing(item)
+
 
 class MyController(ModbusTcpServer):
     def __init__(self, *args, **kwargs):
@@ -220,7 +238,8 @@ class MyController(ModbusTcpServer):
         if self.controller.has_interrupt():
             self._BaseServer__shutdown_request = True
         else:
-            self.controller.loop_incoming() # dispatch handle_* functions
+            self.controller.loop_incoming()  # dispatch handle_* functions
+
 
 class MyContext(ModbusSlaveContext):
     def __init__(self, *args, **kwargs):
@@ -233,8 +252,5 @@ class MyContext(ModbusSlaveContext):
         super().setValues(fx, address, values)
         for i, value in enumerate(values):
             self.controller.handle_datachange(
-                self.device_id,
-                address + i,
-                value,
-                is_internal
+                self.device_id, address + i, value, is_internal
             )

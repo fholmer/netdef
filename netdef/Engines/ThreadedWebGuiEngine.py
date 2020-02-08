@@ -9,25 +9,27 @@ from werkzeug.serving import run_simple
 from . import ThreadedEngine
 from .webadmin import AdminIndex, Views
 
-#from werkzeug.security import generate_password_hash, check_password_hash
+# from werkzeug.security import generate_password_hash, check_password_hash
 
 
 log = logging.getLogger("ThreadedWebGuiEngine")
 log.info("Enter Threaded Web Gui Engine")
 
+
 class ThreadedWebGuiEngine(ThreadedEngine.ThreadedEngine):
     """
     Integrates a simple werkzeug webserver to serve flask_admin webpages
     """
+
     def __init__(self, shared):
         super().__init__(shared)
         self.webadmin_views = Views.Views(shared)
         self.app = None
-    
+
     def load(self, base_package):
         super().load(base_package)
         self.webadmin_views.load(base_package)
-    
+
     def init(self):
         super().init()
         app = self.get_flask_app()
@@ -55,10 +57,18 @@ class ThreadedWebGuiEngine(ThreadedEngine.ThreadedEngine):
 
         # run webserver. blocks until ctrl-c is received
         try:
-            run_simple(host, port, self.app, use_reloader=False, use_debugger=False, threaded=True, ssl_context=ssl_context)
+            run_simple(
+                host,
+                port,
+                self.app,
+                use_reloader=False,
+                use_debugger=False,
+                threaded=True,
+                ssl_context=ssl_context,
+            )
         except KeyboardInterrupt:
             pass
-    
+
     def get_flask_app(self):
         """
         Returns the main flask app.
@@ -96,8 +106,11 @@ class ThreadedWebGuiEngine(ThreadedEngine.ThreadedEngine):
 
         """
         if not self.app:
-            self.app = Flask(__name__, template_folder='templates', static_folder='static')
+            self.app = Flask(
+                __name__, template_folder="templates", static_folder="static"
+            )
         return self.app
+
 
 def init_app(app, webadmin_views, shared):
     """Configure flask. Setup flask_admin and flask_login
@@ -117,7 +130,11 @@ def init_app(app, webadmin_views, shared):
     # then it is captured in the template_path variable and added to its jinja
     # search file path
     try:
-        if not pathlib.Path(__file__).parent.joinpath("templates").samefile(template_path):
+        if (
+            not pathlib.Path(__file__)
+            .parent.joinpath("templates")
+            .samefile(template_path)
+        ):
             template_search_path = app.jinja_loader.searchpath
             template_search_path.insert(0, template_path)
     except FileNotFoundError:
@@ -125,10 +142,10 @@ def init_app(app, webadmin_views, shared):
 
     # global settings and instances are added to app.config
     # other modules can retrieve these with "import current_app"
-    app.config['ADMIN_USERS'] = admin_users
-    app.config['SECRET_KEY'] = secret_key
-    app.config['SHARED'] = shared
-    #app.config['RSTPAGES_SRC'] = pathlib.Path('docs').absolute()
+    app.config["ADMIN_USERS"] = admin_users
+    app.config["SECRET_KEY"] = secret_key
+    app.config["SHARED"] = shared
+    # app.config['RSTPAGES_SRC'] = pathlib.Path('docs').absolute()
 
     login_manager = flask_login.LoginManager()
     login_manager.init_app(app)
@@ -140,7 +157,7 @@ def init_app(app, webadmin_views, shared):
         user = AdminIndex.User(login, admin_users[login]["roles"])
         return user
 
-    @app.route('/')
+    @app.route("/")
     def index():
         return redirect("/admin/", code=302)
 
@@ -150,7 +167,8 @@ def init_app(app, webadmin_views, shared):
         admin = flask_admin.Admin(
             name="Webadmin",
             index_view=AdminIndex.MyAdminIndexView(),
-            template_mode='bootstrap3')
+            template_mode="bootstrap3",
+        )
 
         admin.init_app(app)
         webadmin_views.setup(admin)
@@ -162,7 +180,9 @@ def make_admin_users_dict(config, section):
     # fetch legacy user/pass from konfig
     admin_user = config.config(section, "user", "admin", add_if_not_exists=False)
     admin_password = config.config(section, "password", "", add_if_not_exists=False)
-    admin_password_hash = config.config(section, "password_hash", "", add_if_not_exists=False)
+    admin_password_hash = config.config(
+        section, "password_hash", "", add_if_not_exists=False
+    )
 
     # new rolebased user/pass
     admin_users = {}
@@ -172,12 +192,12 @@ def make_admin_users_dict(config, section):
         config.set_hidden_value(section, "password")
         config.set_hidden_value(section, "password_hash")
 
-        admin_users[admin_user] =  {
+        admin_users[admin_user] = {
             "password": admin_password,
             "password_hash": admin_password_hash,
-            "roles": {"admin"}
+            "roles": {"admin"},
         }
-    
+
     prefixes = {}
 
     for key, val in config.get_dict("webadmin").items():
@@ -186,7 +206,10 @@ def make_admin_users_dict(config, section):
             if attr in ("user", "password", "password_hash", "roles"):
                 if not prefix in prefixes:
                     prefixes[prefix] = {
-                        "user":"", "password":"", "password_hash":"", "roles":set()
+                        "user": "",
+                        "password": "",
+                        "password_hash": "",
+                        "roles": set(),
                     }
                 if attr == "roles":
                     prefixes[prefix][attr] = set(map(str.strip, val.split(",")))
@@ -196,5 +219,5 @@ def make_admin_users_dict(config, section):
 
     for user_info in prefixes.values():
         admin_users[user_info["user"]] = user_info
-    
+
     return admin_users

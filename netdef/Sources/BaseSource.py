@@ -14,17 +14,21 @@ class StatusCode(enum.Enum):
     GOOD: A normal value update.
     INVALID: A value update where the value is not to be trusted.
     """
+
     NONE = 0
     INITIAL = 1
     GOOD = 2
     INVALID = 3
 
-class BaseSource():
+
+class BaseSource:
     def __init__(self, key=None, value=None, controller=None, source=None, rule=None):
-        #verdier
+        # verdier
 
         # cache
-        self.value = value  # cachet verdi fra get_value eller set_value når disse er behandlet
+        self.value = (
+            value
+        )  # cachet verdi fra get_value eller set_value når disse er behandlet
 
         # verdiens statuskode, ved oppstart er den NONE
         # første innhentede verdi fra controller er INITIAL
@@ -49,13 +53,21 @@ class BaseSource():
         self.set_source_time = None
         self.set_status_code = None
         self.set_origin = None
-        self.set_callback = None # callback som skal kjøres når verdi settes fra utrykk
+        self.set_callback = None  # callback som skal kjøres når verdi settes fra utrykk
 
         # kilder
-        self.rule = rule # kontroller må benytte denne for å sende RUN_EXPRESSION til riktig kø
-        self.controller = controller # regelmotor må benytte denne for å sende ADD_SOURCE til riktig kontroller
-        self.source = source # kan brukes av kontroller eller uttrykk for å verifisere kilde-typen
-        self.key = key # unik identifikasjon for kilden. kommer typisk fra en konfigfil som er parset av regelmotor
+        self.rule = (
+            rule
+        )  # kontroller må benytte denne for å sende RUN_EXPRESSION til riktig kø
+        self.controller = (
+            controller
+        )  # regelmotor må benytte denne for å sende ADD_SOURCE til riktig kontroller
+        self.source = (
+            source
+        )  # kan brukes av kontroller eller uttrykk for å verifisere kilde-typen
+        self.key = (
+            key
+        )  # unik identifikasjon for kilden. kommer typisk fra en konfigfil som er parset av regelmotor
 
         # dette er en valgfri "wrapper" til verdien fra kontrolleren.
         # hensikten er å gjøre manipulering av verdi så enkel som mulig i uttrykk
@@ -63,7 +75,9 @@ class BaseSource():
 
     def __str__(self):
         # brukes til søk og print av kildedata
-        return self.get_reference() + " R: {} V:{}".format(self.rule, self.value_as_string)
+        return self.get_reference() + " R: {} V:{}".format(
+            self.rule, self.value_as_string
+        )
 
     def get_reference(self):
         """
@@ -120,7 +134,7 @@ class BaseSource():
         # """ Benyttes av controller. Funksjon som bekrefter/avkrefter om inndata er
         #     en kjent liste av noe slag. hvis ja, så blir unpack_subitems brukt etterpå.
         # """
-        return False # kilder må overstyre denne. den er default av.
+        return False  # kilder må overstyre denne. den er default av.
 
     @staticmethod
     def unpack_subitems(value):
@@ -160,7 +174,7 @@ class BaseSource():
         # """ Benyttes av controller. Funksjon som bekrefter/avkrefter om inndata er
         #     kompatiblet med denne klassen. hvis ja, så blir unpack_value brukt etterpå.
         # """
-        return False # kilder må overstyre denne. den er default av.
+        return False  # kilder må overstyre denne. den er default av.
 
     @staticmethod
     def unpack_value(key, source_time, value):
@@ -207,7 +221,7 @@ class BaseSource():
         #     skal brukes mot.
         # """
         return self.key, value
-    
+
     def pack_add_source(self):
         """
         Used if source must be added to external system. I.e. a subscription.
@@ -291,7 +305,7 @@ class BaseSource():
             return True
         else:
             return False
-    
+
     def set_value_from_string(self, value, stime=None, status_ok=True, origin=""):
         """
         Converts given value to correct datatype and sends a WRITE_SOURCE message

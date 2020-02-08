@@ -19,6 +19,7 @@ class ZmqDataAccessController(BaseController.BaseController):
     .. danger:: Development Status :: 3 - Alpha
 
     """
+
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.logger = logging.getLogger(self.name)
@@ -26,9 +27,11 @@ class ZmqDataAccessController(BaseController.BaseController):
 
         config = self.shared.config.config
 
-        self.topic = b"" # config(self.name, "topic", "dist")
+        self.topic = b""  # config(self.name, "topic", "dist")
         self.publish_url = config(self.name, "publish_url", "tcp://127.0.0.1:5556")
-        self.subscribe_list = config(self.name, "subscribe_urls", "{}_subscribe_urls".format(self.name))
+        self.subscribe_list = config(
+            self.name, "subscribe_urls", "{}_subscribe_urls".format(self.name)
+        )
 
         self.subscribe_urls = [
             url for url in self.shared.config.get_dict(self.subscribe_list).values()
@@ -53,7 +56,7 @@ class ZmqDataAccessController(BaseController.BaseController):
 
     def loop_subscribers(self):
         try:
-            events = {"first":1}
+            events = {"first": 1}
             while events and not self.has_interrupt():
                 events = dict(self.poller.poll(10))
 
@@ -65,14 +68,19 @@ class ZmqDataAccessController(BaseController.BaseController):
 
                         if self.has_source(item_key):
                             item = self.get_source(item_key)
-                            if self.update_source_instance_value(item, value, stime, True, False):
+                            if self.update_source_instance_value(
+                                item, value, stime, True, False
+                            ):
                                 self.send_outgoing(item)
 
                 elif self.pub in events:
                     event = self.pub.recv(flags=zmq.NOBLOCK)
                     self.logger.debug("PUB RECV %s", event)
-                    if event[0] == 1: # subscribe-event
-                        rep = tuple((item.key, item.value, item.source_time) for item in self.get_sources().values())
+                    if event[0] == 1:  # subscribe-event
+                        rep = tuple(
+                            (item.key, item.value, item.source_time)
+                            for item in self.get_sources().values()
+                        )
                         self.pub.send_pyobj(rep)
 
         except zmq.ZMQError as error:
@@ -86,8 +94,8 @@ class ZmqDataAccessController(BaseController.BaseController):
         self.logger.info("Running")
         self.connect()
         while not self.has_interrupt():
-            self.loop_incoming() # dispatch handle_* functions
-            self.loop_subscribers() # dispatch poll_* functions
+            self.loop_incoming()  # dispatch handle_* functions
+            self.loop_subscribers()  # dispatch poll_* functions
 
         self.logger.info("Stopped")
 
@@ -96,5 +104,10 @@ class ZmqDataAccessController(BaseController.BaseController):
         self.add_source(incoming.key, incoming)
 
     def handle_write_source(self, incoming, value, source_time):
-        self.logger.debug("'Write source' event to %s. value: %s at: %s", incoming.key, value, source_time)
-        self.pub.send_pyobj(((incoming.key, value, source_time), ), flags=zmq.NOBLOCK)
+        self.logger.debug(
+            "'Write source' event to %s. value: %s at: %s",
+            incoming.key,
+            value,
+            source_time,
+        )
+        self.pub.send_pyobj(((incoming.key, value, source_time),), flags=zmq.NOBLOCK)

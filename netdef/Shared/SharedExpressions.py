@@ -1,4 +1,4 @@
-class ExpressionInstances():
+class ExpressionInstances:
     def __init__(self):
         self.items = []
         self.items_by_reference = {}
@@ -21,5 +21,6 @@ class ExpressionInstances():
     def has_expression_in_source_ref(self, ref, expression):
         return expression in self.items_by_reference[ref]
 
-class SharedExpressions():
+
+class SharedExpressions:
     instances = ExpressionInstances()

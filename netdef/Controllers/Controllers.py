@@ -17,16 +17,19 @@ def register(name):
             def __init__(self, name, shared):
                 ...
     """
+
     def classdecorator(name, cls):
         CONTROLLERDICT[name] = cls
         return cls
+
     return functools.partial(classdecorator, name)
 
 
-class Controllers():
+class Controllers:
     """
     A collection of all loaded controllers
     """
+
     def __init__(self, shared=None):
         self.logging = logging.getLogger(__name__)
         self.items = CONTROLLERDICT
@@ -57,7 +60,7 @@ class Controllers():
 
         if isinstance(base_packages, str):
             base_packages = [base_packages]
-        
+
         added = []
 
         for base_package in base_packages:
@@ -67,19 +70,21 @@ class Controllers():
                 if int(activate) and not name in added:
                     try:
                         # laster modul
-                        importlib.import_module("{}.Controllers.{}".format(base_package, name))
+                        importlib.import_module(
+                            "{}.Controllers.{}".format(base_package, name)
+                        )
                         # lager kø-instanser
                         added.append(name)
                     except ImportError as e:
                         if isinstance(e.name, str):
                             if not e.name.startswith(base_package + ".Controllers"):
-                                raise(e)
+                                raise (e)
                         else:
-                            raise(e)
+                            raise (e)
 
         for name, activate in activate_controllers.items():
             if int(activate) and not name in added:
-                    self.logging.error("%s not found in %s", name, base_packages)
+                self.logging.error("%s not found in %s", name, base_packages)
 
         for name in self.items.keys():
             self.shared.queues.add_controller(name)
@@ -92,4 +97,6 @@ class Controllers():
                 self.shared.queues.add_controller(name)
                 self.shared.queues.send_setup_state_to_controller(name)
             else:
-                self.logging.error("%s not found for alias %s in configfile", origin, name)
+                self.logging.error(
+                    "%s not found for alias %s in configfile", origin, name
+                )

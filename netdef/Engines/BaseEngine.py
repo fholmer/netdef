@@ -7,7 +7,8 @@ from ..Shared.Internal import Statistics
 log = logging.getLogger(__name__)
 log.debug("load module")
 
-class BaseEngine():
+
+class BaseEngine:
     def __init__(self, shared=None):
         self.add_shared_object(shared)
 
@@ -46,7 +47,8 @@ class BaseEngine():
     def block():
         raise NotImplementedError
 
-class BaseExpressionExecutor():
+
+class BaseExpressionExecutor:
     def __init__(self, name, shared):
         self.add_name(name)
         self.add_shared(shared)
@@ -77,9 +79,15 @@ class BaseExpressionExecutor():
         try:
             while not self.has_interrupt():
                 if Statistics.on:
-                    Statistics.set(self.name + ".incoming.queue.size", self.incoming.qsize())
-                    Statistics.set(self.name + ".threading.total.count", threading.active_count())
-                messagetype, incoming = self.incoming.get(block=True, timeout=self.queue_timeout)
+                    Statistics.set(
+                        self.name + ".incoming.queue.size", self.incoming.qsize()
+                    )
+                    Statistics.set(
+                        self.name + ".threading.total.count", threading.active_count()
+                    )
+                messagetype, incoming = self.incoming.get(
+                    block=True, timeout=self.queue_timeout
+                )
                 if messagetype == self.messagetypes.RUN_EXPRESSION:
                     source_item, expressions = incoming
                     self.handle_run_expression(source_item, expressions)

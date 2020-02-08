@@ -17,7 +17,9 @@ import sys
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 from collections import namedtuple
 
-ApplicationService = namedtuple('ApplicationService', ['svc_name', 'exe_name', 'app_callback', 'template_callback'])
+ApplicationService = namedtuple(
+    "ApplicationService", ["svc_name", "exe_name", "app_callback", "template_callback"]
+)
 
 SYSTEMD_UNIT_TEMPLATE = """[Unit]
 Description={DESC}
@@ -39,6 +41,7 @@ StandardError=syslog
 WantedBy=multi-user.target
 
 """
+
 
 def get_service(svc_name, exe_name, app_callback, template_callback):
     """
@@ -76,15 +79,16 @@ def get_service(svc_name, exe_name, app_callback, template_callback):
     #
 
     if not pathlib.Path(exe_name).suffix:
-        exe_name = str(pathlib.Path(exe_name).with_suffix('.service')).lower()
+        exe_name = str(pathlib.Path(exe_name).with_suffix(".service")).lower()
 
     app_service = ApplicationService(
         svc_name=svc_name,
         exe_name=exe_name,
         app_callback=app_callback,
-        template_callback=template_callback
+        template_callback=template_callback,
     )
     return app_service
+
 
 def run_service(app_service_class):
     """
@@ -114,12 +118,24 @@ def run_service(app_service_class):
     """
 
     cmd_parser = ArgumentParser(add_help=True)
-    cmd_parser.add_argument('proj_path', type=pathlib.Path, help='path to project directory')
-    cmd_parser.add_argument('-i', '--install', action='store_true', help='install as systemd service')
-    cmd_parser.add_argument('-u', '--user', action='store', help='install as given user', default=os.getlogin())
+    cmd_parser.add_argument(
+        "proj_path", type=pathlib.Path, help="path to project directory"
+    )
+    cmd_parser.add_argument(
+        "-i", "--install", action="store_true", help="install as systemd service"
+    )
+    cmd_parser.add_argument(
+        "-u",
+        "--user",
+        action="store",
+        help="install as given user",
+        default=os.getlogin(),
+    )
     args = cmd_parser.parse_args()
 
-    service_file = pathlib.Path("/etc/systemd/system").joinpath(app_service_class.exe_name)
+    service_file = pathlib.Path("/etc/systemd/system").joinpath(
+        app_service_class.exe_name
+    )
     proj_path = args.proj_path.expanduser().absolute()
     os.chdir(str(proj_path))
 
@@ -128,6 +144,7 @@ def run_service(app_service_class):
     else:
         cmd_parser.print_usage()
         print("Proj path: {}".format(proj_path))
+
 
 def install_service(proj_path, service_file, svc_name, user):
     """
@@ -152,7 +169,7 @@ def install_service(proj_path, service_file, svc_name, user):
 
         if sys.argv[0] == __file__:
             # when "python -m netdef.systemd_service"
-            args = [sys.executable, '-m', 'netdef.systemd_service'] + sys.argv[1:]
+            args = [sys.executable, "-m", "netdef.systemd_service"] + sys.argv[1:]
         else:
             args = sys.argv
 
@@ -169,11 +186,15 @@ def install_service(proj_path, service_file, svc_name, user):
         return
 
     if service_file.is_file():
-        res = input("""WARNING:
+        res = input(
+            """WARNING:
     File already exists and will be overwritten:
         {}
     
-    Continue? (y/[N]): """.format(service_file))
+    Continue? (y/[N]): """.format(
+                service_file
+            )
+        )
 
         if res.lower() == "y":
             print("")
@@ -193,23 +214,18 @@ def install_service(proj_path, service_file, svc_name, user):
 
  Continue? (y/[N]): """
 
-    res = input(message.format(
-        FN=service_file,
-        DESC=svc_name,
-        WD=proj_path,
-        USER=user,
-        EXEC=exec_file
-    ))
+    res = input(
+        message.format(
+            FN=service_file, DESC=svc_name, WD=proj_path, USER=user, EXEC=exec_file
+        )
+    )
     if not res.lower() == "y":
         print("Operation aborted by user")
         return
 
     service_file.write_text(
         SYSTEMD_UNIT_TEMPLATE.format(
-            DESC=svc_name,
-            WD=proj_path,
-            USER=user,
-            EXEC=exec_file
+            DESC=svc_name, WD=proj_path, USER=user, EXEC=exec_file
         )
     )
 
@@ -222,19 +238,36 @@ def install_service(proj_path, service_file, svc_name, user):
     print("Enable the service: ", "$ systemctl enable " + service_name)
     print("Start the service:  ", "$ systemctl start " + service_name)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     default_name = str(pathlib.Path(".").expanduser().absolute().name)
 
-    cmd_parser = ArgumentParser(add_help=True, formatter_class=ArgumentDefaultsHelpFormatter)
-    cmd_parser.add_argument('proj_path', type=pathlib.Path, help='path to project directory')
-    cmd_parser.add_argument('-i', '--install', action='store_true', help='install as systemd service')
-    cmd_parser.add_argument('-u', '--user', action='store', help='install as given user', default=os.getlogin())
-    cmd_parser.add_argument('-n', '--name', action='store', help='application name', default=default_name)
+    cmd_parser = ArgumentParser(
+        add_help=True, formatter_class=ArgumentDefaultsHelpFormatter
+    )
+    cmd_parser.add_argument(
+        "proj_path", type=pathlib.Path, help="path to project directory"
+    )
+    cmd_parser.add_argument(
+        "-i", "--install", action="store_true", help="install as systemd service"
+    )
+    cmd_parser.add_argument(
+        "-u",
+        "--user",
+        action="store",
+        help="install as given user",
+        default=os.getlogin(),
+    )
+    cmd_parser.add_argument(
+        "-n", "--name", action="store", help="application name", default=default_name
+    )
     args = cmd_parser.parse_args()
 
     app_service_class = get_service(args.name, args.name, None, None)
 
-    service_file = pathlib.Path("/etc/systemd/system").joinpath(app_service_class.exe_name)
+    service_file = pathlib.Path("/etc/systemd/system").joinpath(
+        app_service_class.exe_name
+    )
     proj_path = args.proj_path.expanduser().absolute()
     os.chdir(str(proj_path))
 
