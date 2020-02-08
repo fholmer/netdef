@@ -1,22 +1,22 @@
-import pytest
-import queue
 import datetime
+import queue
 from unittest.mock import Mock
+
+import pytest
+
 from netdef.Controllers import BaseController
 from netdef.Shared.SharedQueues import MessageType
 from netdef.Sources.BaseSource import BaseSource, StatusCode
 
+
 def test_basics():
     # setup
     incoming = Mock()
-    incoming.get.side_effect = [
-        (MessageType.ADD_SOURCE, "src1"),
-        queue.Empty()
-    ]
+    incoming.get.side_effect = [(MessageType.ADD_SOURCE, "src1"), queue.Empty()]
     shared = Mock()
     shared.queues.get_messages_to_controller.return_value = incoming
     shared.queues.MessageType = MessageType
-    
+
     interrupt = Mock()
     interrupt.is_set.return_value = False
 
@@ -44,15 +44,12 @@ def test_basics():
     assert rule2 == "r2"
     assert src2.key == "src2"
 
-def test_update_source_instance_value():
+
+def test_update_source_instance_value_is_none():
     # update_source_instance_value
     src = BaseSource()
     res = BaseController.BaseController.update_source_instance_value(
-        source_instance=src,
-        value=0,
-        stime=None,
-        status_ok=True,
-        oldnew_check=False
+        source_instance=src, value=0, stime=None, status_ok=True, oldnew_check=False
     )
     assert res == True
     assert src.get == 0
@@ -60,12 +57,43 @@ def test_update_source_instance_value():
     assert src.status_code == StatusCode.INITIAL
 
 
+def test_update_source_instance_value_is_good():
+    # update_source_instance_value
+    src = BaseSource()
+    src.get = 0
+    src.status_code = StatusCode.INITIAL
+    res = BaseController.BaseController.update_source_instance_value(
+        source_instance=src, value=0, stime=None, status_ok=True, oldnew_check=False
+    )
+    assert res == True
+    assert src.get == 0
+    assert src.source_time == None
+    assert src.status_code == StatusCode.GOOD
+
+
+def test_update_source_instance_value_is_invalid():
+    # update_source_instance_value
+    src = BaseSource()
+    src.get = 0
+    src.status_code = StatusCode.INITIAL
+    res = BaseController.BaseController.update_source_instance_value(
+        source_instance=src, value=0, stime=None, status_ok=False, oldnew_check=False
+    )
+    assert res == True
+    assert src.get == 0
+    assert src.source_time == None
+    assert src.status_code == StatusCode.INVALID
+
+
 def test_loop_incoming():
     # setup
     now = datetime.datetime.utcnow()
     hdl_tick = (MessageType.TICK, BaseSource("tick"))
     hdl_add_source = (MessageType.ADD_SOURCE, BaseSource("add_source"))
-    hdl_write_source = (MessageType.WRITE_SOURCE, (BaseSource("write_source"),0.11,now))
+    hdl_write_source = (
+        MessageType.WRITE_SOURCE,
+        (BaseSource("write_source"), 0.11, now),
+    )
     hdl_add_parser = (MessageType.ADD_PARSER, BaseSource("add_parser"))
 
     incoming = Mock()
@@ -74,12 +102,12 @@ def test_loop_incoming():
         hdl_add_source,
         hdl_write_source,
         hdl_add_parser,
-        queue.Empty()
+        queue.Empty(),
     ]
     shared = Mock()
     shared.queues.get_messages_to_controller.return_value = incoming
     shared.queues.MessageType = MessageType
-    
+
     interrupt = Mock()
     interrupt.is_set.side_effect = [False, False, False, False, False, True]
 

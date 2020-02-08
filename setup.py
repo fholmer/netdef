@@ -5,23 +5,21 @@
 See:
 https://packaging.python.org/en/latest/distributing.html
 
+Code formatting:
+    python3 -m isort -rc netdef tests
+    python3 -m black netdef tests
 
 To build sdist:
     python3 setup.py sdist
 
 To build wheel:
-    install wheel:
-      python3 -m pip install wheel
-    build wheel:
       python3 setup.py bdist_wheel
 
 Update requirements:
     python3 -m pip freeze -r requirements-full-stable.txt > requirements-full-stable.txt
 
 Upload to pypi:
-	python3 -m twine upload dist/*
-
-Download required packages:
+    python3 -m twine upload dist/*
     
 """
 
