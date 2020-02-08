@@ -1,6 +1,7 @@
 import logging
-from . import FloatSource, Sources
+
 from ..Interfaces import CommTestInterface
+from . import FloatSource, Sources
 
 log = logging.getLogger(__name__)
 

@@ -1,5 +1,6 @@
 from .DefaultInterface import DefaultInterface
 
+
 class ByteStringInterface(DefaultInterface):
 
     def __init__(self, value):

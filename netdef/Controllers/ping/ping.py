@@ -1,10 +1,10 @@
+import asyncio
 import os
-import time
 import random
-import struct
 import select
 import socket
-import asyncio
+import struct
+import time
 
 try:
     from . import ping_plugin

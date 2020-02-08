@@ -1,4 +1,5 @@
-from . import SharedConfig, SharedQueues, SharedSources, SharedExpressions
+from . import SharedConfig, SharedExpressions, SharedQueues, SharedSources
+
 
 class Shared():
     """

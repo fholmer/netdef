@@ -1,12 +1,13 @@
-import win32serviceutil
-import win32service
-import win32console
-import servicemanager
-import pathlib
 import os
+import pathlib
 import sys
-from multiprocessing import Process, freeze_support
 import traceback
+from multiprocessing import Process, freeze_support
+
+import servicemanager
+import win32console
+import win32service
+import win32serviceutil
 
 freeze_support()
 
@@ -136,4 +137,3 @@ def run_service(app_service_class):
         proj_path = pathlib.Path(os.curdir).expanduser().absolute()
         app_service_class._exe_args_ = '-r "' + str(proj_path) + '"'
         win32serviceutil.HandleCommandLine(app_service_class)
-

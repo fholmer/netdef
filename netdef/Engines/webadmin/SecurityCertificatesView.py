@@ -1,14 +1,18 @@
 import configparser
 import functools
 import glob
+
 import flask_login
-from wtforms import Form, StringField, PasswordField, validators, SelectField, IntegerField
-from flask import current_app, request, flash
+from flask import current_app, flash, request
 from flask_admin import expose
 from flask_admin.form import FormOpts, rules
-from .MyBaseView import MyBaseView
-from . import Views
+from wtforms import (Form, IntegerField, PasswordField, SelectField,
+                     StringField, validators)
+
 from .. import utils
+from . import Views
+from .MyBaseView import MyBaseView
+
 
 @Views.register("SecurityCertificatesView")
 def setup(admin, view=None):

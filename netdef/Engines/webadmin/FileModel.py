@@ -1,9 +1,12 @@
 
 import pathlib
+
 from flask_admin.contrib import fileadmin
 from flask_admin.form import FormOpts
-from .MyBaseView import MyBaseView
+
 from . import Views
+from .MyBaseView import MyBaseView
+
 
 @Views.register("Files")
 def setup(admin):

@@ -1,12 +1,15 @@
 import binascii
 import os
-from flask import url_for, redirect, request, current_app
-from wtforms import form, fields, validators
+
 import flask_admin
-from flask_admin import helpers, expose
 import flask_login
-from .. import utils
+from flask import current_app, redirect, request, url_for
+from flask_admin import expose, helpers
+from wtforms import fields, form, validators
+
 from ... import __version__ as version
+from .. import utils
+
 
 def shutdown_server():
     func = current_app.config.get("server.shutdown")

@@ -1,6 +1,8 @@
 import logging
 import pathlib
+
 import yaml
+
 from . import BaseRule, Rules
 
 SourceInfo = BaseRule.SourceInfo

@@ -1,5 +1,5 @@
-import logging
 import csv
+import logging
 import pathlib
 
 from . import BaseRule, Rules

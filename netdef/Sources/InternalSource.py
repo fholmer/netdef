@@ -1,6 +1,8 @@
 import pickle
-from . import DictSource, Sources
+
 from ..Interfaces.DefaultInterface import DefaultInterface
+from . import DictSource, Sources
+
 
 @Sources.register("InternalSource")
 class InternalSource(DictSource.DictSource):
@@ -20,4 +22,3 @@ class InternalSource(DictSource.DictSource):
     def pack_value(self, value):
         obj = pickle.dumps(value)
         return obj
-

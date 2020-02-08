@@ -1,8 +1,10 @@
-import time
-import pytest
 import asyncio
-import aiohttp
+import time
 from unittest.mock import Mock
+
+import aiohttp
+import pytest
+
 from netdef.Controllers import ConcurrentWebRequestController
 from netdef.Sources import ConcurrentWebRequestSource
 

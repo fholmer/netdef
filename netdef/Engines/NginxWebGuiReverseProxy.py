@@ -1,5 +1,7 @@
-import waitress
 import logging
+
+import waitress
+
 from .ThreadedWebGuiEngine import ThreadedWebGuiEngine
 
 log = logging.getLogger("NginxReverseProxy")

@@ -1,5 +1,5 @@
-from netdef.Sources import BaseSource, Sources
 from netdef.Interfaces import UnitOfValueInterface
+from netdef.Sources import BaseSource, Sources
 
 bytes2human = UnitOfValueInterface.bytes2human
 

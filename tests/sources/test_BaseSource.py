@@ -1,6 +1,8 @@
-from unittest.mock import Mock
 import datetime
+from unittest.mock import Mock
+
 from netdef.Sources import BaseSource
+
 
 def test_basic_class():
     "test defaults"
@@ -134,5 +136,3 @@ def test_source_set_callback():
     assert _src_cpy is src
     assert isinstance(_stime, datetime.datetime)
     assert _val == 444.42
-
-    

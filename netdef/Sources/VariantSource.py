@@ -1,6 +1,7 @@
 import logging
-from . import BaseSource, Sources
+
 from ..Interfaces.DefaultInterface import DefaultInterface
+from . import BaseSource, Sources
 
 log = logging.getLogger(__name__)
 

@@ -1,5 +1,6 @@
 from ...Sources.BaseSource import StatusCode
 
+
 class Expression():
     """
     A class containing a reference to the expression-function and references

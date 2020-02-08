@@ -1,14 +1,19 @@
-import logging
-import time
 import datetime
-import psutil
+import logging
 import threading
+import time
+
+import psutil
+
 from netdef.Controllers import BaseController, Controllers
-from netdef.Sources.BaseSource import StatusCode
 from netdef.Shared.Internal import Statistics
+from netdef.Sources.BaseSource import StatusCode
 
 # import my supported sources
-from ..Sources.SystemMonitorSource import bytes2human, SystemMonitorSource, SystemMonitorByteSource, SystemMonitorPercentSource
+from ..Sources.SystemMonitorSource import (SystemMonitorByteSource,
+                                           SystemMonitorPercentSource,
+                                           SystemMonitorSource, bytes2human)
+
 
 def get_vm():
     """

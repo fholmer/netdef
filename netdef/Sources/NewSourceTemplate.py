@@ -1,5 +1,6 @@
-from netdef.Sources import BaseSource, Sources
 from netdef.Interfaces.DefaultInterface import DefaultInterface
+from netdef.Sources import BaseSource, Sources
+
 
 @Sources.register("NewSourceTemplate")
 class NewSourceTemplate(BaseSource.BaseSource):

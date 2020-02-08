@@ -1,7 +1,8 @@
-from argparse import ArgumentParser
 import getpass
-import pathlib
 import os
+import pathlib
+from argparse import ArgumentParser
+
 
 def run_app():
     from . import main
@@ -207,4 +208,3 @@ if __name__ == '__main__':
     # entrypoint: python -m console_scripts 
     # entrypoint(run_app, get_template_config)
     framework_entrypoint()
-

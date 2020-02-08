@@ -10,11 +10,11 @@ This example installs the project in current directory as a service:
 
 """
 
-import pathlib
 import os
-import sys
+import pathlib
 import shutil
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+import sys
+from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 from collections import namedtuple
 
 ApplicationService = namedtuple('ApplicationService', ['svc_name', 'exe_name', 'app_callback', 'template_callback'])

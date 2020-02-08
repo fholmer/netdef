@@ -1,7 +1,9 @@
-from wtforms import form, fields
+from wtforms import fields, form
+
 from ...Shared.Internal import Statistics
-from .SourcesModel import SourcesModelView
 from . import Views
+from .SourcesModel import SourcesModelView
+
 
 @Views.register("Statistics")
 def setup(admin):

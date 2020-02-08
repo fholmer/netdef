@@ -1,10 +1,12 @@
-import time
-import datetime
 import asyncio
+import datetime
 import encodings.idna
-from . import BaseAsyncController, Controllers
+import time
+
 from ..Sources.BaseSource import StatusCode
+from . import BaseAsyncController, Controllers
 from .ping import ping
+
 
 @Controllers.register("CommTestController")
 class CommTestController(BaseAsyncController.BaseAsyncController):

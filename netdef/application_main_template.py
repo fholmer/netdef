@@ -1,11 +1,14 @@
 import os
+
 from netdef.Controllers import Controllers
-from netdef.Sources import Sources
-from netdef.Rules import Rules
 from netdef.Engines import ThreadedWebGuiEngine
+from netdef.Rules import Rules
 from netdef.Shared import Shared
-from netdef.utils import setup_logging, handle_restart
+from netdef.Sources import Sources
+from netdef.utils import handle_restart, setup_logging
+
 from . import defaultconfig
+
 
 def main():
     # for å sette opp logging må vi først initiere shared-modulen

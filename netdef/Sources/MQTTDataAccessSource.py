@@ -1,8 +1,9 @@
-import logging
-import json
 import datetime
-from netdef.Sources import BaseSource, Sources
+import json
+import logging
+
 from netdef.Interfaces.DefaultInterface import DefaultInterface
+from netdef.Sources import BaseSource, Sources
 
 log = logging.getLogger(__name__)
 

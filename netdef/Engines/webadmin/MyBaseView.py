@@ -1,7 +1,7 @@
-from flask import Flask, url_for, redirect, request, abort
-
-from flask_admin import helpers, expose, model, BaseView
 import flask_login
+from flask import Flask, abort, redirect, request, url_for
+from flask_admin import BaseView, expose, helpers, model
+
 
 class MyBaseView(BaseView):
     def is_accessible(self):

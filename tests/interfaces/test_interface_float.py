@@ -1,5 +1,6 @@
 from netdef.Interfaces.FloatInterface import FloatInterface
 
+
 def test_interface_values():
     empty = FloatInterface(0.0)
     assert empty.value == 0.0

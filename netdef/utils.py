@@ -1,12 +1,13 @@
 import logging
-from logging.handlers import RotatingFileHandler
-import sys
 import os
+import sys
+from logging.handlers import RotatingFileHandler
 
+from .Engines.BaseEngine import BaseEngine
+from .Shared.Shared import Shared
 # for assertion:
 from .Shared.SharedConfig import Config
-from .Shared.Shared import Shared
-from .Engines.BaseEngine import BaseEngine
+
 
 def setup_logging(config):
     """

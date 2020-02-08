@@ -1,11 +1,14 @@
 import configparser
 import functools
 import glob
-from wtforms import Form, StringField, SelectField
-from flask import current_app, request, flash
+
+from flask import current_app, flash, request
 from flask_admin import expose
-from .MyBaseView import MyBaseView
+from wtforms import Form, SelectField, StringField
+
 from . import Views
+from .MyBaseView import MyBaseView
+
 
 @Views.register("SecurityBuiltinControllersView")
 def setup(admin, view=None):

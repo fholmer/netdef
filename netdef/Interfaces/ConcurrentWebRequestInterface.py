@@ -1,5 +1,6 @@
 from netdef.Interfaces.DefaultInterface import DefaultInterface
 
+
 class Value():
     __slots__ = ("delay", "available", "data")
     def __init__(self, value):

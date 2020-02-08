@@ -1,15 +1,16 @@
-import sys
 import datetime
-import subprocess
-import platform
 import pathlib
+import platform
+import subprocess
+import sys
+
 import psutil
-from flask import current_app, stream_with_context, Response
+from flask import Response, current_app, stream_with_context
 from flask_admin import expose
-from .MyBaseView import MyBaseView
-from . import Views
 
 from ... import __version__ as version
+from . import Views
+from .MyBaseView import MyBaseView
 
 APP_STARTUP = datetime.datetime.utcnow()
 SYS_STARTUP = datetime.datetime.utcfromtimestamp(psutil.boot_time())

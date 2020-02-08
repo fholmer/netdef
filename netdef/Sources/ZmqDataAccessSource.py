@@ -1,6 +1,7 @@
 import logging
-from netdef.Sources import BaseSource, Sources
+
 from netdef.Interfaces.DefaultInterface import DefaultInterface
+from netdef.Sources import BaseSource, Sources
 
 log = logging.getLogger(__name__)
 

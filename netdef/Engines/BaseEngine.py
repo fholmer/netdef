@@ -1,6 +1,7 @@
-import queue
 import logging
+import queue
 import threading
+
 from ..Shared.Internal import Statistics
 
 log = logging.getLogger(__name__)

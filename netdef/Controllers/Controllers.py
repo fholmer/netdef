@@ -1,5 +1,5 @@
-import importlib
 import functools
+import importlib
 import logging
 from collections import OrderedDict
 

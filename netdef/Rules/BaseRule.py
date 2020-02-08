@@ -1,14 +1,14 @@
+import logging
+import queue
 from collections import Iterable
 from types import ModuleType
-import queue
-import logging
-from ..Engines.expression.Expression import Expression
-from ..Shared.Internal import Statistics
-from ..Interfaces.internal.tick import Tick
-from ..Sources.BaseSource import BaseSource
-from ..Controllers.BaseController import BaseController
-from .utils import get_module_from_string
 
+from ..Controllers.BaseController import BaseController
+from ..Engines.expression.Expression import Expression
+from ..Interfaces.internal.tick import Tick
+from ..Shared.Internal import Statistics
+from ..Sources.BaseSource import BaseSource
+from .utils import get_module_from_string
 
 # Det er en blanding av norsk og engelsk her.
 #

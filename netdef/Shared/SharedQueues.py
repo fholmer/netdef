@@ -1,6 +1,6 @@
+import logging
 import queue
 from enum import Enum
-import logging
 
 # mesage types
 

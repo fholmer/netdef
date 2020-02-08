@@ -1,5 +1,6 @@
-from . import BaseSource, Sources
 from ..Interfaces.DefaultInterface import DefaultInterface
+from . import BaseSource, Sources
+
 
 @Sources.register("XmlRpcMethodCallSource")
 class XmlRpcMethodCallSource(BaseSource.BaseSource):
@@ -26,4 +27,3 @@ class XmlRpcMethodCallSource(BaseSource.BaseSource):
     def unpack_subitems(value):
         "Yields None, cannot unpack subitems"
         yield None
-

@@ -1,7 +1,8 @@
+import configparser
 import logging
 import pathlib
-import configparser
 import re
+
 from . import BaseRule, Rules
 
 SourceInfo = BaseRule.SourceInfo

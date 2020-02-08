@@ -1,5 +1,6 @@
-from . import BaseSource, Sources
 from ..Interfaces.DefaultInterface import DefaultInterface
+from . import BaseSource, Sources
+
 
 @Sources.register("DictSource")
 class DictSource(BaseSource.BaseSource):

@@ -1,5 +1,7 @@
 from unittest.mock import Mock
+
 from netdef.Controllers import SystemMonitorController
+
 
 def test_get_clean_mount_point_name():
     assert "no change" == \

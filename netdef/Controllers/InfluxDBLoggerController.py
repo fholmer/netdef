@@ -1,5 +1,5 @@
-import logging
 import datetime
+import logging
 
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBClientError, InfluxDBServerError
@@ -7,9 +7,9 @@ from requests.exceptions import RequestException
 
 from netdef.Controllers import BaseController, Controllers
 from netdef.Sources.BaseSource import StatusCode
-
 # import my supported sources
 from netdef.Sources.InfluxDBLoggerSource import InfluxDBLoggerSource
+
 
 @Controllers.register("InfluxDBLoggerController")
 class InfluxDBLoggerController(BaseController.BaseController):

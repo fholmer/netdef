@@ -1,5 +1,6 @@
 from .DefaultInterface import DefaultInterface
 
+
 class FloatInterface(DefaultInterface):
 
     def __init__(self, value):

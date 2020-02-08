@@ -1,5 +1,6 @@
 import time
 
+
 class Tick():
     __slots = ('_tick', 'controller')
     def __init__(self, controller):
@@ -9,4 +10,3 @@ class Tick():
         self._tick = time.time()
     def timediff(self):
         return round(time.time() - self._tick, 1)
-

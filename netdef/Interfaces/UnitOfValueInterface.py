@@ -1,5 +1,6 @@
 from .DefaultInterface import DefaultInterface
 
+
 class NoUnitInterface(DefaultInterface):
     def get_value_and_unit(self):
         return str(self.value)

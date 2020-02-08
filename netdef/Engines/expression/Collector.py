@@ -1,7 +1,8 @@
 import queue
 import time
-from threading import Lock
 from enum import Enum
+from threading import Lock
+
 
 class Mode(Enum):
     FIRST = 1

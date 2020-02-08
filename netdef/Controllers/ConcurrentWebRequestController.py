@@ -1,11 +1,14 @@
 import asyncio
-import time
 import datetime
+import time
 from itertools import repeat
+
 import aiohttp
+
 from netdef.Controllers import BaseAsyncController, Controllers
 from netdef.Sources.BaseSource import StatusCode
-from netdef.Sources.ConcurrentWebRequestSource import ConcurrentWebRequestSource, Request, Result
+from netdef.Sources.ConcurrentWebRequestSource import (
+    ConcurrentWebRequestSource, Request, Result)
 
 # this controller is in development, do not use it yet.
 

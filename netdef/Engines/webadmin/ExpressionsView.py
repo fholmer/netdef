@@ -1,9 +1,11 @@
 from flask import current_app
 from flask_admin import model
-from wtforms import form, fields
+from wtforms import fields, form
+
+from ..expression.Expression import Expression
 from . import Views
 from .MyBaseView import MyBaseView
-from ..expression.Expression import Expression
+
 
 @Views.register("ExpressionsView")
 def setup(admin):

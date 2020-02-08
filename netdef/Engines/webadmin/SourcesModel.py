@@ -1,9 +1,11 @@
 from flask import current_app
-from wtforms import form, fields
 from flask_admin import model
+from wtforms import fields, form
+
 from ...Sources.BaseSource import BaseSource
-from .MyBaseView import MyBaseView
 from . import Views
+from .MyBaseView import MyBaseView
+
 
 @Views.register("Sources")
 def setup(admin):

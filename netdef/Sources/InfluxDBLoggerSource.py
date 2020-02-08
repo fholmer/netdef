@@ -1,5 +1,7 @@
+from netdef.Interfaces.InfluxDBLoggerInterface import (InfluxDBLoggerInterface,
+                                                       Value)
 from netdef.Sources import BaseSource, Sources
-from netdef.Interfaces.InfluxDBLoggerInterface import InfluxDBLoggerInterface, Value
+
 
 @Sources.register("InfluxDBLoggerSource")
 class InfluxDBLoggerSource(BaseSource.BaseSource):
@@ -61,4 +63,3 @@ class InfluxDBLoggerSource(BaseSource.BaseSource):
             return self.make_points(data, self.key, data.value, data.source_time, data.status_code)
         else:
             return self.make_points(self, self.key, data, source_time, status_code)
-

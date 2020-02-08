@@ -1,5 +1,6 @@
 from .DefaultInterface import DefaultInterface
 
+
 class Value():
     __slots__ = ("delay", "available")
     def __init__(self, value):

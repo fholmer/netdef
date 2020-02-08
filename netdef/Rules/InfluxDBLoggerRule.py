@@ -1,7 +1,9 @@
 import logging
 import pathlib
-from netdef.Rules import BaseRule, Rules
+
 from netdef.Interfaces.InfluxDBLoggerInterface import InfluxDBLoggerInterface
+from netdef.Rules import BaseRule, Rules
+
 
 @Rules.register("InfluxDBLoggerRule")
 class InfluxDBLoggerRule(BaseRule.BaseRule):

@@ -1,5 +1,7 @@
 import pytest
+
 from netdef.Interfaces.IntegerInterface import IntegerInterface
+
 
 def test_integer_interface_values():
     empty = IntegerInterface(0)

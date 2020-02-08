@@ -1,7 +1,10 @@
 import logging
 import time
+
+from netdef.Interfaces.ConcurrentWebRequestInterface import \
+    ConcurrentWebRequestInterface
 from netdef.Sources import BaseSource, Sources
-from netdef.Interfaces.ConcurrentWebRequestInterface import ConcurrentWebRequestInterface
+
 
 @Sources.register("ConcurrentWebRequestSource")
 class ConcurrentWebRequestSource(BaseSource.BaseSource):

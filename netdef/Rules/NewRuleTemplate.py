@@ -1,7 +1,8 @@
 import logging
 import pathlib
-from netdef.Rules.utils import import_file
+
 from netdef.Rules import BaseRule, Rules
+from netdef.Rules.utils import import_file
 
 SourceInfo = BaseRule.SourceInfo
 ExpressionInfo = BaseRule.ExpressionInfo

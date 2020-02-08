@@ -1,6 +1,8 @@
 import logging
-from . import IntegerSource, Sources
+
 from ..Interfaces.IntegerInterface import IntegerInterface
+from . import IntegerSource, Sources
+
 
 @Sources.register("HoldingRegisterSource")
 class HoldingRegisterSource(IntegerSource.IntegerSource):

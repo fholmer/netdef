@@ -1,5 +1,6 @@
 from netdef.Interfaces.CommTestInterface import CommTestInterface, Value
 
+
 def test_interface_values():
     empty = CommTestInterface([0, False])
     assert isinstance(empty.value, Value)

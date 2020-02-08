@@ -1,5 +1,6 @@
 from netdef.Interfaces import UnitOfValueInterface
 
+
 def test_interface_NoUnitInterface():
     empty = UnitOfValueInterface.NoUnitInterface(0.0)
     assert empty.value == 0.0

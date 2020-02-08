@@ -1,11 +1,12 @@
-import threading
-from threading import Thread, Event
-from concurrent.futures import ThreadPoolExecutor
-import time
-import os
 import logging
-from . import BaseEngine
+import os
+import threading
+import time
+from concurrent.futures import ThreadPoolExecutor
+from threading import Event, Thread
+
 from ..Shared.Internal import Statistics
+from . import BaseEngine
 
 log = logging.getLogger("ThreadedEngine")
 log.info("Enter ThreadedEngine")

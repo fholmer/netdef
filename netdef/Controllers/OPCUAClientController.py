@@ -1,10 +1,11 @@
+import concurrent.futures
 import logging
 import time
-import concurrent.futures
+
 import opcua
 
-from . import BaseController, Controllers
 from ..Sources.BaseSource import StatusCode
+from . import BaseController, Controllers
 
 log = logging.getLogger(__name__)
 log.debug("Loading module")

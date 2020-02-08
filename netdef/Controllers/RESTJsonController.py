@@ -1,15 +1,17 @@
-import logging
-import time
 import datetime
-import urllib.request
-import urllib.parse
-import urllib.error
 import http.client
 import json
-#import base64
+import logging
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
 
 from netdef.Controllers import BaseController, Controllers
 from netdef.Sources.BaseSource import StatusCode
+
+#import base64
+
 
 log = logging.getLogger(__name__)
 log.debug("Loading module")

@@ -1,7 +1,9 @@
-import pytest
 import os
-from netdef.Shared.SharedConfig import Config
+
+import pytest
+
 from netdef.Shared import SharedConfig
+from netdef.Shared.SharedConfig import Config
 
 PROJ = os.path.dirname(__file__)
 

@@ -1,6 +1,7 @@
 # a singleton dict for misc. stats.
 from collections import OrderedDict
 
+
 class Statistics():
     """
     A singleton class to store statistics as key-value pair.

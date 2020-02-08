@@ -1,9 +1,10 @@
-import os
-import sys
 import logging
+import os
 import pathlib
+import sys
 from collections import OrderedDict
-from configparser import ConfigParser, ExtendedInterpolation, InterpolationMissingOptionError
+from configparser import (ConfigParser, ExtendedInterpolation,
+                          InterpolationMissingOptionError)
 
 log = logging.getLogger(__name__)
 
@@ -159,4 +160,3 @@ class Config():
             raise ValueError("Error parsing config-files. [general]version {} not found".format(1))
  
         return True
-

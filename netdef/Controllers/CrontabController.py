@@ -1,7 +1,9 @@
+import datetime
 import logging
 import time
-import datetime
+
 import crontab
+
 from netdef.Controllers import BaseController, Controllers
 from netdef.Sources.BaseSource import StatusCode
 

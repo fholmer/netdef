@@ -1,5 +1,6 @@
 from .DefaultInterface import DefaultInterface
 
+
 class IntegerInterface(DefaultInterface):
     """ Interface that facilitates bit manipulation in an integer """
 

@@ -1,7 +1,9 @@
-import enum
 import copy
 import datetime
+import enum
+
 from ..Interfaces.DefaultInterface import DefaultInterface
+
 
 class StatusCode(enum.Enum):
     """

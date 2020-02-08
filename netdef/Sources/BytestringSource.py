@@ -1,7 +1,10 @@
 import re
 import struct
-from netdef.Sources import Sources, BaseSource
+
+from netdef.Sources import BaseSource, Sources
+
 from ..Interfaces.BytestringInterface import ByteStringInterface
+
 
 @Sources.register("BytestringSource")
 class BytestringSource(BaseSource.BaseSource):

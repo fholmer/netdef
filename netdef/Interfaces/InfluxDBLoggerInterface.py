@@ -1,5 +1,6 @@
-from .DefaultInterface import DefaultInterface
 from collections import namedtuple
+
+from .DefaultInterface import DefaultInterface
 
 Value = namedtuple("Value", ["key", "source", "rule", "controller", "value", "source_time", "status_code"])
 

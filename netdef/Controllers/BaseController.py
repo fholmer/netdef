@@ -1,8 +1,10 @@
-import queue
 import logging
+import queue
 import time
-from ..Sources.BaseSource import StatusCode
+
 from ..Shared.Internal import Statistics
+from ..Sources.BaseSource import StatusCode
+
 
 class BaseController():
     """

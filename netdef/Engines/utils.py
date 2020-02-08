@@ -1,8 +1,10 @@
-import os
 import binascii
-import subprocess
+import os
 import shutil
+import subprocess
+
 import werkzeug.security
+
 
 def create_pass(password):
     return werkzeug.security.generate_password_hash(password).replace("$", "$$")

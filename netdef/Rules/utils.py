@@ -1,7 +1,7 @@
 import importlib
 import importlib.util
-import sys
 import pathlib
+import sys
 
 V_MAJOR = sys.version_info.major
 V_MINOR = sys.version_info.minor

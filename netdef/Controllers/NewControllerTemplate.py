@@ -1,10 +1,11 @@
-import logging
 import datetime
+import logging
+
 from netdef.Controllers import BaseController, Controllers
 from netdef.Sources.BaseSource import StatusCode
-
 # import my supported sources
 from netdef.Sources.NewSourceTemplate import NewSourceTemplate
+
 
 @Controllers.register("NewControllerTemplate")
 class NewControllerTemplate(BaseController.BaseController):

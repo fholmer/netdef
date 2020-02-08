@@ -1,8 +1,10 @@
 from flask import current_app
 from flask_admin import model
-from wtforms import form, fields
+from wtforms import fields, form
+
 from . import Views
 from .MyBaseView import MyBaseView
+
 
 @Views.register("Settings")
 def setup(admin):
@@ -66,4 +68,3 @@ class SettingsModelView(MyBaseView, model.BaseModelView):
 
     def is_accessible(self):
         return self.has_role("admin")
-        

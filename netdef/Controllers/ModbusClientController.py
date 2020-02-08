@@ -1,10 +1,11 @@
-import logging
 import datetime
-from pymodbus.client.sync import ModbusTcpClient as ModbusClient
-from pymodbus.exceptions import ModbusIOException, ConnectionException
+import logging
 
-from . import BaseController, Controllers
+from pymodbus.client.sync import ModbusTcpClient as ModbusClient
+from pymodbus.exceptions import ConnectionException, ModbusIOException
+
 from ..Sources.BaseSource import StatusCode
+from . import BaseController, Controllers
 
 log = logging.getLogger(__name__)
 log.debug("Loading module")

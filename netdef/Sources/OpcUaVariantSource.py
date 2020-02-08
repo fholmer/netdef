@@ -1,8 +1,11 @@
 import logging
+
 from opcua.ua import NodeId, VariantType
-from . import BaseSource, Sources
-from ..Interfaces import DefaultInterface, IntegerInterface, FloatInterface, BytestringInterface
+
+from ..Interfaces import (BytestringInterface, DefaultInterface,
+                          FloatInterface, IntegerInterface)
 from ..Interfaces.datamessage import DataDefinition
+from . import BaseSource, Sources
 
 supported_types = {vt.name.lower(): vt.name for vt in VariantType}
 

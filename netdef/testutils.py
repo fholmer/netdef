@@ -1,10 +1,12 @@
-from unittest.mock import Mock
 import datetime
 import inspect
 import os
-from netdef.Rules.utils import get_module_from_string
+from unittest.mock import Mock
+
 from netdef.Engines.expression.Expression import Expression
-from netdef.Sources.BaseSource import StatusCode, BaseSource
+from netdef.Rules.utils import get_module_from_string
+from netdef.Sources.BaseSource import BaseSource, StatusCode
+
 
 class MockSource():
     def __init__(self, expression, source):

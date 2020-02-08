@@ -1,17 +1,17 @@
-import logging
 import datetime
+import logging
 import time
 
-from pymodbus.server.sync import ModbusSocketFramer, ModbusTcpServer
+from pymodbus.datastore import (ModbusSequentialDataBlock, ModbusServerContext,
+                                ModbusSlaveContext)
 from pymodbus.device import ModbusDeviceIdentification
-from pymodbus.datastore import ModbusSequentialDataBlock
-from pymodbus.datastore import ModbusServerContext
-from pymodbus.datastore import ModbusSlaveContext
+from pymodbus.server.sync import ModbusSocketFramer, ModbusTcpServer
 
-from . import BaseController, Controllers
+from ..Shared.Internal import Statistics
 from ..Sources.BaseSource import StatusCode
 from ..Sources.HoldingRegisterSource import HoldingRegisterSource
-from ..Shared.Internal import Statistics
+from . import BaseController, Controllers
+
 
 @Controllers.register("ModbusServerController")
 class ModbusServerController(BaseController.BaseController):
