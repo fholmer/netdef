@@ -62,16 +62,58 @@ Getting started
 
 First install make-project::
 
-    $ python3 -m pip --user install make
+    $ python3 -m pip install --user make
 
 Create your first application::
 
     $ python3 -m make project gl:fholmer/netdef-project/minimal-app
-    
-Setup your application::
 
-    $ cd your-application
+When asked for *project_name* type *Test-App*::
+
+    project_name? [First-App]: Test-App
+
+Setup development environment for your application::
+
+    $ cd Test-App
     $ python3 -m venv venv
     $ source venv/bin/activate
+    $ pip install wheel
     $ pip install -r requirements-dev.txt
     $ pip install -r requirements.txt
+    $ python -m test_app -i .
+
+Run::
+
+    $ python -m test_app -r .
+
+*CTRL-C* to exit
+
+Package your application::
+
+    $ python setup.py bdist_wheel
+
+Exit development environment::
+
+    $ deactivate
+
+Prepare deployment::
+
+    $ sudo mkdir -p /opt/test-app
+    $ sudo chown $USER:$USER /opt/test-app/
+    $ python3 -m venv /opt/test-app/
+
+Deploy your application::
+
+    $ source /opt/test-app/bin/activate
+    $ pip install ./dist/Test_App-0.1.0-py3-none-any.whl
+    $ python -m test_app -i /opt/test-app/
+
+Install as service::
+
+    $ sudo /opt/test-app/bin/Test-App-Service -u $USER --install /opt/test-app/
+
+Enable and run::
+
+    $ sudo systemctl --system daemon-reload
+    $ sudo systemctl enable test-app-service.service
+    $ sudo systemctl start test-app-service.service
