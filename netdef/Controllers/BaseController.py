@@ -26,7 +26,13 @@ class BaseController():
         }
 
     def _statistics_update_last_minute(self, increment):
-        "Write internal statistics to the Statistics singleton if activated"
+        """
+        Write internal statistics to the Statistics singleton if activated
+
+        :param int increment: set to ``1`` every time a queue item is processed.
+            Set to ``0`` to just refresh statistics.
+
+        """
         if Statistics.on:
             Statistics.set(self.name + ".incoming.queue.size", self.incoming.qsize())
 
@@ -144,7 +150,33 @@ class BaseController():
 
     def clear_incoming(self, until_empty=True, until_messagetype=None):
         """
-        Delete queue items
+        Delete all messages from incoming queue.
+
+        :param bool until_empty: If True the function will block until queue is empty.
+            If False it will block forever.
+        :param MessageType until_messagetype: Block
+            until given messagetype is received
+
+        Example:
+
+        .. code-block:: python
+
+            ...
+
+            while not self.has_interrupt():
+                reconnect = False
+                try:
+                    if reconnect:
+                        self.clear_incoming()
+                        self.try_reconnect()
+                    # main loop
+                    while not self.has_interrupt():
+                        self.loop_incoming()
+                        self.loop_outgoing()
+                except ConnectionError:
+                    reconnect = True
+
+            ...
         """
         while not self.has_interrupt():
             try:
@@ -152,7 +184,7 @@ class BaseController():
                 self.logger.debug("Discarding message of type %s", messagetype)
                 self.incoming.task_done()
                 if until_messagetype and until_messagetype == messagetype:
-                    self._statistics_update_last_minute(0)
+                    self._statistics_update_last_minute(1)
                     return
             except queue.Empty:
                 if until_empty:
@@ -166,7 +198,7 @@ class BaseController():
         Returns one message from the queue.
 
         :returns: tuple of (messagetype, incoming)
-        :rtype: tuple(netdef.Shared.SharedQueues.MessageType, netdef.Sources.BaseSource.BaseSource)
+        :rtype: tuple(MessageType, BaseSource)
         """
         try:
             if not self.has_interrupt():
@@ -179,11 +211,35 @@ class BaseController():
             return None, None
 
     def loop_until_app_state_running(self):
+        """
+        Usefull if you want your controller to block while ADD_SOURCE and ADD_PARSER is
+        dispatched
+
+        Example:
+
+        .. code-block:: python
+
+            def run(self):
+                self.loop_until_app_state_running()
+                while not self.has_interrupt():
+                    try:
+                        self.handle_connection()
+                        while not self.has_interrupt():
+                            self.loop_incoming()
+                            self.loop_outgoing()
+                    except ConnectionError:
+                        self.handle_conn_error()
+        """
         self.loop_incoming(until_empty=False, until_app_state=self.appstatetypes.RUNNING)
 
     def loop_incoming(self, until_empty=True, until_timeout=0.0, until_messagetype=None, until_app_state=None):
         """
-        Get every message from the queue and dispatch the associated handler function
+        Get every message from the queue and dispatch the associated handler function.
+
+        :param bool until_empty: Blocking until queue is empty
+        :param float until_timeout: Timeout in seconds. ``0.0`` blocks forever.
+        :param MessageType until_messagetype: Blocking until given messagetype is dispatched
+        :param AppStateType until_app_state: Blocking until given app_state is dispatched
         """
         loop_timeout = time.time() + until_timeout
         while not self.has_interrupt():

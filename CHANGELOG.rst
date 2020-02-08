@@ -6,6 +6,8 @@
 - Webadmin: Added role based user table
 - Added testutils.MockExpression to simplify testing of expressions
 - Added: InfluxDBLogger
+- Improved ModbusClientController
+- BaseController: Improved message queue helper function
 
 **Incompatible API changes**
 
