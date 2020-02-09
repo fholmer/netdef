@@ -15,47 +15,16 @@ CommTestController
    :caption: config/default.conf
 
 
-ModbusServerController
-++++++++++++++++++++++
-.. literalinclude:: ../controller-configs/ModbusServerController.conf
+ConcurrentWebRequestController
+++++++++++++++++++++++++++++++
+.. literalinclude:: ../controller-configs/ConcurrentWebRequestController.conf
    :language: ini
    :caption: config/default.conf
 
 .. code-block:: text
    :caption: requirements.txt
 
-    pymodbus
-
-
-NewControllerTemplate
-+++++++++++++++++++++
-.. literalinclude:: ../controller-configs/NewControllerTemplate.conf
-   :language: ini
-   :caption: config/default.conf
-
-
-SystemMonitorController
-+++++++++++++++++++++++
-.. literalinclude:: ../controller-configs/SystemMonitorController.conf
-   :language: ini
-   :caption: config/default.conf
-
-.. code-block:: text
-   :caption: requirements.txt
-
-    psutil
-
-
-ZmqDataAccessController
-+++++++++++++++++++++++
-.. literalinclude:: ../controller-configs/ZmqDataAccessController.conf
-   :language: ini
-   :caption: config/default.conf
-
-.. code-block:: text
-   :caption: requirements.txt
-
-    pyzmq
+    aiohttp
 
 
 CrontabController
@@ -70,6 +39,37 @@ CrontabController
     crontab
 
 
+InfluxDBLoggerController
+++++++++++++++++++++++++
+.. literalinclude:: ../controller-configs/InfluxDBLogger.conf
+   :language: ini
+   :caption: config/default.conf
+
+.. code-block:: text
+   :caption: requirements.txt
+
+    influxdb
+
+
+InternalController
+++++++++++++++++++
+.. literalinclude:: ../controller-configs/InternalController.conf
+   :language: ini
+   :caption: config/default.conf
+
+
+ModbusServerController
+++++++++++++++++++++++
+.. literalinclude:: ../controller-configs/ModbusServerController.conf
+   :language: ini
+   :caption: config/default.conf
+
+.. code-block:: text
+   :caption: requirements.txt
+
+    pymodbus
+
+
 MQTTDataAccessController
 ++++++++++++++++++++++++
 .. literalinclude:: ../controller-configs/MQTTDataAccessController.conf
@@ -80,6 +80,13 @@ MQTTDataAccessController
    :caption: requirements.txt
 
     paho-mqtt
+
+
+NewControllerTemplate
++++++++++++++++++++++
+.. literalinclude:: ../controller-configs/NewControllerTemplate.conf
+   :language: ini
+   :caption: config/default.conf
 
 
 OPCUAServerController
@@ -94,6 +101,18 @@ OPCUAServerController
     freeopcua
 
 
+SystemMonitorController
++++++++++++++++++++++++
+.. literalinclude:: ../controller-configs/SystemMonitorController.conf
+   :language: ini
+   :caption: config/default.conf
+
+.. code-block:: text
+   :caption: requirements.txt
+
+    psutil
+
+
 XmlRpcController
 ++++++++++++++++
 .. literalinclude:: ../controller-configs/XmlRpcController.conf
@@ -101,28 +120,16 @@ XmlRpcController
    :caption: config/default.conf
 
 
-ConcurrentWebRequestController
-++++++++++++++++++++++++++++++
-.. literalinclude:: ../controller-configs/ConcurrentWebRequestController.conf
+ZmqDataAccessController
++++++++++++++++++++++++
+.. literalinclude:: ../controller-configs/ZmqDataAccessController.conf
    :language: ini
    :caption: config/default.conf
 
 .. code-block:: text
    :caption: requirements.txt
 
-    aiohttp
-
-
-InfluxDBLoggerController
-++++++++++++++++++++++++
-.. literalinclude:: ../controller-configs/InfluxDBLogger.conf
-   :language: ini
-   :caption: config/default.conf
-
-.. code-block:: text
-   :caption: requirements.txt
-
-    influxdb
+    pyzmq
 
 
 Rule configs
@@ -141,6 +148,49 @@ CSVRule
     IntegerSource,TextSource
     example-data1-as-int,example-data1-as-text
     example-data2-as-int,example-data2-as-text
+
+.. code-block:: python
+   :caption: config/example_rule_101.py
+
+    def setup(shared):
+        pass
+
+    def expression(intdata, textdata):
+        pass
+
+
+InfluxDBLoggerRule
+++++++++++++++++++
+
+.. literalinclude:: ../rule-configs/InfluxDBLogger.conf
+   :language: ini
+   :caption: config/default.conf
+
+.. code-block:: text
+   :caption: requirements.txt
+
+    influxdb
+
+
+INIRule
+++++++++
+
+.. literalinclude:: ../rule-configs/INIRule.conf
+   :language: ini
+   :caption: config/default.conf
+
+.. code-block:: ini
+   :caption: config/example_rule_101.ini
+
+    [example_rule_101]
+    on = 1
+    parsers = IntegerSource, TextSource
+    module = config/example_rule_101.py
+    setup = setup
+    expression = expression
+    arguments:
+        IntegerSource(example-data1-as-int), TextSource(example-data1-as-text)
+        IntegerSource(example-data2-as-int), TextSource(example-data2-as-text)
 
 .. code-block:: python
    :caption: config/example_rule_101.py
@@ -200,45 +250,3 @@ YAMLRule
    :caption: requirements.txt
 
     PyYAML
-
-
-INIRule
-++++++++
-
-.. literalinclude:: ../rule-configs/INIRule.conf
-   :language: ini
-   :caption: config/default.conf
-
-.. code-block:: ini
-   :caption: config/example_rule_101.ini
-
-    [example_rule_101]
-    on = 1
-    parsers = IntegerSource, TextSource
-    module = config/example_rule_101.py
-    setup = setup
-    expression = expression
-    arguments:
-        IntegerSource(example-data1-as-int), TextSource(example-data1-as-text)
-        IntegerSource(example-data2-as-int), TextSource(example-data2-as-text)
-
-.. code-block:: python
-   :caption: config/example_rule_101.py
-
-    def setup(shared):
-        pass
-
-    def expression(intdata, textdata):
-        pass
-
-InfluxDBLoggerRule
-++++++++++++++++++
-
-.. literalinclude:: ../rule-configs/InfluxDBLogger.conf
-   :language: ini
-   :caption: config/default.conf
-
-.. code-block:: text
-   :caption: requirements.txt
-
-    influxdb

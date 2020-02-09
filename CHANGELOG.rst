@@ -1,4 +1,4 @@
-1.0.6.dev1
+1.0.6.dev2
 ==========
 
 **Enhancements**
@@ -8,10 +8,12 @@
 - Added: InfluxDBLogger
 - Improved ModbusClientController
 - BaseController: Improved message queue helper function
+- InternalController: Improved persistent storage
 
 **Incompatible API changes**
 
 - Webadmin: [webadmin]user/password keyword has changed.
+- InternalController: changed persistent storage filenames
 
 1.0.5
 =====

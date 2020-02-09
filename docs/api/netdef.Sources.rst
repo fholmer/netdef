@@ -4,6 +4,7 @@ netdef.Sources package
 .. contents::
    :local:
 
+-------
 Sources
 -------
 
@@ -12,6 +13,10 @@ Sources
     :undoc-members:
     :show-inheritance:
 
+-------------
+Abstract base
+-------------
+
 BaseSource
 ----------
 
@@ -19,6 +24,10 @@ BaseSource
     :members:
     :undoc-members:
     :show-inheritance:
+
+-------------------
+Built-in Interfaces
+-------------------
 
 BytestringSource
 ----------------

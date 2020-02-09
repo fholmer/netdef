@@ -51,10 +51,10 @@ CSVRule
     :undoc-members:
     :show-inheritance:
 
-YAMLRule
---------
+InfluxDBLoggerRule
+------------------
 
-.. automodule:: netdef.Rules.YAMLRule
+.. automodule:: netdef.Rules.InfluxDBLoggerRule
     :members:
     :undoc-members:
     :show-inheritance:
@@ -67,10 +67,10 @@ INIRule
     :undoc-members:
     :show-inheritance:
 
-InfluxDBLoggerRule
-------------------
+YAMLRule
+--------
 
-.. automodule:: netdef.Rules.InfluxDBLoggerRule
+.. automodule:: netdef.Rules.YAMLRule
     :members:
     :undoc-members:
     :show-inheritance:

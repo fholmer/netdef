@@ -4,6 +4,10 @@ netdef.Interfaces package
 .. contents::
    :local:
 
+-------------
+Abstract base
+-------------
+
 Default interface
 -----------------
 
@@ -12,29 +16,9 @@ Default interface
     :undoc-members:
     :show-inheritance:
 
-IntegerInterface
-----------------
-
-.. automodule:: netdef.Interfaces.IntegerInterface
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-FloatInterface
---------------
-
-.. automodule:: netdef.Interfaces.FloatInterface
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-StringInterface
----------------
-
-.. automodule:: netdef.Interfaces.StringInterface
-    :members:
-    :undoc-members:
-    :show-inheritance:
+-------------------
+Built-in Interfaces
+-------------------
 
 BytestringInterface
 -------------------
@@ -60,9 +44,42 @@ ConcurrentWebRequestInterface
     :undoc-members:
     :show-inheritance:
 
+FloatInterface
+--------------
+
+.. automodule:: netdef.Interfaces.FloatInterface
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 InfluxDBLoggerInterface
 -----------------------
 
 .. automodule:: netdef.Interfaces.InfluxDBLoggerInterface
     :members:
+    :show-inheritance:
+
+IntegerInterface
+----------------
+
+.. automodule:: netdef.Interfaces.IntegerInterface
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+StringInterface
+---------------
+
+.. automodule:: netdef.Interfaces.StringInterface
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+UnitOfValueInterface
+--------------------
+
+.. automodule:: netdef.Interfaces.UnitOfValueInterface
+    :members:
+    :undoc-members:
     :show-inheritance:

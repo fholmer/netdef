@@ -50,6 +50,14 @@ CommTestController
     :members:
     :show-inheritance:
 
+ConcurrentWebRequestController
+------------------------------
+
+.. automodule:: netdef.Controllers.ConcurrentWebRequestController
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 CrontabController
 -----------------
 
@@ -57,25 +65,17 @@ CrontabController
     :members:
     :show-inheritance:
 
-InternalController
-------------------
-
-.. automodule:: netdef.Controllers.InternalController
-    :members:
-    :show-inheritance:
-
-SystemMonitorController
------------------------
-
-.. automodule:: netdef.Controllers.SystemMonitorController
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 InfluxDBLoggerController
 ------------------------
 
 .. automodule:: netdef.Controllers.InfluxDBLoggerController
+    :members:
+    :show-inheritance:
+
+InternalController
+------------------
+
+.. automodule:: netdef.Controllers.InternalController
     :members:
     :show-inheritance:
 
@@ -127,6 +127,14 @@ RESTJsonController
     :undoc-members:
     :show-inheritance:
 
+SystemMonitorController
+-----------------------
+
+.. automodule:: netdef.Controllers.SystemMonitorController
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 XmlRpcController
 ----------------
 
@@ -135,10 +143,10 @@ XmlRpcController
     :undoc-members:
     :show-inheritance:
 
-ConcurrentWebRequestController
-------------------------------
+ZmqDataAccessController
+-----------------------
 
-.. automodule:: netdef.Controllers.ConcurrentWebRequestController
+.. automodule:: netdef.Controllers.ZmqDataAccessController
     :members:
     :undoc-members:
     :show-inheritance:
