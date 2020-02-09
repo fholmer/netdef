@@ -18,12 +18,25 @@ This is an abstract baseclass
     :undoc-members:
     :show-inheritance:
 
-----------
+-----------
+Expressions
+-----------
+
 Expression
 ----------
 
 .. automodule:: netdef.Engines.expression.Expression
     :members:
+    :undoc-members:
+    :show-inheritance:
+
+Collector
+---------
+
+.. automodule:: netdef.Engines.expression.Collector
+    :members:
+    :private-members:
+    :special-members: __call__
     :undoc-members:
     :show-inheritance:
 

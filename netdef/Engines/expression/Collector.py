@@ -5,14 +5,28 @@ from threading import Lock
 
 
 class Mode(Enum):
+    "collector modes"
     FIRST = 1
+    "Use arguments from the first call"
     LAST = 2
+    "Use arguments from the last call"
     LIST_ALL = 3
+    "Convert arguments to lists with every call"
     FIRST_WITH_EVENT = 4
+    "Use arguments from the first call and an additional argument called event"
     LAST_WITH_EVENT = 5
+    "Use arguments from the last call and an additional argument called event"
 
 
 class Collector:
+    """
+    Takes a function but does not call it right away. After the given wait
+    time has elapsed the function is called based on the given mode.
+
+    :param callable fn: a function or callable
+    :param float wait: seconds to wait
+    :param Mode mode: how to call the callable
+    """
     def __init__(self, fn, wait, mode):
         self.mode = mode
         self.fn = fn
@@ -29,6 +43,12 @@ class Collector:
             raise NotImplementedError
 
     def __call__(self, *args):
+        """
+        Add arguments to a queue. Only the first call will acquire
+        :attr:`self.lock` and sleep until wait time has elapsed. After sleep
+        the arguments in queue is used to call the function :attr:`self.fn`
+        based on the chosen mode.
+        """
         _lock = self.lock.acquire(blocking=False)
         self.buffer.put(args)
         if _lock:
