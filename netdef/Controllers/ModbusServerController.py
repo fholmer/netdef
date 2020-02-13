@@ -78,6 +78,10 @@ class ModbusServerController(BaseController.BaseController):
         super().__init__(name, shared)
         self.logger = logging.getLogger(name)
         self.logger.info("init")
+
+    def run(self):
+        "Main loop. Will exit when receiving interrupt signal"
+
         config = self.shared.config.config
 
         self.send_events_internal = config(self.name, "send_events_on_internal", 0)
@@ -109,11 +113,18 @@ class ModbusServerController(BaseController.BaseController):
         # vi får heller ikke signalisert shutdown.
         # ved å overstyre noen funksjoner i serveren kan vi løse dette
         # dette er gjort i MyController
+
         self.server = self.init_server(self.context, framer, identity, host, port)
         self.logger.info("listen %s, port %s", host, port)
 
+        self.logger.info("Running")
+        self.server.serve_forever()
+        self.logger.info("Closing connections")
+        self.server.server_close()
+        self.logger.info("Stopped")
+
     def init_server(self, context, framer, identity, host, port):
-        for i in range(5):
+        for i in range(20):
             if i > 0:
                 time.sleep(10)
             try:
@@ -185,14 +196,6 @@ class ModbusServerController(BaseController.BaseController):
         Override this function to return a custom framer
         """
         return ModbusSocketFramer
-
-    def run(self):
-        "Main loop. Will exit when receiving interrupt signal"
-        self.logger.info("Running")
-        self.server.serve_forever()
-        self.logger.info("Closing connections")
-        self.server.server_close()
-        self.logger.info("Stopped")
 
     def handle_add_source(self, incoming):
         self.logger.debug("'Add source' event for %s", incoming.key)

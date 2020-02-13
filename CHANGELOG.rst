@@ -1,4 +1,4 @@
-1.0.6.dev2
+1.0.6.dev3
 ==========
 
 **Enhancements**
@@ -9,6 +9,10 @@
 - Improved ModbusClientController
 - BaseController: Improved message queue helper function
 - InternalController: Improved persistent storage
+
+**Bug fixes**
+- ModbusServerController: Attempt to bind to socket for three minutes before
+  throwing exception.
 
 **Incompatible API changes**
 
