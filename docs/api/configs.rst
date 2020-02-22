@@ -70,9 +70,9 @@ ModbusServerController
     pymodbus
 
 
-MQTTDataAccessController
+MQTTDataMessageController
 ++++++++++++++++++++++++
-.. literalinclude:: ../controller-configs/MQTTDataAccessController.conf
+.. literalinclude:: ../controller-configs/MQTTDataMessageController.conf
    :language: ini
    :caption: config/default.conf
 
@@ -180,7 +180,7 @@ INIRule
    :caption: config/default.conf
 
 .. code-block:: ini
-   :caption: config/example_rule_101.ini
+    :caption: config/example_rule_101.ini
 
     [example_rule_101]
     on = 1
@@ -188,7 +188,7 @@ INIRule
     module = config/example_rule_101.py
     setup = setup
     expression = expression
-    arguments:
+    arguments =
         IntegerSource(example-data1-as-int), TextSource(example-data1-as-text)
         IntegerSource(example-data2-as-int), TextSource(example-data2-as-text)
 
@@ -210,7 +210,7 @@ YAMLRule
    :caption: config/default.conf
 
 .. code-block:: yaml
-   :caption: config/example_rule_101.yaml
+    :caption: config/example_rule_101.yaml
 
     parsers: 
       - source: IntegerSource
@@ -238,7 +238,7 @@ YAMLRule
             key:    example-data2-as-text
 
 .. code-block:: python
-   :caption: config/example_rule_101.py
+    :caption: config/example_rule_101.py
 
     def setup(shared):
         pass
@@ -247,6 +247,6 @@ YAMLRule
         pass
 
 .. code-block:: text
-   :caption: requirements.txt
+    :caption: requirements.txt
 
     PyYAML

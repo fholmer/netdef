@@ -10,7 +10,7 @@ Normally you don't have to compile python. On Windows you can download
 pre-compiled binaries, and most linux distros have a pre-installed version
 of python.
 
-Compile python:
+Compiling to a relative directory:
 
 .. code-block:: console
 
@@ -21,6 +21,20 @@ Compile python:
     $ Python-3.8.1/configure
     $ make
     $ make install DESTDIR=.
+
+Or absolute directory:
+
+.. code-block:: console
+
+    $ mkdir /opt/Python-3.8/
+    $ cd /opt/Python-3.8/
+    $ wget https://www.python.org/ftp/python/3.8.1/Python-3.8.1.tgz
+    $ tar zxvf Python-3.8.1.tgz
+    $ Python-3.8.1/configure --prefix=/opt/Python-3.8
+    $ make
+    $ make install
+
+
 
 psutil
 ------

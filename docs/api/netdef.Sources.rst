@@ -110,10 +110,10 @@ InternalSource
     :undoc-members:
     :show-inheritance:
 
-MQTTDataAccessSource
+MQTTDataMessageSource
 --------------------
 
-.. automodule:: netdef.Sources.MQTTDataAccessSource
+.. automodule:: netdef.Sources.MQTTDataMessageSource
     :members:
     :undoc-members:
     :show-inheritance:

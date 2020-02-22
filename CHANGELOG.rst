@@ -15,7 +15,7 @@
   throwing exception.
 
 **Incompatible API changes**
-
+- MQTTDataMessageController: renamed from MQTTDataAccessController
 - Webadmin: [webadmin]user/password keyword has changed.
 - InternalController: changed persistent storage filenames
 

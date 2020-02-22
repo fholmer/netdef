@@ -95,10 +95,10 @@ ModbusServerController
     :undoc-members:
     :show-inheritance:
 
-MQTTDataAccessController
+MQTTDataMessageController
 ------------------------
 
-.. automodule:: netdef.Controllers.MQTTDataAccessController
+.. automodule:: netdef.Controllers.MQTTDataMessageController
     :members:
     :undoc-members:
     :show-inheritance:

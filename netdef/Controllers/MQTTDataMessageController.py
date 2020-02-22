@@ -1,16 +1,17 @@
 import logging
-
+import uuid
 import paho.mqtt.client as mqtt
+
 
 from netdef.Controllers import BaseController, Controllers
 from netdef.Sources.BaseSource import StatusCode
 
 # import my supported sources
-from ..Sources.MQTTDataAccessSource import MQTTDataAccessSource
+from ..Sources.MQTTDataMessageSource import MQTTDataMessageSource
 
 
-@Controllers.register("MQTTDataAccessController")
-class MQTTDataAccessController(BaseController.BaseController):
+@Controllers.register("MQTTDataMessageController")
+class MQTTDataMessageController(BaseController.BaseController):
 
     """
     .. danger:: Development Status :: 3 - Alpha
@@ -24,10 +25,13 @@ class MQTTDataAccessController(BaseController.BaseController):
 
         config = self.shared.config.config
 
-        self.topic_prefix = config(self.name, "topic_prefix", "DA/")
+        self.topic_prefix = config(self.name, "topic_prefix", "NetdefDataMessage/")
         self.host = config(self.name, "host", "127.0.0.1")
         self.port = config(self.name, "port", 1883)
         self.keepalive = config(self.name, "keepalive", 60)
+        self.origin = uuid.uuid1().urn
+        self.origin = config(self.name, "origin", self.origin)
+        self.ignore_origin = config(self.name, "ignore_messages_from_origin", 1)
 
         self.subscribe_list = config(
             self.name, "subscribe_topics", "{}_subscribe_topics".format(self.name)
@@ -36,6 +40,10 @@ class MQTTDataAccessController(BaseController.BaseController):
         self.subscribe_topics = [
             topic for topic in self.shared.config.get_dict(self.subscribe_list).values()
         ]
+
+        self.subscribe_to_prefix = config(self.name, "subscribe_to_prefix", self.ignore_origin)
+        if self.subscribe_to_prefix:
+            self.subscribe_topics.append("#")
 
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
@@ -70,13 +78,17 @@ class MQTTDataAccessController(BaseController.BaseController):
         item_key = self.get_key(msg.topic)
         if self.has_source(item_key):
             item = self.get_source(item_key)
-            item_key, data = item.parse_message(item_key, msg.payload)
-            if item.can_unpack_value(data):
-                key, stime, value = item.unpack_value(data)
-                assert item_key == key
-                if self.update_source_instance_value(item, value, stime, True, False):
-                    self.send_outgoing(item)
-
+            try:
+                item_key, data = item.parse_message(item_key, msg.payload)
+                if item.can_unpack_value(data):
+                    key, stime, value, status_code, origin = item.unpack_value(data)
+                    assert item_key == key
+                    status_ok = (isinstance(status_code, int) and status_code > 0)
+                    if self.update_source_instance_value(item, value, stime, status_ok, False):
+                        if not self.ignore_origin or (origin != self.origin):
+                            self.send_outgoing(item)
+            except Exception as error:
+                self.logger.error("could not parse payload of topic %s", msg.topic)
     def loop_mqtt(self):
         rc = self.client.loop(timeout=1.0)
         # if rc != mqtt.MQTT_ERR_SUCCESS:
@@ -128,6 +140,6 @@ class MQTTDataAccessController(BaseController.BaseController):
             value,
             source_time,
         )
-        data = incoming.pack_value(value, source_time)
+        data = incoming.pack_value(value, source_time, 1, self.origin)
         topic, payload = incoming.make_message(incoming.key, data)
         self.publish_data_item(topic, payload)

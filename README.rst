@@ -33,7 +33,8 @@ Features
     (`crontab <https://pypi.org/project/crontab>`_)
   * disk, memory and CPU monitoring
     (`psutil <https://pypi.org/project/psutil>`_)
-  * MQTT client (using a simple messaging format called DataAccess)
+  * MQTT client (using a simple messaging format called
+    `DataMessage <https://gitlab.com/fholmer/netdef/-/blob/master/netdef/Interfaces/datamessage/datamessage.py>`_)
     (`paho-mqtt <https://pypi.org/project/paho-mqtt>`_)
   * Simple RESTJson client
   * Simple Influxdb logger (`influxdb <https://pypi.org/project/influxdb>`_)
