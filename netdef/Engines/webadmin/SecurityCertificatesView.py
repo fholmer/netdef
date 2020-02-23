@@ -102,7 +102,13 @@ class SecurityCertificatesView(MyBaseView):
 
         if request.method == "POST" and form.validate():
             res = utils.generate_overwrite_certificates(
-                _pem_cert, _pem_key, _der_cert, _der_key, form.cn.data, form.days.data, int(form.extend_opcua.data)
+                _pem_cert,
+                _pem_key,
+                _der_cert,
+                _der_key,
+                form.cn.data,
+                form.days.data,
+                int(form.extend_opcua.data),
             )
             if res:
                 flash(res, category="warning")

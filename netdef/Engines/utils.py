@@ -1,11 +1,10 @@
 import binascii
 import os
 import shutil
-import subprocess
 import socket
+import subprocess
+
 import psutil
-
-
 import werkzeug.security
 
 
@@ -37,6 +36,7 @@ def check_user_and_pass(app, user, password):
             return True
     return False
 
+
 def get_ip_addresses():
     for interfaces in psutil.net_if_addrs().values():
         for interface in interfaces:
@@ -44,12 +44,14 @@ def get_ip_addresses():
                 if not interface.address.startswith("127"):
                     yield interface.address
 
+
 # default cert filenames:
 default_pem_file = os.path.join("ssl", "certs", "certificate.pem")
 default_key_file = os.path.join("ssl", "private", "certificate.pem.key")
 default_der_file = os.path.join("ssl", "certs", "certificate.der")
 default_derkey_file = os.path.join("ssl", "private", "certificate.der.key")
 default_opcua_urn = "urn:opcua:server"
+
 
 def can_generate_certs():
     if shutil.which("openssl") is None:
@@ -105,14 +107,16 @@ def generate_overwrite_certificates(
         cmd_req_pem.append("-addext")
         subjectAltName = [
             "URI.1:{}".format(default_opcua_urn),
-            "DNS.1:{}".format(socket.gethostname())
+            "DNS.1:{}".format(socket.gethostname()),
         ]
         for n, ip in enumerate(get_ip_addresses(), 1):
             subjectAltName.append("IP.{}:{}".format(n, ip))
 
         cmd_req_pem.append("subjectAltName = " + ", ".join(subjectAltName))
         cmd_req_pem.append("-addext")
-        cmd_req_pem.append("keyUsage = critical, cRLSign, digitalSignature, keyCertSign")
+        cmd_req_pem.append(
+            "keyUsage = critical, cRLSign, digitalSignature, keyCertSign"
+        )
         cmd_req_pem.append("-addext")
         cmd_req_pem.append("extendedKeyUsage = critical, serverAuth")
 

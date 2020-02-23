@@ -1,7 +1,7 @@
 import logging
 import uuid
-import paho.mqtt.client as mqtt
 
+import paho.mqtt.client as mqtt
 
 from netdef.Controllers import BaseController, Controllers
 from netdef.Sources.BaseSource import StatusCode
@@ -33,6 +33,9 @@ class MQTTDataMessageController(BaseController.BaseController):
         self.origin = config(self.name, "origin", self.origin)
         self.ignore_origin = config(self.name, "ignore_messages_from_origin", 1)
 
+        self.publish_qos = config(self.name, "publish_qos", 0)
+        self.publish_retain = bool(config(self.name, "publish_retain", 1))
+
         self.subscribe_list = config(
             self.name, "subscribe_topics", "{}_subscribe_topics".format(self.name)
         )
@@ -41,7 +44,9 @@ class MQTTDataMessageController(BaseController.BaseController):
             topic for topic in self.shared.config.get_dict(self.subscribe_list).values()
         ]
 
-        self.subscribe_to_prefix = config(self.name, "subscribe_to_prefix", self.ignore_origin)
+        self.subscribe_to_prefix = config(
+            self.name, "subscribe_to_prefix", self.ignore_origin
+        )
         if self.subscribe_to_prefix:
             self.subscribe_topics.append("#")
 
@@ -83,12 +88,15 @@ class MQTTDataMessageController(BaseController.BaseController):
                 if item.can_unpack_value(data):
                     key, stime, value, status_code, origin = item.unpack_value(data)
                     assert item_key == key
-                    status_ok = (isinstance(status_code, int) and status_code > 0)
-                    if self.update_source_instance_value(item, value, stime, status_ok, False):
+                    status_ok = isinstance(status_code, int) and status_code > 0
+                    if self.update_source_instance_value(
+                        item, value, stime, status_ok, False
+                    ):
                         if not self.ignore_origin or (origin != self.origin):
                             self.send_outgoing(item)
             except Exception as error:
                 self.logger.error("could not parse payload of topic %s", msg.topic)
+
     def loop_mqtt(self):
         rc = self.client.loop(timeout=1.0)
         # if rc != mqtt.MQTT_ERR_SUCCESS:
@@ -127,7 +135,12 @@ class MQTTDataMessageController(BaseController.BaseController):
         self.logger.info("Stopped")
 
     def publish_data_item(self, topic, payload):
-        self.client.publish(self.get_topic(topic), payload=payload, qos=0, retain=True)
+        self.client.publish(
+            self.get_topic(topic),
+            payload=payload,
+            qos=self.publish_qos,
+            retain=self.publish_retain,
+        )
 
     def handle_add_source(self, incoming):
         self.logger.debug("'Add source' event for %s", incoming.key)

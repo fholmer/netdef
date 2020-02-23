@@ -27,6 +27,7 @@ class Collector:
     :param float wait: seconds to wait
     :param Mode mode: how to call the callable
     """
+
     def __init__(self, fn, wait, mode):
         self.mode = mode
         self.fn = fn

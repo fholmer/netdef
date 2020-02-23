@@ -2,8 +2,8 @@ import datetime
 import json
 import logging
 
-from netdef.Interfaces.DefaultInterface import DefaultInterface
 from netdef.Interfaces.datamessage import DataDefinition, DataMessage
+from netdef.Interfaces.DefaultInterface import DefaultInterface
 from netdef.Sources import BaseSource, Sources
 
 log = logging.getLogger(__name__)
@@ -55,7 +55,7 @@ class MQTTDataMessageSource(BaseSource.BaseSource):
             source_time=stime.timestamp(),
             status_code=status_code,
             origin=origin,
-            extension={}
+            extension={},
         )
         return payload
 
