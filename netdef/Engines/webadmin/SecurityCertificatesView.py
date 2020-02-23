@@ -42,13 +42,14 @@ _der_cert = utils.default_der_file
 _der_key = utils.default_derkey_file
 
 _form_rules = (
-    rules.Header("Certificates"),
+    rules.Header("Certificate"),
     rules.Field("cn"),
     rules.Field("days"),
     rules.Field("pem_cert"),
     rules.Field("pem_key"),
     rules.Field("der_cert"),
     rules.Field("der_key"),
+    rules.Field("extend_opcua"),
     rules.Header("Confirmation"),
     rules.Field("current_password"),
     rules.Text("Confirm changes by entering webadmin password"),
@@ -78,6 +79,10 @@ class SecurityCertificatesForm(Form):
     )
     der_key = SelectField("DER key", default=_der_key, choices=[(_der_key, _der_key)])
 
+    extend_opcua = SelectField(
+        "Add OPCUA extension", default="0", choices=[("0", "Off"), ("1", "On")]
+    )
+
     current_password = PasswordField("Current password")
 
     @staticmethod
@@ -97,7 +102,7 @@ class SecurityCertificatesView(MyBaseView):
 
         if request.method == "POST" and form.validate():
             res = utils.generate_overwrite_certificates(
-                _pem_cert, _pem_key, _der_cert, _der_key, form.cn.data, form.days.data
+                _pem_cert, _pem_key, _der_cert, _der_key, form.cn.data, form.days.data, int(form.extend_opcua.data)
             )
             if res:
                 flash(res, category="warning")

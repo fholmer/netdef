@@ -2,6 +2,9 @@ import binascii
 import os
 import shutil
 import subprocess
+import socket
+import psutil
+
 
 import werkzeug.security
 
@@ -34,13 +37,19 @@ def check_user_and_pass(app, user, password):
             return True
     return False
 
+def get_ip_addresses():
+    for interfaces in psutil.net_if_addrs().values():
+        for interface in interfaces:
+            if interface.family == socket.AF_INET:
+                if not interface.address.startswith("127"):
+                    yield interface.address
 
 # default cert filenames:
 default_pem_file = os.path.join("ssl", "certs", "certificate.pem")
 default_key_file = os.path.join("ssl", "private", "certificate.pem.key")
 default_der_file = os.path.join("ssl", "certs", "certificate.der")
 default_derkey_file = os.path.join("ssl", "private", "certificate.der.key")
-
+default_opcua_urn = "urn:opcua:server"
 
 def can_generate_certs():
     if shutil.which("openssl") is None:
@@ -50,7 +59,7 @@ def can_generate_certs():
 
 
 def generate_overwrite_certificates(
-    pem_file, key_file, der_file, derkey_file, common_name, days=3650
+    pem_file, key_file, der_file, derkey_file, common_name, days=3650, opcua_ext=0
 ):
     cmd_req_pem = [
         "openssl",
@@ -58,7 +67,7 @@ def generate_overwrite_certificates(
         "-x509",
         "-sha256",
         "-newkey",
-        "rsa:2048",
+        "rsa:4096",
         "-keyout",
         key_file,
         "-out",
@@ -89,6 +98,25 @@ def generate_overwrite_certificates(
     else:
         cmd_req_pem.append("-batch")
 
+    if opcua_ext:
+        cmd_req_pem.append("-addext")
+        cmd_req_pem.append("basicConstraints = CA:TRUE")
+
+        cmd_req_pem.append("-addext")
+        subjectAltName = [
+            "URI.1:{}".format(default_opcua_urn),
+            "DNS.1:{}".format(socket.gethostname())
+        ]
+        for n, ip in enumerate(get_ip_addresses(), 1):
+            subjectAltName.append("IP.{}:{}".format(n, ip))
+
+        cmd_req_pem.append("subjectAltName = " + ", ".join(subjectAltName))
+        cmd_req_pem.append("-addext")
+        cmd_req_pem.append("keyUsage = critical, cRLSign, digitalSignature, keyCertSign")
+        cmd_req_pem.append("-addext")
+        cmd_req_pem.append("extendedKeyUsage = critical, serverAuth")
+
+        print(cmd_req_pem)
     res = subprocess.run(cmd_req_pem, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if res.returncode != 0:
         return "{}\n{}".format(res.stdout, res.stderr)

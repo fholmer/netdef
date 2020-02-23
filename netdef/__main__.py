@@ -170,11 +170,12 @@ def generate_certificate(interactive=True):
     der_file = utils.default_der_file
     derkey_file = utils.default_derkey_file
     common_name = ""
+    opcua_ext = 0
 
     if interactive:
         for fn in (pem_file, key_file, der_file, derkey_file):
             if pathlib.Path(fn).is_file():
-                res = input("{} already exists. Overwrite? ([Y]/n) ".format(fn)).lower()
+                res = input("{} already exists. Overwrite? ([y]/n) ".format(fn)).lower()
                 if not (res == "" or res == "y"):
                     print("Operation aborted by user")
                     return
@@ -182,8 +183,12 @@ def generate_certificate(interactive=True):
         if cn:
             common_name = cn
 
+        oua = input("Add OPCUA extensions (y/[n]): ").lower()
+        if oua == "y":
+            opcua_ext = 1
+
     res = utils.generate_overwrite_certificates(
-        pem_file, key_file, der_file, derkey_file, common_name
+        pem_file, key_file, der_file, derkey_file, common_name, opcua_ext=opcua_ext
     )
     if res:
         print("Error")
