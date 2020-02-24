@@ -46,6 +46,7 @@ class Files(MyBaseView, fileadmin.FileAdmin):
         "pam",
         "key",
         "zip",
+        "gz",
         "7z",
         "py",
         "ini",

@@ -179,8 +179,10 @@ class OPCUAServerController(BaseController.BaseController):
         name = config("name", "FreeOpcUa Python Server")
         uri = config("uri", "http://examples.freeopcua.github.io")
         root_object_name = config("root_object_name", "TEST")
+
         separator = config("separator", ".")
         namespace = config("namespace", 2)
+        auto_build_folders = config("auto_build_folders", 0)
 
         self.oldnew = config("oldnew_comparision", 0)
 
@@ -266,6 +268,7 @@ class OPCUAServerController(BaseController.BaseController):
         self.root = root
         self.sep = separator
         self.ns = namespace
+        self.auto_build_folders = auto_build_folders
         self.items = []
         self.subscription = None
 
@@ -319,9 +322,14 @@ class OPCUAServerController(BaseController.BaseController):
             self.logger.error("source already exists %s", nodeid)
             return
 
+        if self.auto_build_folders:
+            parent = self.build_folders(self.root, nodeid, self.sep)
+        else:
+            parent = self.root
+
         defaultvalue = self.get_default_value(incoming)
         varianttype = self.get_varianttype(incoming)
-        varnode = self.add_variablenode(self.root, nodeid, defaultvalue, varianttype)
+        varnode = self.add_variablenode(parent, nodeid, defaultvalue, varianttype)
         if self.is_writable(incoming):
             varnode.set_writable()
 
@@ -364,6 +372,20 @@ class OPCUAServerController(BaseController.BaseController):
             parent = self.root
         return parent.add_folder(self.ns, foldername)
 
+    def build_folders(self, parent, ref, sep):
+        nodeid = ua.NodeId.from_string(ref)
+        folders = nodeid.Identifier.split(sep)
+        ns = nodeid.NamespaceIndex
+        for folder in folders[:-1]:
+            try:
+                has_folder = parent.get_child(
+                    ua.QualifiedName.from_string("{}:{}".format(ns,folder))
+                )
+                parent = has_folder
+            except Exception as error:
+                parent = parent.add_folder(ns, folder)
+        return parent
+
     def add_variablenode(self, parent, ref, val, varianttype):
         "Create and add a variable in server and return the variable node"
         self.logger.debug("ADDING %s AS %s" % (ref, varianttype))
@@ -372,10 +394,15 @@ class OPCUAServerController(BaseController.BaseController):
 
         nodeid = ua.NodeId.from_string(ref)
 
+        if self.auto_build_folders:
+            bname = "%d:%s" % (nodeid.NamespaceIndex, nodeid.Identifier.split(self.sep)[-1])
+        else:
+            bname = "%d:%s" % (nodeid.NamespaceIndex, nodeid.Identifier)
+
         datavalue = self.create_datavalue(val, varianttype, self.initial_status_code)
         var_node = parent.add_variable(
             nodeid=ref,
-            bname="%d:%s" % (nodeid.NamespaceIndex, nodeid.Identifier),
+            bname=bname,
             val=val,
             varianttype=varianttype,
         )

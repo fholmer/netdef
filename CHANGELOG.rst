@@ -9,6 +9,7 @@
 - Improved ModbusClientController
 - BaseController: Improved message queue helper function
 - InternalController: Improved persistent storage
+- OPCUAServerController: added config for auto_build_folders
 
 **Bug fixes**
 - ModbusServerController: Attempt to bind to socket for three minutes before
