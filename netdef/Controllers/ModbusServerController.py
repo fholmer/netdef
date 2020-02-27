@@ -1,6 +1,7 @@
 import datetime
 import logging
 import time
+import socket
 
 from pymodbus.datastore import (
     ModbusSequentialDataBlock,
@@ -87,6 +88,7 @@ class ModbusServerController(BaseController.BaseController):
         self.send_events_internal = config(self.name, "send_events_on_internal", 0)
         self.send_events_external = config(self.name, "send_events_on_external", 1)
         self.oldnew = config(self.name, "oldnew_comparision", 1)
+        self.daemon_threads = config(self.name, "daemon_threads", 0)
 
         self.context = self.get_modbus_server_context()
 
@@ -115,6 +117,8 @@ class ModbusServerController(BaseController.BaseController):
         # dette er gjort i MyController
 
         self.server = self.init_server(self.context, framer, identity, host, port)
+        if self.daemon_threads:
+            self.server.daemon_threads = True
         self.logger.info("listen %s, port %s", host, port)
 
         self.logger.info("Running")
@@ -129,14 +133,14 @@ class ModbusServerController(BaseController.BaseController):
                 time.sleep(10)
             try:
                 return MyController(
-                    context, framer, identity, (host, port), controller=self
+                    context, framer, identity, (host, port), allow_reuse_address=True, controller=self
                 )
                 break
             except OSError as error:
                 self.logger.error("%s. Retry in 10 sec.", repr(error))
         else:
             return MyController(
-                context, framer, identity, (host, port), controller=self
+                context, framer, identity, (host, port), allow_reuse_address=True, controller=self
             )
 
     def get_modbus_server_context(self):
@@ -231,6 +235,7 @@ class ModbusServerController(BaseController.BaseController):
 
 
 class MyController(ModbusTcpServer):
+    daemon_threads = False
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.controller = kwargs["controller"]
