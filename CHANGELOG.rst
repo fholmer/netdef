@@ -1,5 +1,7 @@
-1.0.6.dev3
-==========
+1.0.6
+=====
+
+2020-02-28
 
 **Enhancements**
 
@@ -10,6 +12,7 @@
 - BaseController: Improved message queue helper function
 - InternalController: Improved persistent storage
 - OPCUAServerController: added config for auto_build_folders
+- ModbusServerController: new option: daemon_threads
 
 **Bug fixes**
 - ModbusServerController: Attempt to bind to socket for three minutes before
