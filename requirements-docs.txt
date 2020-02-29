@@ -32,6 +32,10 @@ PyYAML==5.1.1
 pyzmq==18.0.2
 schema==0.7.0
 six==1.11.0
+sphinxcontrib-blockdiag==1.5.5
+sphinxcontrib-seqdiag==0.8.5
+sphinxcontrib-nwdiag==0.9.5
+sphinxcontrib-actdiag==0.8.5
 typing-extensions==3.7.4
 waitress==1.3.0
 Werkzeug==0.15.4
