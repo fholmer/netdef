@@ -71,7 +71,7 @@ ModbusServerController
 
 
 MQTTDataMessageController
-++++++++++++++++++++++++
++++++++++++++++++++++++++
 .. literalinclude:: ../controller-configs/MQTTDataMessageController.conf
    :language: ini
    :caption: config/default.conf

@@ -111,7 +111,7 @@ InternalSource
     :show-inheritance:
 
 MQTTDataMessageSource
---------------------
+---------------------
 
 .. automodule:: netdef.Sources.MQTTDataMessageSource
     :members:

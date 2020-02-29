@@ -15,10 +15,12 @@
 - ModbusServerController: new option: daemon_threads
 
 **Bug fixes**
+
 - ModbusServerController: Attempt to bind to socket for three minutes before
   throwing exception.
 
 **Incompatible API changes**
+
 - MQTTDataMessageController: renamed from MQTTDataAccessController
 - Webadmin: [webadmin]user/password keyword has changed.
 - InternalController: changed persistent storage filenames

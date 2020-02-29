@@ -96,7 +96,7 @@ ModbusServerController
     :show-inheritance:
 
 MQTTDataMessageController
-------------------------
+-------------------------
 
 .. automodule:: netdef.Controllers.MQTTDataMessageController
     :members:

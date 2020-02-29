@@ -33,7 +33,9 @@ autodoc_mock_imports = [
     'servicemanager',
     'crontab',
     'paho',
+    'zmq',
     'opcua.server.user_manager',
+    'influxdb'
 ]
 
 # -- General configuration ---------------------------------------------

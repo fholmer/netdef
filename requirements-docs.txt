@@ -3,6 +3,7 @@ aiohttp==3.5.4
 asn1crypto==0.24.0
 async-timeout==3.0.1
 attrs==19.1.0
+blockdiag==1.5.4
 cffi==1.12.3
 chardet==3.0.4
 Click==7.0
@@ -17,7 +18,7 @@ idna==2.8
 idna-ssl==1.1.0
 itsdangerous==1.1.0
 Jinja2==2.10.1
-lxml==4.3.4
+lxml==4.5.0
 MarkupSafe==1.1.1
 multidict==4.5.2
 opcua==0.98.7
@@ -29,7 +30,6 @@ pyserial==3.4
 python-dateutil==2.8.0
 pytz==2019.1
 PyYAML==5.1.1
-pyzmq==18.0.2
 schema==0.7.0
 six==1.11.0
 sphinxcontrib-blockdiag==1.5.5
