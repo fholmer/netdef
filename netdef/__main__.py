@@ -130,8 +130,8 @@ def generate_webadmin_auth(interactive=True):
     secret_key = utils.create_new_secret()
 
     if interactive:
-        admin_user = input("new admin username: ")
-        admin_pw = getpass.getpass("new admin password: ")
+        admin_user = input("new username: ")
+        admin_pw = getpass.getpass("new password: ")
     else:
         admin_user = "admin"
         admin_pw = utils.create_new_secret()
@@ -171,6 +171,9 @@ def generate_certificate(interactive=True):
     derkey_file = utils.default_derkey_file
     common_name = ""
     opcua_ext = 0
+    uri_list = []
+    dns_list = []
+    ip_list = []
 
     if interactive:
         for fn in (pem_file, key_file, der_file, derkey_file):
@@ -186,9 +189,20 @@ def generate_certificate(interactive=True):
         oua = input("Add OPCUA extensions (y/[n]): ").lower()
         if oua == "y":
             opcua_ext = 1
+            uri_list.append(utils.default_opcua_urn)
+            dns_list.extend(utils.get_host_names())
+            ip_list.extend(list(utils.get_ip_addresses()))
 
     res = utils.generate_overwrite_certificates(
-        pem_file, key_file, der_file, derkey_file, common_name, opcua_ext=opcua_ext
+        pem_file,
+        key_file,
+        der_file,
+        derkey_file,
+        common_name,
+        opcua_ext=opcua_ext,
+        uri_list=uri_list,
+        dns_list=dns_list,
+        ip_list=ip_list,
     )
     if res:
         print("Error")
