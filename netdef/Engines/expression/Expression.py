@@ -37,11 +37,12 @@ class Expression:
         """
         self.kwargs[keyword] = arg
 
-    def get_args(self, source_instance=None):
+    def get_args(self, source_instance=None, frozen_value=None):
         """Wrap each source-instance into its own Argument instance
         Return a tuple of Arguments
         """
-        return tuple(Argument(arg, arg is source_instance) for arg in self.args)
+        inst = source_instance # instigator
+        return tuple(Argument(arg, arg is inst, frozen_value if arg is inst else None) for arg in self.args)
 
     def get_kwargs(self):
         return self.kwargs
@@ -71,7 +72,7 @@ class Argument:
 
     """
 
-    def __init__(self, source_instance, instigator):
+    def __init__(self, source_instance, instigator, frozen_value=None):
 
         # referanse til source instansen
         # husk denne er levende. altså verdien kan plutselig endres av en annen
@@ -81,7 +82,10 @@ class Argument:
         # følgende verdiene er ikke levende:
 
         # value er en lokal kopi av verdien. denne vil ikke endre seg
-        self._value = self._instance.copy_get_value()
+        if instigator and (not frozen_value is None):
+            self._value = frozen_value
+        else:
+            self._value = self._instance.copy_get_value()
 
         # instigator er True hvis verdien er grunnen til at uttrykket blir kjørt
         if instigator:

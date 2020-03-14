@@ -135,7 +135,7 @@ class SharedQueues:
         """
         self.messages_to_engine.put_nowait((messagetype, message_object))
 
-    def run_expressions_in_engine(self, source_instance, expressions):
+    def run_expressions_in_engine(self, source_instance, expressions, value, source_time, status_code):
         """
         Send a RUN_EXPRESSION message to the engine.
 
@@ -144,7 +144,7 @@ class SharedQueues:
 
         """
         self.send_message_to_engine(
-            MessageType.RUN_EXPRESSION, (source_instance, expressions)
+            MessageType.RUN_EXPRESSION, (source_instance, expressions, value, source_time, status_code)
         )
 
     def write_value_to_controller(self, source_instance, value, source_time):
@@ -189,3 +189,27 @@ class SharedQueues:
         self.messages_to_controller[controllername].put_nowait(
             (MessageType.APP_STATE, AppStateType.RUNNING)
         )
+
+    def run_expressions_in_rule(self, source_instance):
+        """
+        Send a RUN_EXPRESSION message to given rule.
+
+        :param source_instance: the source
+
+        """
+        rulename = source_instance.rule
+        try:
+            self.send_message_to_rule(
+                MessageType.RUN_EXPRESSION, rulename, (
+                    source_instance,
+                    source_instance.copy_get_value(),
+                    source_instance.source_time,
+                    source_instance.status_code
+                )
+            )
+        except queue.Full:
+            self.logger.error(
+                "Cannot send message %s. Queue %s is full.",
+                source_instance,
+                rulename,
+            )

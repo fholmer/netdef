@@ -90,7 +90,7 @@ class YAMLRule(BaseRule.BaseRule):
             self.loop_incoming()  # dispatch handle_* functions
         self.logger.info("Stopped")
 
-    def handle_run_expression(self, incoming):
+    def handle_run_expression(self, incoming, value, source_time, status_code):
         expressions = self.get_expressions(incoming)
         if expressions:
-            self.send_expressions_to_engine(incoming, expressions)
+            self.send_expressions_to_engine(incoming, expressions, value, source_time, status_code)

@@ -80,9 +80,11 @@ class BaseRule:
             while not self.has_interrupt():
                 if Statistics.on:
                     Statistics.set(self.name + ".incoming.count", self.incoming.qsize())
-                messagetype, incoming = self.incoming.get(block=True, timeout=0.1)
+                messagetype, message = self.incoming.get(block=True, timeout=0.1)
+                incoming, value, source_time, status_code = message
+
                 if messagetype == self.messagetypes.RUN_EXPRESSION:
-                    self.handle_run_expression(incoming)
+                    self.handle_run_expression(incoming, value, source_time, status_code)
                 else:
                     raise NotImplementedError
         except queue.Empty:
@@ -118,7 +120,7 @@ class BaseRule:
         """
         raise NotImplementedError
 
-    def handle_run_expression(self, incoming):
+    def handle_run_expression(self, incoming, value, source_time, status_code):
         raise NotImplementedError
 
     def add_class_to_controller(self, source_name, controller_name=None):
@@ -157,14 +159,14 @@ class BaseRule:
         except Exception as eee:
             self.logger.exception(eee)
 
-    def send_expressions_to_engine(self, item_instance, expressions):
+    def send_expressions_to_engine(self, item_instance, expressions, value, source_time, status_code):
         """ Send RUN_EXPRESSION to the engine
 
         :param item_instance: the source instance that triggered the expressions
         :param list expressions: list of expressions
 
         """
-        self.shared.queues.run_expressions_in_engine(item_instance, expressions)
+        self.shared.queues.run_expressions_in_engine(item_instance, expressions, value, source_time, status_code)
 
     def convert_to_instance(
         self, item_name, source_name, controller_name, rule_name, defaultvalue

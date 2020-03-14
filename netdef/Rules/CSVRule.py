@@ -95,10 +95,10 @@ class CSVRule(BaseRule.BaseRule):
             self.loop_incoming()  # dispatch handle_* functions
         log.info("Stopped")
 
-    def handle_run_expression(self, incoming):
+    def handle_run_expression(self, incoming, value, source_time, status_code):
         expressions = self.get_expressions(incoming)
         # log.debug("Received %s. Found expressions %s",incoming.key, len(expressions))
         if expressions:
-            self.send_expressions_to_engine(incoming, expressions)
+            self.send_expressions_to_engine(incoming, expressions, value, source_time, status_code)
         # for expression in expressions:
         #    expression.execute()

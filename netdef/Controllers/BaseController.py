@@ -351,9 +351,12 @@ class BaseController:
 
     def send_outgoing(self, outgoing):
         "Send RUN_EXPRESSION message on valuechange"
-        self.shared.queues.send_message_to_rule(
-            self.shared.queues.MessageType.RUN_EXPRESSION, outgoing.rule, outgoing
-        )
+
+        self.shared.queues.run_expressions_in_rule(outgoing)
+        
+        # self.shared.queues.send_message_to_rule(
+        #     self.shared.queues.MessageType.RUN_EXPRESSION, outgoing.rule, outgoing
+        # )
 
     def statistics_update(self):
         self._statistics_update_last_minute(0)

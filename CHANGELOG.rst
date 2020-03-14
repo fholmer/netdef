@@ -1,3 +1,20 @@
+1.0.7.dev1
+==========
+
+**Enhancements**
+
+- SecurityCertificatesView: Added OpcUa certs
+
+**Bug fixes**
+
+- Values from controller is frozen before RUN_EXPRESSION is sendt.
+
+**Incompatible API changes**
+
+- handle_run_expression function in BaseRule now have 4 required arguments.
+  All custom rules have to be updated.
+
+
 1.0.6
 =====
 
