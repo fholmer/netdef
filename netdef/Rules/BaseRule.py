@@ -324,6 +324,10 @@ class BaseRule:
                 arg = self.get_existing_instance(
                     arg
                 )  # replace arg with existing instance
+            else:
+                source_setup = sourceinfo.get_setup_func(arg)
+                if source_setup:
+                    source_setup(self.shared)
 
             self.maintain_searches(arg, expr)
             # 2.
@@ -410,11 +414,12 @@ class SourceInfo:
         shall create a source instance based on this *description*
     """
 
-    __slots__ = ["typename", "key", "controller", "defaultvalue"]
+    __slots__ = ["typename", "key", "controller", "defaultvalue", "setup"]
 
-    def __init__(self, typename, key, controller=None, defaultvalue=None):
+    def __init__(self, typename, key, controller=None, defaultvalue=None, setup="setup"):
         self.key = key
         self.defaultvalue = defaultvalue
+        self.setup = setup
 
         if isinstance(typename, str):
             self.typename = typename
@@ -429,6 +434,12 @@ class SourceInfo:
             self.controller = controller.name
         else:
             raise TypeError("controller: wrong datatype")
+
+    def get_setup_func(self, instance):
+        setup = self.setup
+        if setup and hasattr(instance, setup):
+            return getattr(instance, setup)
+        return None
 
 
 class ExpressionInfo:

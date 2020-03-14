@@ -4,6 +4,10 @@
 **Enhancements**
 
 - SecurityCertificatesView: Added OpcUa certs
+- Controllers: call setup-function in module if found at startup
+- Rules: call setup-function in module if found at startup
+- Sources: call setup-function in module if found at startup
+- BaseSource: call setup-function in source instance if found at startup
 
 **Bug fixes**
 

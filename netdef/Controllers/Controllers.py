@@ -6,7 +6,7 @@ from collections import OrderedDict
 CONTROLLERDICT = OrderedDict()
 
 # denne dekoratoren vil bli aktivert av aktiverte klasser etter Controllers.load()
-def register(name):
+def register(name, classref=None):
     """
     A decorator to register controllers. Example::
 
@@ -16,12 +16,36 @@ def register(name):
         class NewControllerTemplate(BaseController.BaseController):
             def __init__(self, name, shared):
                 ...
+    
+    Can also be called as a normal function::
+
+        from netdef.Controllers import BaseController, Controllers
+
+        def setup(shared):
+            Controllers.register("NewControllerTemplate", NewControllerTemplate)
+
+        class NewControllerTemplate(BaseController.BaseController):
+            def __init__(self, name, shared):
+                ...
+
+    :param str name: Name of the controller class
+    :param object classref: Should be *None* if used as a decorator and
+                            a *class* if called as a function
+    
+    :return: A callable that returns a *class* if used as a decorator
+             and a *class* if called as a normal function
+
     """
 
     def classdecorator(name, cls):
         CONTROLLERDICT[name] = cls
         return cls
 
+    #if register is called as a normal function with two arguments
+    if not classref is None:
+        return classdecorator(name, classref)
+    
+    #if register is called as a decorator with one argument
     return functools.partial(classdecorator, name)
 
 
@@ -70,11 +94,13 @@ class Controllers:
                 if int(activate) and not name in added:
                     try:
                         # laster modul
-                        importlib.import_module(
+                        _mod = importlib.import_module(
                             "{}.Controllers.{}".format(base_package, name)
                         )
                         # lager kø-instanser
                         added.append(name)
+                        if hasattr(_mod, "setup"):
+                            getattr(_mod, "setup")(self.shared)
                     except ImportError as e:
                         if isinstance(e.name, str):
                             if not e.name.startswith(base_package + ".Controllers"):

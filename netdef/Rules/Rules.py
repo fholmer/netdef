@@ -6,11 +6,46 @@ from collections import OrderedDict
 RULESDICT = OrderedDict()
 
 
-def register(name):
+def register(name, classref=None):
+    """
+    A decorator to register rules. Example::
+
+        from netdef.Rules import BaseRule, Rules
+
+        @Rules.register("NewRuleTemplate")
+        class NewRuleTemplate(BaseRule.BaseRule):
+            def __init__(self, name, shared):
+                ...
+    
+    Can also be called as a normal function::
+
+        from netdef.Rules import BaseRule, Rules
+
+        def setup(shared):
+            Rules.register("NewRuleTemplate", NewRuleTemplate)
+
+        class NewRuleTemplate(BaseRule.BaseRule):
+            def __init__(self, name, shared):
+                ...
+
+    :param str name: Name of the rule class
+    :param object classref: Should be *None* if used as a decorator and
+                            a *class* if called as a function
+    
+    :return: A callable that returns a *class* if used as a decorator
+             and a *class* if called as a normal function
+
+    """
+
     def classdecorator(name, cls):
         RULESDICT[name] = cls
         return cls
 
+    #if register is called as a normal function with two arguments
+    if not classref is None:
+        return classdecorator(name, classref)
+    
+    #if register is called as a decorator with one argument
     return functools.partial(classdecorator, name)
 
 
@@ -41,10 +76,13 @@ class Rules:
             for name, activate in activate_rules.items():
                 if int(activate) and not name in added:
                     try:
-                        importlib.import_module(
+                        _mod = importlib.import_module(
                             "{}.Rules.{}".format(base_package, name)
                         )
                         added.append(name)
+                        if hasattr(_mod, "setup"):
+                            getattr(_mod, "setup")(self.shared)
+
                     except ImportError as e:
                         if isinstance(e.name, str):
                             if not e.name.startswith(base_package + ".Rules"):
