@@ -1,3 +1,4 @@
+import os
 import logging
 import queue
 from collections import Iterable
@@ -459,7 +460,7 @@ class ExpressionInfo:
             _expr = module
         elif isinstance(module, ModuleType):
             _pymod = module
-            _expr = Expression(getattr(_pymod, func), _pymod.__file__)
+            _expr = Expression(getattr(_pymod, func), os.path.relpath(_pymod.__file__))
         else:
             raise TypeError("module: wrong datatype")
 
