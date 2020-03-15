@@ -12,6 +12,7 @@
 **Bug fixes**
 
 - Values from controller is frozen before RUN_EXPRESSION is sendt.
+- CommTestSource: remove url_path from host
 
 **Incompatible API changes**
 

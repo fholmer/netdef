@@ -21,9 +21,11 @@ class CommTestSource(FloatSource.FloatSource):
             _, addr = addr.split("@", 1)
         if "://" in addr:
             _, addr = addr.split("://", 1)
+        if "/" in addr:
+            addr, _ = addr.split("/", 1)
 
         if ":" in addr:
-            host, port = addr.split(":")
+            host, port = addr.split(":")[:2]
             return host, int(port)
         else:
             return addr, 80
