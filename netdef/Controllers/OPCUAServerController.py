@@ -379,7 +379,7 @@ class OPCUAServerController(BaseController.BaseController):
         for folder in folders[:-1]:
             try:
                 has_folder = parent.get_child(
-                    ua.QualifiedName.from_string("{}:{}".format(ns,folder))
+                    ua.QualifiedName.from_string("{}:{}".format(ns, folder))
                 )
                 parent = has_folder
             except Exception as error:
@@ -395,16 +395,16 @@ class OPCUAServerController(BaseController.BaseController):
         nodeid = ua.NodeId.from_string(ref)
 
         if self.auto_build_folders:
-            bname = "%d:%s" % (nodeid.NamespaceIndex, nodeid.Identifier.split(self.sep)[-1])
+            bname = "%d:%s" % (
+                nodeid.NamespaceIndex,
+                nodeid.Identifier.split(self.sep)[-1],
+            )
         else:
             bname = "%d:%s" % (nodeid.NamespaceIndex, nodeid.Identifier)
 
         datavalue = self.create_datavalue(val, varianttype, self.initial_status_code)
         var_node = parent.add_variable(
-            nodeid=ref,
-            bname=bname,
-            val=val,
-            varianttype=varianttype,
+            nodeid=ref, bname=bname, val=val, varianttype=varianttype
         )
         var_node.set_data_value(datavalue)
         return var_node

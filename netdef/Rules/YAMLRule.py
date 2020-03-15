@@ -93,4 +93,6 @@ class YAMLRule(BaseRule.BaseRule):
     def handle_run_expression(self, incoming, value, source_time, status_code):
         expressions = self.get_expressions(incoming)
         if expressions:
-            self.send_expressions_to_engine(incoming, expressions, value, source_time, status_code)
+            self.send_expressions_to_engine(
+                incoming, expressions, value, source_time, status_code
+            )

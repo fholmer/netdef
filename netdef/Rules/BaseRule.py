@@ -1,5 +1,5 @@
-import os
 import logging
+import os
 import queue
 from collections import Iterable
 from types import ModuleType
@@ -85,7 +85,9 @@ class BaseRule:
                 incoming, value, source_time, status_code = message
 
                 if messagetype == self.messagetypes.RUN_EXPRESSION:
-                    self.handle_run_expression(incoming, value, source_time, status_code)
+                    self.handle_run_expression(
+                        incoming, value, source_time, status_code
+                    )
                 else:
                     raise NotImplementedError
         except queue.Empty:
@@ -160,14 +162,18 @@ class BaseRule:
         except Exception as eee:
             self.logger.exception(eee)
 
-    def send_expressions_to_engine(self, item_instance, expressions, value, source_time, status_code):
+    def send_expressions_to_engine(
+        self, item_instance, expressions, value, source_time, status_code
+    ):
         """ Send RUN_EXPRESSION to the engine
 
         :param item_instance: the source instance that triggered the expressions
         :param list expressions: list of expressions
 
         """
-        self.shared.queues.run_expressions_in_engine(item_instance, expressions, value, source_time, status_code)
+        self.shared.queues.run_expressions_in_engine(
+            item_instance, expressions, value, source_time, status_code
+        )
 
     def convert_to_instance(
         self, item_name, source_name, controller_name, rule_name, defaultvalue
@@ -417,7 +423,9 @@ class SourceInfo:
 
     __slots__ = ["typename", "key", "controller", "defaultvalue", "setup"]
 
-    def __init__(self, typename, key, controller=None, defaultvalue=None, setup="setup"):
+    def __init__(
+        self, typename, key, controller=None, defaultvalue=None, setup="setup"
+    ):
         self.key = key
         self.defaultvalue = defaultvalue
         self.setup = setup

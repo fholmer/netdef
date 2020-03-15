@@ -99,6 +99,8 @@ class CSVRule(BaseRule.BaseRule):
         expressions = self.get_expressions(incoming)
         # log.debug("Received %s. Found expressions %s",incoming.key, len(expressions))
         if expressions:
-            self.send_expressions_to_engine(incoming, expressions, value, source_time, status_code)
+            self.send_expressions_to_engine(
+                incoming, expressions, value, source_time, status_code
+            )
         # for expression in expressions:
         #    expression.execute()

@@ -1,7 +1,7 @@
 import datetime
 import logging
-import time
 import socket
+import time
 
 from pymodbus.datastore import (
     ModbusSequentialDataBlock,
@@ -133,14 +133,24 @@ class ModbusServerController(BaseController.BaseController):
                 time.sleep(10)
             try:
                 return MyController(
-                    context, framer, identity, (host, port), allow_reuse_address=True, controller=self
+                    context,
+                    framer,
+                    identity,
+                    (host, port),
+                    allow_reuse_address=True,
+                    controller=self,
                 )
                 break
             except OSError as error:
                 self.logger.error("%s. Retry in 10 sec.", repr(error))
         else:
             return MyController(
-                context, framer, identity, (host, port), allow_reuse_address=True, controller=self
+                context,
+                framer,
+                identity,
+                (host, port),
+                allow_reuse_address=True,
+                controller=self,
             )
 
     def get_modbus_server_context(self):
@@ -236,6 +246,7 @@ class ModbusServerController(BaseController.BaseController):
 
 class MyController(ModbusTcpServer):
     daemon_threads = False
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.controller = kwargs["controller"]

@@ -41,8 +41,11 @@ class Expression:
         """Wrap each source-instance into its own Argument instance
         Return a tuple of Arguments
         """
-        inst = source_instance # instigator
-        return tuple(Argument(arg, arg is inst, frozen_value if arg is inst else None) for arg in self.args)
+        inst = source_instance  # instigator
+        return tuple(
+            Argument(arg, arg is inst, frozen_value if arg is inst else None)
+            for arg in self.args
+        )
 
     def get_kwargs(self):
         return self.kwargs

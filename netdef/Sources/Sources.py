@@ -36,15 +36,16 @@ def register(name, classref=None):
              and a *class* if called as a normal function
 
     """
+
     def classdecorator(name, cls):
         SOURCEDICT[name] = cls
         return cls
 
-    #if register is called as a normal function with two arguments
+    # if register is called as a normal function with two arguments
     if not classref is None:
         return classdecorator(name, classref)
-    
-    #if register is called as a decorator with one argument
+
+    # if register is called as a decorator with one argument
     return functools.partial(classdecorator, name)
 
 

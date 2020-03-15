@@ -353,7 +353,7 @@ class BaseController:
         "Send RUN_EXPRESSION message on valuechange"
 
         self.shared.queues.run_expressions_in_rule(outgoing)
-        
+
         # self.shared.queues.send_message_to_rule(
         #     self.shared.queues.MessageType.RUN_EXPRESSION, outgoing.rule, outgoing
         # )

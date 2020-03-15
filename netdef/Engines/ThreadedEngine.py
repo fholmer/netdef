@@ -103,7 +103,9 @@ class ExpressionExecutor(BaseEngine.BaseExpressionExecutor):
         self.thread_pool.shutdown(wait=True)
         log.info("Stopped")
 
-    def handle_run_expression(self, source_item, expressions, value, source_time, status_code):
+    def handle_run_expression(
+        self, source_item, expressions, value, source_time, status_code
+    ):
         for expression in expressions:
             args = expression.get_args(source_item, value)
             kwargs = expression.get_kwargs()

@@ -90,12 +90,16 @@ class BaseExpressionExecutor:
                 )
                 if messagetype == self.messagetypes.RUN_EXPRESSION:
                     source_item, expressions, value, source_time, status_code = incoming
-                    self.handle_run_expression(source_item, expressions, value, source_time, status_code)
+                    self.handle_run_expression(
+                        source_item, expressions, value, source_time, status_code
+                    )
                 else:
                     raise NotImplementedError
 
         except queue.Empty:
             pass
 
-    def handle_run_expression(self, source_item, expressions, value, source_time, status_code):
+    def handle_run_expression(
+        self, source_item, expressions, value, source_time, status_code
+    ):
         raise NotImplementedError
