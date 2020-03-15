@@ -16,6 +16,26 @@ Default interface
     :undoc-members:
     :show-inheritance:
 
+----------------
+Internal classes
+----------------
+
+Datamessage
+-----------
+
+.. automodule:: netdef.Interfaces.datamessage
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Tick
+----
+
+.. automodule:: netdef.Interfaces.internal.tick
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 -------------------
 Built-in Interfaces
 -------------------
