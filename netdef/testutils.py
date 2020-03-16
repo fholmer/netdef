@@ -80,20 +80,42 @@ class MockSource:
 
 
 class MockExpression:
+    """
+    Example::
+
+        from netdef.testutils import MockExpression
+
+        def test_hello():
+            mock = MockExpression(
+                module="config/command_rule.py",
+                intern=InternalSource("generic"),
+                cmd=SubprocessSource("echo hello")
+            )
+            mock.intern.update_value(None, stat_init=True)
+            mock.cmd.assert_called_once_with("world")
+            mock.intern.assert_not_called()
+    """
     def __init__(self, **kwargs):
         self._kwargs = kwargs
         self._expr = None
+        self._pymod = None
 
         for k, v in self._kwargs.items():
             if isinstance(v, Expression):
                 self._expr = v
                 break
+            elif isinstance(v, type(os)):
+                self._pymod = v
             elif isinstance(v, str) and k == "module":
-                _pymod = get_module_from_string(
+                self._pymod = get_module_from_string(
                     v, __package__, os.getcwd(), "testutils", "mockexpression"
                 )
+            if self._pymod:
                 func = self._kwargs.get("expression", "expression")
-                self._expr = Expression(getattr(_pymod, func), _pymod.__file__)
+                self._expr = Expression(
+                    getattr(self._pymod, func), self._pymod.__file__
+                )
+                break
 
         assert not self._expr is None
 
@@ -104,3 +126,26 @@ class MockExpression:
 
         for arg in inspect.signature(self._expr.expression).parameters.keys():
             self._expr.add_arg(self._kwargs[arg])
+
+    def get_module(self):
+        "Returns the expression module"
+        return self._pymod
+
+    def set_init_values(self, **kwargs):
+        for k, v in kwargs.items():
+            attr = getattr(self, k)
+            attr.update_value(val=v, stat_init=True, run_expression=False)
+
+    def set_none_values(self, **kwargs):
+        for k, v in kwargs.items():
+            attr = getattr(self, k)
+            attr.update_value(val=v, stat_none=True, run_expression=False)
+
+    def get_callbacks(self):
+        return ((arg, arg.set_callback) for arg in self._expr.args)
+
+    def __getattr__(self, name):
+        # this is only to please pylint
+        raise AttributeError(
+            "MockExpression has no attribute '{}'".format(name)
+        )
