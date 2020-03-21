@@ -8,6 +8,7 @@
 - Rules: call setup-function in module if found at startup
 - Sources: call setup-function in module if found at startup
 - BaseSource: call setup-function in source instance if found at startup
+- Added testutils.MockShared
 
 **Bug fixes**
 

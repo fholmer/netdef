@@ -23,7 +23,7 @@ class Config:
 
     """
 
-    def __init__(self, identifier, install_path, proj_path, default_config_string):
+    def __init__(self, identifier, install_path, proj_path, default_config_string, read_from_files=True):
 
         self.IDENTIFIER = identifier
 
@@ -56,20 +56,22 @@ class Config:
             self.conf_encoding = sys.getdefaultencoding()
 
         # self.read("{install_path}/data".format(install_path=install_path))
-        self.read_default(config_path)
+        if read_from_files:
+            self.read_default(config_path)
 
         self.verify(proj_path, config_path)
 
-        if "config" in self._config:
+        if read_from_files and "config" in self._config:
             for ident, path in self.get_dict("config").items():
                 self._config.read(path, encoding=self.conf_encoding)
 
         # this file should not be editable from "Config Files" in webadmin.
         # Used to lock specific configurations. must therefore be read last.
-        self._config.read(
-            "{config_path}/default.lock".format(config_path=config_path),
-            encoding=self.conf_encoding,
-        )
+        if read_from_files:
+            self._config.read(
+                "{config_path}/default.lock".format(config_path=config_path),
+                encoding=self.conf_encoding,
+            )
 
         # liste over konfiger som ikke skal være synlig i webadmin
         # settes med set_hidden_value-funksjonen
@@ -163,10 +165,12 @@ class Config:
                 )
             )
 
-        if self.config("general", "identifier", "") != self.IDENTIFIER:
+        _ident = self.config("general", "identifier", "")
+        if _ident != self.IDENTIFIER:
             raise ValueError(
-                "Error parsing config-files. [general]identifier {} not found".format(
-                    self.IDENTIFIER
+                "Error parsing config-files. [general]identifier {} not found {}".format(
+                    self.IDENTIFIER,
+                    _ident
                 )
             )
 

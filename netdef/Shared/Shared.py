@@ -11,7 +11,7 @@ class Shared:
     :param str identifier: a unique identifier for this app.
     :param str install_path: Full filepath to application package location
     :param str proj_path: Full filepath to project location
-    :param str default_config_string: initial config text for :class:`netdef.Shared.SharedConfig.Config`
+    :param str default_config_string: initial config text for :class:`SharedConfig.Config`
     
     """
 
