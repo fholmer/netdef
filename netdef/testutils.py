@@ -78,6 +78,20 @@ class MockSource:
     def assert_not_called(self):
         self.source.set_callback.assert_not_called()
 
+    @property
+    def call_count(self):
+        return self.source.set_callback.call_count
+
+    @property
+    def call_args(self):
+        args, kwargs = self.source.set_callback.call_args
+        src, val, stime = args
+        return val
+
+    @property
+    def call_args_list(self):
+        call_args_list = self.source.set_callback.call_args_list
+        return [args[1] for args, kwargs in call_args_list]
 
 class MockExpression:
     """
