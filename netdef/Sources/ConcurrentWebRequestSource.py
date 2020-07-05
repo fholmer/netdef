@@ -7,8 +7,18 @@ from netdef.Interfaces.ConcurrentWebRequestInterface import (
 from netdef.Sources import BaseSource, Sources
 
 
+def setup(shared):
+    ConcurrentWebRequestSource.DEFAULT_CLIENT_SESSION_TIMEOUT = shared.config.config(
+        "ConcurrentWebRequestSource",
+        "client_session_timeout",
+        ConcurrentWebRequestSource.DEFAULT_CLIENT_SESSION_TIMEOUT,
+    )
+
+
 @Sources.register("ConcurrentWebRequestSource")
 class ConcurrentWebRequestSource(BaseSource.BaseSource):
+    DEFAULT_CLIENT_SESSION_TIMEOUT = 2
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.interface = ConcurrentWebRequestInterface
@@ -41,7 +51,7 @@ class ConcurrentWebRequestSource(BaseSource.BaseSource):
         self._session = session
 
     def get_client_session_timeout(self):
-        return 2
+        return self.DEFAULT_CLIENT_SESSION_TIMEOUT
 
     def get_commands_list(self):
         return []
