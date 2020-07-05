@@ -37,6 +37,37 @@ def check_user_and_pass(app, user, password):
     return False
 
 
+def update_usertable(admin_users, config, section):
+
+    prefixes = {}
+
+    for key, val in config.get_dict("webadmin").items():
+        if key.startswith("users.") and key.count(".") == 2:
+            prefix, attr = key.split(".")[1:3]
+            if attr in ("user", "password", "password_hash", "roles"):
+                if not prefix in prefixes:
+                    prefixes[prefix] = create_usertable_item("", "", "", "")
+                if attr == "roles":
+                    prefixes[prefix][attr] = set(map(str.strip, val.split(",")))
+                else:
+                    config.set_hidden_value(section, key)
+                    prefixes[prefix][attr] = val
+
+    for user_info in prefixes.values():
+        admin_users[user_info["user"]] = user_info
+
+    return admin_users
+
+
+def create_usertable_item(user, password, password_hash, roles):
+    return {
+        "user": user,
+        "password": password,
+        "password_hash": password_hash,
+        "roles": set(map(str.strip, roles.split(","))) if roles else set(),
+    }
+
+
 def get_ip_addresses():
     for interfaces in psutil.net_if_addrs().values():
         for interface in interfaces:

@@ -1,8 +1,8 @@
 {% extends 'admin/master.html' %}
 {% block body %}
 {{ super() }}
-<div class="row-fluid">
 
+<div class="row-fluid">
     <div>
         {% if current_user.is_authenticated %}
         <p>Application version: {{version}}</p>
@@ -34,6 +34,15 @@
             </div>
             </div>
         </form>
+
+        {% if usertable_is_empty %}
+
+        <div class="alert alert-warning" role="alert">
+            <p><b>Warning</b></p>
+            <p>User table is not configured. <a href="../security_webadmin">Click here</a> to configure.</p>
+        </div>
+
+        {% endif %}
 
         {{ link | safe }}
         {% endif %}

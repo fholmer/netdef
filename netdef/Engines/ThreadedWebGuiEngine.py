@@ -6,11 +6,10 @@ import flask_login
 from flask import Flask, redirect
 from werkzeug.serving import run_simple
 
-from . import ThreadedEngine
+from . import ThreadedEngine, utils
 from .webadmin import AdminIndex, Views
 
 # from werkzeug.security import generate_password_hash, check_password_hash
-
 
 log = logging.getLogger("ThreadedWebGuiEngine")
 log.info("Enter Threaded Web Gui Engine")
@@ -150,6 +149,11 @@ def init_app(app, webadmin_views, shared):
     login_manager = flask_login.LoginManager()
     login_manager.init_app(app)
 
+    def _usertable_is_empty():
+        return dict(usertable_is_empty=False if admin_users else True)
+
+    app.context_processor(_usertable_is_empty)
+
     @login_manager.user_loader
     def user_loader(login):
         if login not in (admin_users.keys()):
@@ -178,7 +182,7 @@ def init_app(app, webadmin_views, shared):
 
 def make_admin_users_dict(config, section):
     # fetch legacy user/pass from konfig
-    admin_user = config.config(section, "user", "admin", add_if_not_exists=False)
+    admin_user = config.config(section, "user", "", add_if_not_exists=False)
     admin_password = config.config(section, "password", "", add_if_not_exists=False)
     admin_password_hash = config.config(
         section, "password_hash", "", add_if_not_exists=False
@@ -198,26 +202,4 @@ def make_admin_users_dict(config, section):
             "roles": {"admin"},
         }
 
-    prefixes = {}
-
-    for key, val in config.get_dict("webadmin").items():
-        if key.startswith("users.") and key.count(".") == 2:
-            prefix, attr = key.split(".")[1:3]
-            if attr in ("user", "password", "password_hash", "roles"):
-                if not prefix in prefixes:
-                    prefixes[prefix] = {
-                        "user": "",
-                        "password": "",
-                        "password_hash": "",
-                        "roles": set(),
-                    }
-                if attr == "roles":
-                    prefixes[prefix][attr] = set(map(str.strip, val.split(",")))
-                else:
-                    config.set_hidden_value(section, key)
-                    prefixes[prefix][attr] = val
-
-    for user_info in prefixes.values():
-        admin_users[user_info["user"]] = user_info
-
-    return admin_users
+    return utils.update_usertable(admin_users, config, section)

@@ -7,8 +7,7 @@
 <div class="row-fluid">
 
     <div>
-        {% if current_user.is_authenticated %}
-
+        {% if current_user.is_authenticated or usertable_is_empty %}
 
         {% block webadmin_security_settings %}
 
@@ -32,7 +31,6 @@
                 </span>
 
                 {% endif %}
-        
 
             </div>
         </div>
@@ -44,7 +42,7 @@
 
         {% else %}
 
-            Not logged in
+            Not logged in. <a href="../login">Click here</a> to log in.
             
         {% endif %}
 

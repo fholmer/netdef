@@ -6,7 +6,7 @@ from flask import current_app, flash, request
 from flask_admin import expose
 from wtforms import Form, PasswordField, SelectField, StringField, validators
 
-from ..utils import check_user_and_pass, create_new_secret, create_pass
+from ..utils import check_user_and_pass, create_new_secret, create_pass, create_usertable_item
 from . import Views
 from .MyBaseView import MyBaseView
 
@@ -55,7 +55,6 @@ default = {
     ),
 }
 
-
 class SecurityForm(Form):
     login = StringField("Login", [validators.Required()], default=default["user"])
     old_password = PasswordField("Current password")
@@ -100,6 +99,13 @@ class SecurityForm(Form):
         choices=[("0", "No"), ("1", "Yes")],
     )
 
+class BasicSecurityForm(SecurityForm):
+    old_password = None
+    validate_password = None
+    new_flask_secret = SelectField(
+        "Renew session cookie", choices=[("yes", "Yes"), ("no", "No")]
+    )
+
 
 class SecurityWebadminView(MyBaseView):
     choices_crts = [("", "None")] + [
@@ -121,7 +127,43 @@ class SecurityWebadminView(MyBaseView):
             legacy_admin = webadmin_conf.get("webadmin", "user", fallback="")
             webadmin_conf.set("webadmin", "users.admin.user", legacy_admin)
 
-        form = SecurityForm(request.form)
+        if self.usertable_is_empty():
+            form = BasicSecurityForm(request.form)
+        else:
+            form = SecurityForm(request.form)
+
+        self.setup_form_defaults(form)
+
+        if request.method == "POST" and form.validate():
+            if self.usertable_is_empty():
+                self.setup_conf_userdata(webadmin_conf, form)
+                flash("Password has been changed.")
+            else:
+                if form.old_password.data:
+                    if check_user_and_pass(
+                        current_app, form.login.data, form.old_password.data
+                    ):
+                        self.setup_conf_userdata(webadmin_conf, form)
+                        flash("Password has been changed.")
+                    else:
+                        flash("Current password is invalid.")
+
+            self.setup_conf_secrets_and_https(webadmin_conf, form)
+
+            webadmin_conf.write(open(conf_file, "w"))
+            self.update_usertable(form)
+
+            flash(
+                "Changes to '{}' saved successfully.".format(conf_file),
+                category="success",
+            )
+
+        return self.render(
+            "security/webadmin.html", conf_file=conf_file, conf_ok=conf_ok, form=form
+        )
+
+
+    def setup_form_defaults(self, form):
 
         form.ssl_certificate.choices.clear()
         form.ssl_certificate_key.choices.clear()
@@ -146,52 +188,52 @@ class SecurityWebadminView(MyBaseView):
                 (form.ssl_certificate_key.data, form.ssl_certificate_key.data)
             )
 
-        if request.method == "POST" and form.validate():
-            if form.old_password.data:
-                if check_user_and_pass(
-                    current_app, form.login.data, form.old_password.data
-                ):
-                    password = create_pass(form.password.data)
-                    webadmin_conf.set("webadmin", "users.admin.user", form.login.data)
-                    webadmin_conf.set("webadmin", "users.admin.password", "")
-                    webadmin_conf.set("webadmin", "users.admin.password_hash", password)
-                    webadmin_conf.set("webadmin", "users.admin.roles", "admin")
 
-                    if webadmin_conf.get("webadmin", "user", fallback=""):
-                        # remove legacy config
-                        webadmin_conf.remove_option("webadmin", "user")
-                        webadmin_conf.remove_option("webadmin", "password")
-                        webadmin_conf.remove_option("webadmin", "password_hash")
-
-                    flash("Password has been changed.")
-                else:
-                    flash("Current password is invalid.")
-
-            if form.new_flask_secret.data == "yes":
-                secret = create_new_secret()
-                webadmin_conf.set("webadmin", "secret_key", secret)
-
-            webadmin_conf.set("webadmin", "ssl_on", form.ssl_on.data)
-            webadmin_conf.set("webadmin", "ssl_certificate", form.ssl_certificate.data)
-            webadmin_conf.set(
-                "webadmin", "ssl_certificate_key", form.ssl_certificate_key.data
-            )
-
-            webadmin_conf.set("auto_update", "on", form.update_on.data)
-            webadmin_conf.set(
-                "auto_update", "pre_release", form.update_pre_release.data
-            )
-
-            webadmin_conf.write(open(conf_file, "w"))
-
-            flash(
-                "Changes to '{}' saved successfully.".format(conf_file),
-                category="success",
-            )
-
-        return self.render(
-            "security/webadmin.html", conf_file=conf_file, conf_ok=conf_ok, form=form
+    def update_usertable(self, form):
+        usertable = current_app.config["ADMIN_USERS"]
+        password = create_pass(form.password.data)
+        usertable[form.login.data] = create_usertable_item(
+            user=form.login.data,
+            password="",
+            password_hash=password,
+            roles="admin"
         )
 
+
+    def setup_conf_userdata(self, webadmin_conf, form):
+        password = create_pass(form.password.data)
+        webadmin_conf.set("webadmin", "users.admin.user", form.login.data)
+        webadmin_conf.set("webadmin", "users.admin.password", "")
+        webadmin_conf.set("webadmin", "users.admin.password_hash", password)
+        webadmin_conf.set("webadmin", "users.admin.roles", "admin")
+
+        if webadmin_conf.get("webadmin", "user", fallback=""):
+            # remove legacy config
+            webadmin_conf.remove_option("webadmin", "user")
+            webadmin_conf.remove_option("webadmin", "password")
+            webadmin_conf.remove_option("webadmin", "password_hash")
+
+
+    def setup_conf_secrets_and_https(self, webadmin_conf, form):
+        if form.new_flask_secret.data == "yes":
+            secret = create_new_secret()
+            webadmin_conf.set("webadmin", "secret_key", secret)
+
+        webadmin_conf.set("webadmin", "ssl_on", form.ssl_on.data)
+        webadmin_conf.set("webadmin", "ssl_certificate", form.ssl_certificate.data)
+        webadmin_conf.set(
+            "webadmin", "ssl_certificate_key", form.ssl_certificate_key.data
+        )
+
+        webadmin_conf.set("auto_update", "on", form.update_on.data)
+        webadmin_conf.set(
+            "auto_update", "pre_release", form.update_pre_release.data
+        )
+
+
+    def usertable_is_empty(self):
+        return current_app.config["ADMIN_USERS"] == {}
+
+
     def is_accessible(self):
-        return self.has_role("admin")
+        return self.has_role("admin") or self.usertable_is_empty()
