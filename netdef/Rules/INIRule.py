@@ -118,5 +118,5 @@ class INIRule(BaseRule.BaseRule):
         expressions = self.get_expressions(incoming)
         if expressions:
             self.send_expressions_to_engine(
-                incoming, expressions, value, source_time, status_codes
+                incoming, expressions, value, source_time, status_code
             )
