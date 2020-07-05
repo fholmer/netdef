@@ -2,7 +2,6 @@ import datetime
 import logging
 
 import zmq
-
 from netdef.Controllers import BaseController, Controllers
 from netdef.Sources.BaseSource import StatusCode
 

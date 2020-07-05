@@ -23,7 +23,14 @@ class Config:
 
     """
 
-    def __init__(self, identifier, install_path, proj_path, default_config_string, read_from_files=True):
+    def __init__(
+        self,
+        identifier,
+        install_path,
+        proj_path,
+        default_config_string,
+        read_from_files=True,
+    ):
 
         self.IDENTIFIER = identifier
 
@@ -169,8 +176,7 @@ class Config:
         if _ident != self.IDENTIFIER:
             raise ValueError(
                 "Error parsing config-files. [general]identifier {} not found {}".format(
-                    self.IDENTIFIER,
-                    _ident
+                    self.IDENTIFIER, _ident
                 )
             )
 

@@ -2,9 +2,9 @@ import asyncio
 import time
 from unittest.mock import Mock
 
-import aiohttp
 import pytest
 
+import aiohttp
 from netdef.Controllers import ConcurrentWebRequestController
 from netdef.Sources import ConcurrentWebRequestSource
 
@@ -14,8 +14,8 @@ CTRL = ConcurrentWebRequestController.ConcurrentWebRequestController
 
 class SRC(ConcurrentWebRequestSource.ConcurrentWebRequestSource):
     def testing_echo_request(self):
-        html_response = (
-            yield ConcurrentWebRequestSource.Request("GET", self.build_url("/"))
+        html_response = yield ConcurrentWebRequestSource.Request(
+            "GET", self.build_url("/")
         )
         yield ConcurrentWebRequestSource.Result(html_response)
 

@@ -3,7 +3,6 @@ import logging
 import time
 
 import crontab
-
 from netdef.Controllers import BaseController, Controllers
 from netdef.Sources.BaseSource import StatusCode
 

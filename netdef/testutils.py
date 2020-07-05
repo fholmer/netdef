@@ -2,24 +2,25 @@ import datetime
 import inspect
 import os
 from unittest.mock import Mock
+
 from netdef.Engines.expression.Expression import Expression
 from netdef.Rules.utils import get_module_from_string
-from netdef.Sources.BaseSource import BaseSource, StatusCode
-from netdef.Shared.Shared import Shared
 from netdef.Shared import SharedConfig
+from netdef.Shared.Shared import Shared
+from netdef.Sources.BaseSource import BaseSource, StatusCode
 
 
 class MockShared(Shared):
     def __init__(self, config_string=""):
-        identifier=""
-        install_path=None
-        proj_path=None
+        identifier = ""
+        install_path = None
+        proj_path = None
         read_from_files = False
 
         if "[general]" not in config_string:
             config_string = "[general]\nversion=1\n{}".format(config_string)
 
-        default_config_string=config_string
+        default_config_string = config_string
 
         self.config = SharedConfig.Config(
             identifier, install_path, proj_path, default_config_string, read_from_files
@@ -114,6 +115,7 @@ class MockSource:
         call_args_list = self.source.set_callback.call_args_list
         return [args[1] for args, kwargs in call_args_list]
 
+
 class MockExpression:
     """
     Example::
@@ -130,6 +132,7 @@ class MockExpression:
             mock.cmd.assert_called_once_with("world")
             mock.intern.assert_not_called()
     """
+
     def __init__(self, **kwargs):
         self._kwargs = kwargs
         self._expr = None
@@ -181,6 +184,4 @@ class MockExpression:
 
     def __getattr__(self, name):
         # this is only to please pylint
-        raise AttributeError(
-            "MockExpression has no attribute '{}'".format(name)
-        )
+        raise AttributeError("MockExpression has no attribute '{}'".format(name))

@@ -77,8 +77,8 @@ class InstallationRepo(MyBaseView, fileadmin.FileAdmin):
     allowed_extensions = ("zip", "whl", "gz")
     can_download = True
     can_rename = (
-        False
-    )  # man kan laste opp et ugyldig format og rename til gyldig format
+        False  # man kan laste opp et ugyldig format og rename til gyldig format
+    )
 
     # har overstyrt list_row_actions for å legge til en download-knapp.
     list_template = "admin/filelist.html"

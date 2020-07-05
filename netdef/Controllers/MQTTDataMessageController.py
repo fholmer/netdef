@@ -2,7 +2,6 @@ import logging
 import uuid
 
 import paho.mqtt.client as mqtt
-
 from netdef.Controllers import BaseController, Controllers
 from netdef.Sources.BaseSource import StatusCode
 

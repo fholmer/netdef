@@ -6,7 +6,12 @@ from flask import current_app, flash, request
 from flask_admin import expose
 from wtforms import Form, PasswordField, SelectField, StringField, validators
 
-from ..utils import check_user_and_pass, create_new_secret, create_pass, create_usertable_item
+from ..utils import (
+    check_user_and_pass,
+    create_new_secret,
+    create_pass,
+    create_usertable_item,
+)
 from . import Views
 from .MyBaseView import MyBaseView
 
@@ -55,6 +60,7 @@ default = {
     ),
 }
 
+
 class SecurityForm(Form):
     login = StringField("Login", [validators.Required()], default=default["user"])
     old_password = PasswordField("Current password")
@@ -98,6 +104,7 @@ class SecurityForm(Form):
         default=default["update_pre_release"],
         choices=[("0", "No"), ("1", "Yes")],
     )
+
 
 class BasicSecurityForm(SecurityForm):
     old_password = None
@@ -162,7 +169,6 @@ class SecurityWebadminView(MyBaseView):
             "security/webadmin.html", conf_file=conf_file, conf_ok=conf_ok, form=form
         )
 
-
     def setup_form_defaults(self, form):
 
         form.ssl_certificate.choices.clear()
@@ -188,17 +194,12 @@ class SecurityWebadminView(MyBaseView):
                 (form.ssl_certificate_key.data, form.ssl_certificate_key.data)
             )
 
-
     def update_usertable(self, form):
         usertable = current_app.config["ADMIN_USERS"]
         password = create_pass(form.password.data)
         usertable[form.login.data] = create_usertable_item(
-            user=form.login.data,
-            password="",
-            password_hash=password,
-            roles="admin"
+            user=form.login.data, password="", password_hash=password, roles="admin"
         )
-
 
     def setup_conf_userdata(self, webadmin_conf, form):
         password = create_pass(form.password.data)
@@ -213,7 +214,6 @@ class SecurityWebadminView(MyBaseView):
             webadmin_conf.remove_option("webadmin", "password")
             webadmin_conf.remove_option("webadmin", "password_hash")
 
-
     def setup_conf_secrets_and_https(self, webadmin_conf, form):
         if form.new_flask_secret.data == "yes":
             secret = create_new_secret()
@@ -226,14 +226,10 @@ class SecurityWebadminView(MyBaseView):
         )
 
         webadmin_conf.set("auto_update", "on", form.update_on.data)
-        webadmin_conf.set(
-            "auto_update", "pre_release", form.update_pre_release.data
-        )
-
+        webadmin_conf.set("auto_update", "pre_release", form.update_pre_release.data)
 
     def usertable_is_empty(self):
         return current_app.config["ADMIN_USERS"] == {}
-
 
     def is_accessible(self):
         return self.has_role("admin") or self.usertable_is_empty()

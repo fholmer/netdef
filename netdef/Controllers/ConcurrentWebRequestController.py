@@ -4,7 +4,6 @@ import time
 from itertools import repeat
 
 import aiohttp
-
 from netdef.Controllers import BaseAsyncController, Controllers
 from netdef.Sources.BaseSource import StatusCode
 from netdef.Sources.ConcurrentWebRequestSource import (
