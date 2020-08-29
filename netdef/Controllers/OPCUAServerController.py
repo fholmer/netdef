@@ -15,8 +15,21 @@ from opcua.server.user_manager import UserManager
 
 # from netdef.Shared.Internal import Statistics
 
+class CustomAnonInternalSession(InternalSession):
+    "Custom InternalSession will set timestamp when missing"
 
-class CustomInternalSession(InternalSession):
+    def write(self, params):
+        for writevalue in params.NodesToWrite:
+            if writevalue.AttributeId == ua.AttributeIds.Value:
+                datavalue = writevalue.Value
+                if not datavalue.SourceTimestamp:
+                    datavalue.SourceTimestamp = datetime.datetime.utcnow()
+                if not datavalue.ServerTimestamp:
+                    datavalue.ServerTimestamp = datavalue.SourceTimestamp
+        return super().write(params)
+
+
+class CustomInternalSession(CustomAnonInternalSession):
     "This custom InternalSession will block anonymous access"
 
     def activate_session(self, params):
@@ -29,6 +42,7 @@ class CustomInternalSession(InternalSession):
 
 
 class CustomServer(Server):
+    "Custom Server that enables Basic128Rsa15 and Basic256"
     def _setup_server_nodes(self):
         super()._setup_server_nodes()
         if self._security_policy != [ua.SecurityPolicyType.NoSecurity]:
@@ -222,7 +236,9 @@ class OPCUAServerController(BaseController.BaseController):
         initial_values_is_quality_good = config("initial_values_is_quality_good", 0)
 
         if anonymous_on:
-            server = CustomServer()
+            server = CustomServer(
+                iserver=InternalServer(session_cls=CustomAnonInternalSession)
+            )
         else:
             server = CustomServer(
                 iserver=InternalServer(session_cls=CustomInternalSession)
@@ -276,6 +292,8 @@ class OPCUAServerController(BaseController.BaseController):
             self.initial_status_code = ua.StatusCodes.Good
         else:
             self.initial_status_code = ua.StatusCodes.BadWaitingForInitialData
+        
+        self.initial_timestamp = datetime.datetime.utcnow()
 
     def run(self):
         "Main loop. Will exit when receiving interrupt signal"
@@ -363,8 +381,8 @@ class OPCUAServerController(BaseController.BaseController):
                     varianttype,
                 )
                 varianttype = None
-
-        varnode.set_value(value, varianttype)
+        datavalue = self.create_datavalue(value, varianttype, ua.StatusCodes.Good, source_time)
+        varnode.set_value(datavalue)
 
     def add_folder(self, parent, foldername):
         "Add a folder in server"
@@ -402,18 +420,21 @@ class OPCUAServerController(BaseController.BaseController):
         else:
             bname = "%d:%s" % (nodeid.NamespaceIndex, nodeid.Identifier)
 
-        datavalue = self.create_datavalue(val, varianttype, self.initial_status_code)
+        datavalue = self.create_datavalue(val, varianttype, self.initial_status_code, self.initial_timestamp)
         var_node = parent.add_variable(
             nodeid=ref, bname=bname, val=val, varianttype=varianttype
         )
         var_node.set_data_value(datavalue)
         return var_node
 
-    def create_datavalue(self, val, datatype, statuscode):
+    def create_datavalue(self, val, datatype, statuscode, timestamp):
         "Create a value for the server that keep the correct datatype"
         variant = ua.Variant(value=val, varianttype=datatype)
         status = ua.StatusCode(statuscode)
-        return ua.DataValue(variant=variant, status=status)
+        datavalue = ua.DataValue(variant=variant, status=status)
+        datavalue.SourceTimestamp = timestamp
+        datavalue.ServerTimestamp = timestamp
+        return datavalue
 
     def get_varianttype(self, incoming):
         "Returns the varianttype from the source"
@@ -477,10 +498,6 @@ class SubHandler:
         nodeid = node.nodeid.to_string()
         item = data.monitored_item.Value
         source_value = item.Value.Value
-        if item.SourceTimestamp is None:
-            item.SourceTimestamp = datetime.datetime.utcnow()
-        if item.ServerTimestamp is None:
-            item.ServerTimestamp = item.SourceTimestamp
         source_time = item.SourceTimestamp
         source_status_ok = item.StatusCode.value == 0
         self.logger.debug(

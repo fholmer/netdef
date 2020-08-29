@@ -1,5 +1,7 @@
-1.0.7.dev1
+1.0.7.dev2
 ==========
+
+2020-08-29
 
 **Enhancements**
 
@@ -9,6 +11,7 @@
 - Sources: call setup-function in module if found at startup
 - BaseSource: call setup-function in source instance if found at startup
 - Added testutils.MockShared
+- OPCUAServerController: insert SourceTimestamp and ServerTimestamp if missing
 
 **Bug fixes**
 
