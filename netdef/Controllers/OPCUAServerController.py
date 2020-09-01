@@ -243,7 +243,8 @@ class OPCUAServerController(BaseController.BaseController):
             server = CustomServer(
                 iserver=InternalServer(session_cls=CustomInternalSession)
             )
-            server.iserver._parent = server
+
+        server.iserver._parent = server
 
         server.set_application_uri(uri)
         server.name = name
