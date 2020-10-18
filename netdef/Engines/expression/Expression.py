@@ -163,3 +163,8 @@ class Argument:
     def key(self):
         "Returns the key attribute from source instance"
         return self._instance.key
+
+    @property
+    def controller(self):
+        "Returns the controller attribute from source instance"
+        return self._instance.controller
