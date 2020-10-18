@@ -2,6 +2,7 @@ import importlib
 import importlib.util
 import pathlib
 import sys
+import os.path
 
 V_MAJOR = sys.version_info.major
 V_MINOR = sys.version_info.minor
@@ -43,7 +44,7 @@ def load_entrypoint(entrypoint, package=None):
 
 
 def get_module_from_string(mod_str, package, abs_root, location_name, mod_name):
-    if "/" in mod_str:
+    if "/" in mod_str or os.path.sep in mod_str:
         if pathlib.Path(mod_str).is_absolute():
             abs_file = pathlib.Path(mod_str)
         elif abs_root:
@@ -61,7 +62,7 @@ def get_module_from_string(mod_str, package, abs_root, location_name, mod_name):
             )
         elif not mod_name:
             raise ValueError("mod_name: expect string, got {}".format(mod_name))
-        return import_file(mod_str, location_name, mod_name)
+        return import_file(abs_file, location_name, mod_name)
     else:
         mod, obj = load_entrypoint(mod_str, package)
         return mod

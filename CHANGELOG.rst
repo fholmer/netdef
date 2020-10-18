@@ -1,7 +1,7 @@
-1.0.7.dev2
+1.0.7.dev3
 ==========
 
-2020-08-29
+2020-10-18
 
 **Enhancements**
 
@@ -15,8 +15,9 @@
 
 **Bug fixes**
 
-- Values from controller is frozen before RUN_EXPRESSION is sendt.
+- Values from controller is frozen before RUN_EXPRESSION is sent.
 - CommTestSource: remove url_path from host
+- Rules.utils: relative import of filenames did not work properly
 
 **Incompatible API changes**
 

@@ -1,0 +1,2 @@
+def expression(*args):
+    pass
