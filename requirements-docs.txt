@@ -8,7 +8,7 @@ cffi==1.12.3
 chardet==3.0.4
 Click==7.0
 crontab==0.22.5
-cryptography==2.7
+cryptography==3.2
 Flask==1.0.3
 Flask-Admin==1.5.3
 Flask-BasicAuth==0.2.0
