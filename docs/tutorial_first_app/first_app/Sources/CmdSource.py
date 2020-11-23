@@ -1,8 +1,8 @@
 from netdef.Sources import BaseSource, Sources
 from netdef.Interfaces.DefaultInterface import DefaultInterface
 
-@Sources.register("SubprocessSource")
-class SubprocessSource(BaseSource.BaseSource):
+@Sources.register("CmdSource")
+class CmdSource(BaseSource.BaseSource):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.interface = DefaultInterface

@@ -15,7 +15,7 @@ from a config file so it will be easy to reuse, change or extend the commands.
 To achieve this we just implement a method in the source that returns the
 command. the command can be extracted from the sources key:
 
-``first_app/Sources/SubprocessSource.py``:
+``first_app/Sources/CmdSource.py``:
 
 .. code-block:: python
     :linenos:
@@ -23,8 +23,8 @@ command. the command can be extracted from the sources key:
     from netdef.Sources import BaseSource, Sources
     from netdef.Interfaces.DefaultInterface import DefaultInterface
 
-    @Sources.register("SubprocessSource")
-    class SubprocessSource(BaseSource.BaseSource):
+    @Sources.register("CmdSource")
+    class CmdSource(BaseSource.BaseSource):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self.interface = DefaultInterface
@@ -38,7 +38,7 @@ command. the command can be extracted from the sources key:
 The controller can retrieve the command to run by calling
 :attr:`get_command_and_args` 
 
-``first_app/Controllers/SubprocessController.py``:
+``first_app/Controllers/CmdController.py``:
 
 .. code-block:: python
     :lineno-start: 1
@@ -51,7 +51,7 @@ The controller can retrieve the command to run by calling
     from netdef.Controllers import BaseController, Controllers
     from netdef.Sources.BaseSource import StatusCode
 
-    from ..Sources.SubprocessSource import SubprocessSource
+    from ..Sources.CmdSource import CmdSource
 
 We will use subprocess and shlex from standard library to execute commands.
 To keep it simple we can create a wrapper function that run a command and
@@ -78,8 +78,8 @@ added as an argument to the command. the option is read from config file.
 .. code-block:: python
     :lineno-start: 20
 
-    @Controllers.register("SubprocessController")
-    class SubprocessController(BaseController.BaseController):
+    @Controllers.register("CmdController")
+    class CmdController(BaseController.BaseController):
         def __init__(self, name, shared):
             super().__init__(name, shared)
             self.logger = logging.getLogger(self.name)
@@ -121,7 +121,7 @@ To check if it is one of ours we use
 :attr:`netdef.Controllers.BaseController.BaseController.has_source`
 
 To check if we know how to handle it we check if it is an instance of
-the source we created :class:`SubprocessSource`.
+the source we created :class:`CmdSource`.
 
 .. code-block:: python
     :lineno-start: 36
@@ -135,15 +135,15 @@ the source we created :class:`SubprocessSource`.
                 )
             return
 
-        if not isinstance(incoming, SubprocessSource):
+        if not isinstance(incoming, CmdSource):
             self.logger.error(
-                "Got write event for %s, but only SubprocessSource is supported",
+                "Got write event for %s, but only CmdSource is supported",
                 type(incoming)
                 )
             return
 
-We have verified that the source is an instance of :class:`SubprocessSource`.
-Knowing this we can safely call :attr:`SubprocessSource.get_command_and_args`
+We have verified that the source is an instance of :class:`CmdSource`.
+Knowing this we can safely call :attr:`CmdSource.get_command_and_args`
 to get the command.
 
 .. code-block:: python
@@ -271,7 +271,7 @@ TODO
                         command_expression_module,
                         [
                             SourceInfo("InternalSource", "generic"),
-                            SourceInfo("SubprocessSource", command)
+                            SourceInfo("CmdSource", command)
                         ]
                     )
                 )
@@ -313,23 +313,23 @@ TODO
     [FirstAppRule]
 
     [sources]
-    SubprocessSource = 1
+    CmdSource = 1
     InternalSource = 1
 
-    [SubprocessSource]
-    controller = SubprocessController
+    [CmdSource]
+    controller = CmdController
 
     [InternalSource]
     controller = InternalController
 
     [controllers]
-    SubprocessController = 1
+    CmdController = 1
     InternalController = 1
 
     [InternalController]
     send_init_event = 1
 
-    [SubprocessController]
+    [CmdController]
     value_as_args = 1
 
 TODO
@@ -342,13 +342,13 @@ TODO
 
     from netdef.testutils import MockExpression
     from netdef.Sources.InternalSource import InternalSource
-    from first_app.Sources.SubprocessSource import SubprocessSource
+    from first_app.Sources.CmdSource import CmdSource
 
     def test_hello():
         mock = MockExpression(
             module="config/command_rule.py",
             intern=InternalSource("generic"),
-            cmd=SubprocessSource("echo hello")
+            cmd=CmdSource("echo hello")
         )
         mock.intern.update_value(None, stat_init=True)
         mock.cmd.assert_called_once_with("world")
@@ -359,7 +359,7 @@ TODO
         mock = MockExpression(
             module="config/command_rule.py",
             intern=InternalSource("generic"),
-            cmd=SubprocessSource("echo Don\\'t break the")
+            cmd=CmdSource("echo Don\\'t break the")
         )
         mock.intern.update_value(None, stat_init=True)
         mock.cmd.assert_called_once_with("circle")
@@ -370,7 +370,7 @@ TODO
         mock = MockExpression(
             module="config/command_rule.py",
             intern=InternalSource("generic"),
-            cmd=SubprocessSource("ls -lah .")
+            cmd=CmdSource("ls -lah .")
         )
         mock.intern.update_value(None, stat_init=True)
         mock.cmd.assert_called_once_with("")

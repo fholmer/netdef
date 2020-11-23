@@ -126,7 +126,7 @@ class MockExpression:
             mock = MockExpression(
                 module="config/command_rule.py",
                 intern=InternalSource("generic"),
-                cmd=SubprocessSource("echo hello")
+                cmd=CmdSource("echo hello")
             )
             mock.intern.update_value(None, stat_init=True)
             mock.cmd.assert_called_once_with("world")

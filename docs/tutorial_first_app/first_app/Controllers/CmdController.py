@@ -5,7 +5,7 @@ import shlex
 from netdef.Controllers import BaseController, Controllers
 from netdef.Sources.BaseSource import StatusCode
 
-from ..Sources.SubprocessSource import SubprocessSource
+from ..Sources.CmdSource import CmdSource
 
 def stdout_from_terminal(command_as_str, err_msg=None):
     command_args = shlex.split(command_as_str)
@@ -18,8 +18,8 @@ def stdout_from_terminal(command_as_str, err_msg=None):
         else:
             return err_msg
 
-@Controllers.register("SubprocessController")
-class SubprocessController(BaseController.BaseController):
+@Controllers.register("CmdController")
+class CmdController(BaseController.BaseController):
     def __init__(self, name, shared):
         super().__init__(name, shared)
         self.logger = logging.getLogger(self.name)
@@ -46,9 +46,9 @@ class SubprocessController(BaseController.BaseController):
                 )
             return
 
-        if not isinstance(incoming, SubprocessSource):
+        if not isinstance(incoming, CmdSource):
             self.logger.error(
-                "Got write event for %s, but only SubprocessSource is supported",
+                "Got write event for %s, but only CmdSource is supported",
                 type(incoming)
                 )
             return

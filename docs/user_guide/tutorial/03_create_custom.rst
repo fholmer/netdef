@@ -10,7 +10,7 @@ Copy the included template to create a custom controller.
 
 Paste it into your application with a new name:
 
-``first_app/Controllers/SubprocessController.py``:
+``first_app/Controllers/CmdController.py``:
 
 .. code-block:: python
     :linenos:
@@ -24,8 +24,8 @@ Paste it into your application with a new name:
     # import my supported sources
     from netdef.Sources.NewSourceTemplate import NewSourceTemplate
 
-    @Controllers.register("SubprocessController")
-    class SubprocessController(BaseController.BaseController):
+    @Controllers.register("CmdController")
+    class CmdController(BaseController.BaseController):
         def __init__(self, name, shared):
             super().__init__(name, shared)
     
@@ -39,9 +39,9 @@ To activate the controller we have to merge following config to ``default.conf``
 .. code-block:: ini
 
     [controllers]
-    SubprocessController = 1
+    CmdController = 1
 
-    [SubprocessController]
+    [CmdController]
 
 Result after merge:
 
@@ -50,13 +50,13 @@ Result after merge:
     [controllers]
     CrontabController = 1
     OPCUAServerController = 1
-    SubprocessController = 1
+    CmdController = 1
 
     [CrontabController]
 
     [OPCUAServerController]
 
-    [SubprocessController]
+    [CmdController]
 
 
 Create a custom source
@@ -70,7 +70,7 @@ Copy the included template to create a custom source for your controller.
 
 Paste it into your application with a new name:
 
-``first_app/Sources/SubprocessSource.py``:
+``first_app/Sources/CmdSource.py``:
 
 .. code-block:: python
     :linenos:
@@ -79,8 +79,8 @@ Paste it into your application with a new name:
     from netdef.Sources import BaseSource, Sources
     from netdef.Interfaces.DefaultInterface import DefaultInterface
 
-    @Sources.register("SubprocessSource")
-    class SubprocessSource(BaseSource.BaseSource):
+    @Sources.register("CmdSource")
+    class CmdSource(BaseSource.BaseSource):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self.interface = DefaultInterface
@@ -93,7 +93,7 @@ Line 4 and 5 is changed to the same name as the file.
 
 Change line 7 in your custom controller:
 
-``first_app/Controllers/SubprocessController.py``:
+``first_app/Controllers/CmdController.py``:
 
 .. code-block:: python
     :linenos:
@@ -105,7 +105,7 @@ Change line 7 in your custom controller:
     from netdef.Sources.BaseSource import StatusCode
 
     # import my new source
-    from ..Sources.SubprocessSource import SubprocessSource
+    from ..Sources.CmdSource import CmdSource
     ...
 
 To activate the source we have to merge following config to ``default.conf``:
@@ -113,10 +113,10 @@ To activate the source we have to merge following config to ``default.conf``:
 .. code-block:: ini
 
     [sources]
-    SubprocessSource = 1
+    CmdSource = 1
 
-    [SubprocessSource]
-    controller = SubprocessController
+    [CmdSource]
+    controller = CmdController
 
 Result:
 
@@ -125,12 +125,12 @@ Result:
     [controllers]
     CrontabController = 1
     OPCUAServerController = 1
-    SubprocessController = 1
+    CmdController = 1
 
     [sources]
     CrontabSource = 1
     VariantSource = 1
-    SubprocessSource = 1
+    CmdSource = 1
 
     [CrontabSource]
     controller = CrontabController
@@ -138,14 +138,14 @@ Result:
     [VariantSource]
     controller = OPCUAServerController
 
-    [SubprocessSource]
-    controller = SubprocessController
+    [CmdSource]
+    controller = CmdController
 
     [CrontabController]
 
     [OPCUAServerController]
 
-    [SubprocessController]
+    [CmdController]
 
 
 Create a custom rule
@@ -203,12 +203,12 @@ Result:
     [controllers]
     CrontabController = 1
     OPCUAServerController = 1
-    SubprocessController = 1
+    CmdController = 1
 
     [sources]
     CrontabSource = 1
     VariantSource = 1
-    SubprocessSource = 1
+    CmdSource = 1
 
     [CrontabSource]
     controller = CrontabController
@@ -216,11 +216,11 @@ Result:
     [VariantSource]
     controller = OPCUAServerController
 
-    [SubprocessSource]
-    controller = SubprocessController
+    [CmdSource]
+    controller = CmdController
 
     [CrontabController]
 
     [OPCUAServerController]
 
-    [SubprocessController]
+    [CmdController]

@@ -40,7 +40,7 @@ class FirstAppRule(BaseRule.BaseRule):
                     command_expression_module,
                     [
                         SourceInfo("InternalSource", "generic"),
-                        SourceInfo("SubprocessSource", command)
+                        SourceInfo("CmdSource", command)
                     ]
                 )
             )
