@@ -104,8 +104,9 @@ class XmlRpcController(BaseController.BaseController):
             if self.disable:  # disble: tøm køen og loop
                 self.fetch_one_incoming()
                 continue
-            self.loop_incoming()  # dispatch handle_* functions
-            self.sleep(self.poll_interval)
+            self.loop_incoming(
+                until_empty=False, until_timeout=self.poll_interval
+            )  # dispatch handle_* functions
             if not self.has_interrupt():
                 self.loop_outgoing()  # dispatch poll_* functions
         self.logger.info("Stopped")
