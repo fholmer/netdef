@@ -14,7 +14,7 @@ log.debug("Loading module")
 @Controllers.register("ModbusClientController")
 class ModbusClientController(BaseController.BaseController):
     """
-    .. caution:: Development Status :: 4 - Beta
+    .. tip:: Development Status :: 5 - Production/Stable
 
     Read and write holding registers of a modbus device.
 
