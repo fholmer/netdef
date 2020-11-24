@@ -26,10 +26,10 @@ class SubprocessSource(BaseSource.BaseSource):
         "Implement parsing function"
         return value
 
-    def has_poll_request(self):
+    def has_poll_interval(self):
         return True
 
-    def get_poll_request_interval(self):
+    def get_poll_interval(self):
         return self.DEFAULT_INTERVAL
 
     @staticmethod

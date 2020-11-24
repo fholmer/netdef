@@ -43,8 +43,8 @@ class SubprocessController(BaseController.BaseController):
                 self.loop_incoming(until_empty=False, until_timeout=timeout)  # dispatch handle_* functions
 
                 for item in self.get_sources().values():
-                    if item.has_poll_request():
-                        if item.get_poll_request_interval() == current_interval:
+                    if item.has_poll_interval():
+                        if item.get_poll_interval() == current_interval:
                             self.poll_outgoing_item(item)
             else:
                 self.loop_incoming()
@@ -54,8 +54,8 @@ class SubprocessController(BaseController.BaseController):
         interval_plan = NextInterval(time.time())
 
         for source in self.get_sources().values():
-            if source.has_poll_request():
-                pri = source.get_poll_request_interval()
+            if source.has_poll_interval():
+                pri = source.get_poll_interval()
                 if pri > 0:
                     interval_plan.add(pri)
         return interval_plan
@@ -105,6 +105,7 @@ class SubprocessController(BaseController.BaseController):
 
         cmd_as_str = item.get_command_and_args()
         response = stdout_from_terminal(cmd_as_str)
+        response = item.parse_stdout_response(response)
         stime = datetime.datetime.utcnow()
         status_ok = True
 
