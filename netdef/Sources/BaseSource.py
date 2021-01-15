@@ -325,5 +325,5 @@ class BaseSource:
         elif isinstance(self.get_value, (int, str, float)):
             val = type(self.get_value)(value)
         else:
-            val = str(val)
+            val = str(value)
         self._set_set_value(val, stime, status_ok, origin)
