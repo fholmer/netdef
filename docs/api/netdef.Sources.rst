@@ -118,6 +118,14 @@ MQTTDataMessageSource
     :undoc-members:
     :show-inheritance:
 
+SubprocessSource
+----------------
+
+.. automodule:: netdef.Sources.SubprocessSource
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 SystemMonitorSource
 -------------------
 

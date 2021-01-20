@@ -1,7 +1,7 @@
-1.0.7.dev3
+1.0.7.dev4
 ==========
 
-2020-10-18
+2021-01-20
 
 **Enhancements**
 
@@ -12,6 +12,7 @@
 - BaseSource: call setup-function in source instance if found at startup
 - Added testutils.MockShared
 - OPCUAServerController: insert SourceTimestamp and ServerTimestamp if missing
+- Added: SubprocessController
 
 **Bug fixes**
 
