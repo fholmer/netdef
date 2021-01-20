@@ -37,6 +37,10 @@ class SubprocessController(BaseController.BaseController):
         self.loop_until_app_state_running()
         self.interval_plan = self.setup_interval_plan()
 
+        for item in self.get_sources().values():
+            if item.has_initial_poll():
+                self.poll_outgoing_item(item)
+
         while not self.has_interrupt():
             if self.interval_plan.has_interval():
                 timeout, current_interval = self.interval_plan.next(time.time())
