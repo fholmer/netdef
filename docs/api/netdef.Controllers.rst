@@ -127,6 +127,14 @@ RESTJsonController
     :undoc-members:
     :show-inheritance:
 
+SubprocessController
+--------------------
+
+.. automodule:: netdef.Controllers.SubprocessController
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 SystemMonitorController
 -----------------------
 

@@ -100,6 +100,11 @@ OPCUAServerController
 
     freeopcua
 
+SubprocessController
+++++++++++++++++++++
+.. literalinclude:: ../controller-configs/SubprocessController.conf
+   :language: ini
+   :caption: config/default.conf
 
 SystemMonitorController
 +++++++++++++++++++++++

@@ -26,6 +26,9 @@ class SubprocessSource(BaseSource.BaseSource):
         "Implement parsing function"
         return value
 
+    def has_initial_poll(self):
+        return self.has_poll_interval()
+
     def has_poll_interval(self):
         return True
 
